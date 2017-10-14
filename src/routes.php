@@ -25,14 +25,13 @@ $app->get('/', function ($request, $response, $args) {
 
     $flash = $this->flash;
     $RouteHelper = new \Shotgun\RouteHelper($this, $request, 'Accueil');
-    $js_for_layout = 'countdown.js';
     
     // Sample log message
     // $this->logger->info("Slim-Skeleton '/' index");
     
     // Render index view
     $this->renderer->render($response, 'header.php', compact('flash', 'RouteHelper', 'Auth', $args));
-    $this->renderer->render($response, 'home.php', compact('RouteHelper', 'Auth', $args));
+    $this->renderer->render($response, 'creation.php', compact('RouteHelper', 'Auth', $args));
     return $this->renderer->render($response, 'footer.php', compact('RouteHelper', 'Auth', 'js_for_layout', $args));
 })->setName('home');
 
