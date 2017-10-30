@@ -80,7 +80,7 @@
         <a href="<?= $casUrl ?>" class="btn btn-lg btn-info btn-block">Ou avec cas.icam.fr</a>
       </form>
         <hr>
-        <p style="text-align:center"><em>Page d'authentification vers le portail du Shotgun Festival</em></p>
+        <p style="text-align:center"><em>Page d'authentification vers le portail du Shotgun</em></p>
     </div>
     <script src="<?= $RouteHelper->publicPath ?>js/bootstrap.min.js"></script>
   </body>

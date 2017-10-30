@@ -10,6 +10,7 @@
     <link href="<?= $RouteHelper->publicPath ?>css/main.css" rel="stylesheet">
     <meta name="description" content="Shotgun">
     <meta name="author" content="Thibaut de Gouberville 118, Guillaume Dubois 119, Gregoire Dervaux 119">
+    <link rel="stylesheet" href="<?= $RouteHelper->publicPath ?>css/font-awesome-4.7.0/css/font-awesome.min.css">
     <link rel="shortcut icon" href="<?= $RouteHelper->publicPath ?>img/icone.png">
     <link href="http://getbootstrap.com/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
 
@@ -32,9 +33,9 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
-            <li><a href="<?= $RouteHelper->getPathFor() ?>">Home</a></li>
-            <li><a href="<?= $RouteHelper->getPathFor('about') ?>">About</a></li>
-            <li><a href="<?= $RouteHelper->getPathFor('logout') ?>">Déconnexion</a></li>
+            <li><a class="nav-link" href="<?= $RouteHelper->getPathFor() ?>">Home</a></li>
+            <li><a class="nav-link" href="<?= $RouteHelper->getPathFor('about') ?>">About</a></li>
+            <li><a class="nav-link" href="<?= $RouteHelper->getPathFor('logout') ?>">Déconnexion</a></li>
           </ul>
         </div>
       </nav>
