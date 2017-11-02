@@ -16,7 +16,7 @@ return [
         ],
 
         'public_path' => 'public/',
-        'webSiteTitle' => 'VisuLignes',
+        'webSiteTitle' => 'Payicam Shotgun',
         'emailContactGala' => 'contact@xxx',
 
         'casUrl' => 'https://cas.icam.fr/cas/',

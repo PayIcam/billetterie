@@ -2,7 +2,7 @@
 <body>
 	<container>
 	<div class="col-md-offset-1 col-md-6">
-		<form method="post" action="edit_invite.php">
+		<form method="post" action="<?= $RouteHelper->getPathFor('confirmation.php') ?>">
 			<fieldset>
 			<legend>Nouveau Shotgun</legend>
 				
@@ -39,7 +39,7 @@
 					    <script src="http://code.gijgo.com/1.5.1/js/gijgo.js" type="text/javascript"></script>
 					    <link href="http://code.gijgo.com/1.5.1/css/gijgo.css" rel="stylesheet" type="text/css" />
 					</div>
-					    <input id="datepicker" width="276" />
+					    <input id="datepicker" name="date_debut" width="276" />
 					    <script>
 					        $('#datepicker').datepicker({
 					            uiLibrary: 'bootstrap4',
@@ -54,7 +54,7 @@
 					    <script src="http://code.gijgo.com/1.5.1/js/gijgo.js" type="text/javascript"></script>
 					    <link href="http://code.gijgo.com/1.5.1/css/gijgo.css" rel="stylesheet" type="text/css" />
 					</div>
-					    <input id="datepicker2" width="276" />
+					    <input id="datepicker2" name="date_fin" width="276" />
 					    <script>
 					        $('#datepicker2').datepicker({
 					            uiLibrary: 'bootstrap4',
@@ -65,10 +65,10 @@
 				</div>
 				<div id="nb_place" class="form-group col-sm-3">
 					<label>Nombre de place total</label>
-					<input type="number" class="form-control">
+					<input type="number" class="form-control" name="nb_place_tot">
 				</div>
 				<br>
-				<div class="form-row col-md-8">
+				<div class="form-row col-md-9" id="div_option">
 					<label class="col-form-label">Nom option 1</label>
 					<div class="form-group col-md-3" id="nom">
 						<input type="text" class="form-control" aria-describedby="sizing-addon2" name="nom_option">
@@ -88,11 +88,10 @@
 					function addForm(){
 
 						$("button").hide();//cache le bouton (provisoire, il faut afficher un bouton permettant de supprimer une option)
-						var f = document.createElement("form"); //creation nouveau formulaire (BESOIN?)
 						// f.setAttribute('method',"post");
 						// f.setAttribute('action',"submit.php");
 						var divrow = document.createElement("div");//mise en page pour que ça tienne sur 1 ligne
-						divrow.setAttribute('class',"form-row col-md-8");
+						divrow.setAttribute('class',"form-row col-md-12");
 
 						var div1 = document.createElement("div");
 						div1.setAttribute('class',"form-group col-md-3");
@@ -149,12 +148,11 @@
 						divrow.appendChild(label3);
 						divrow.appendChild(div3);
 						divrow.appendChild(bouton);
-						f.appendChild(divrow);
+						div_option.appendChild(divrow);
 
 						//and some more input elements here
 						//and dont forget to add a submit button
 
-						document.getElementsByTagName('body')[0].appendChild(f);
 						nom.focus();
 					}
 
@@ -168,6 +166,10 @@
 		    <br>
 		    </div>
 			</fieldset>
+			<div class="form-row col-md-8">
+				<input type="submit" class="btn btn-primary" value="Valider">
+				<br>
+			</div>
 		</form>
 	</div>
 </container>
