@@ -36,7 +36,7 @@ $app->get('/', function ($request, $response, $args) {
 })->setName('home');
 
 
-$app->get('/creation', function ($request, $response, $args) {
+$app->post('/creation', function ($request, $response, $args) {
     global $Auth, $bdd;
 
     $flash = $this->flash;
@@ -49,6 +49,6 @@ $app->get('/creation', function ($request, $response, $args) {
     $this->renderer->render($response, 'header.php', compact('flash', 'RouteHelper', 'Auth', $args));
     $this->renderer->render($response, 'confirmation.php', compact('RouteHelper', 'Auth', $args));
     return $this->renderer->render($response, 'footer.php', compact('RouteHelper', 'Auth', 'js_for_layout', $args));
-})->setName('confirm');
+})->setName('confirmation');
 
 
