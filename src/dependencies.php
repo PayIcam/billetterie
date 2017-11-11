@@ -29,8 +29,12 @@ $container['logger'] = function ($c) {
 
 
 $confSQL = $settings['settings']['confSQL'];
+$confSQL_Auth = $settings['settings']['confSQL_Auth'];
 
-try{    $bdd = new PDO('mysql:host=localhost;dbname=Springfestival;charset=utf8', 'root', '');} // WTF
-catch(Exception $e){        die('Erreur : '.$e->getMessage());}
+try{    $bdd_Auth = new PDO('mysql:host='.$confSQL_Auth['sql_host'].';dbname='.$confSQL_Auth['sql_db'].';charset=utf8',$confSQL_Auth['sql_user'], $confSQL_Auth['sql_pass']);} // WTF
+catch(Exception $e){        die('Erreur : '.$e->getMessage());};
+
+try{    $bdd = new PDO('mysql:host='.$confSQL['sql_host'].';dbname='.$confSQL['sql_db'].';charset=utf8',$confSQL['sql_user'], $confSQL['sql_pass']);} // WTF
+catch(Exception $e){        die('Erreur : '.$e->getMessage());};
 
 $Auth = new \Shotgun\Auth($settings['settings']['casUrl']);
