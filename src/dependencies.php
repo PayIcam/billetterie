@@ -30,7 +30,7 @@ $container['logger'] = function ($c) {
 
 $confSQL = $settings['settings']['confSQL'];
 
-try{    $bdd = new PDO('mysql:host=localhost;dbname=Springfestival;charset=utf8', 'root', '');} // WTF
+try{    $bdd = new PDO('mysql:host=localhost;dbname=shotgun;charset=utf8', 'root', '');}
 catch(Exception $e){        die('Erreur : '.$e->getMessage());}
 
 $Auth = new \Shotgun\Auth($settings['settings']['casUrl']);
