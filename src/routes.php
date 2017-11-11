@@ -36,11 +36,11 @@ $app->get('/', function ($request, $response, $args) {
 })->setName('home');
 
 
-$app->post('/creation', function ($request, $response, $args) {
+$app->post('/confirm', function ($request, $response, $args) {
     global $Auth, $bdd;
 
     $flash = $this->flash;
-    $RouteHelper = new \Shotgun\RouteHelper($this, $request, 'confirm');
+    $RouteHelper = new \Shotgun\RouteHelper($this, $request, 'confirmation');
     
     // Sample log message
     // $this->logger->info("Slim-Skeleton '/' index");
@@ -49,6 +49,6 @@ $app->post('/creation', function ($request, $response, $args) {
     $this->renderer->render($response, 'header.php', compact('flash', 'RouteHelper', 'Auth', $args));
     $this->renderer->render($response, 'confirmation.php', compact('RouteHelper', 'Auth', $args));
     return $this->renderer->render($response, 'footer.php', compact('RouteHelper', 'Auth', 'js_for_layout', $args));
-})->setName('confirmation');
+})->setName('confirm');
 
 

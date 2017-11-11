@@ -8,6 +8,7 @@
      <!-- Le styles -->
     <link href="<?= $RouteHelper->publicPath ?>css/bootstrap.min.css" rel="stylesheet">
     <link href="<?= $RouteHelper->publicPath ?>css/main.css" rel="stylesheet">
+    <script src="<?= $RouteHelper->publicPath ?>js/option.js" type="text/javascript"> </script>
     <meta name="description" content="Shotgun">
     <meta name="author" content="Thibaut de Gouberville 118, Guillaume Dubois 119, Gregoire Dervaux 119">
     <link rel="stylesheet" href="<?= $RouteHelper->publicPath ?>css/font-awesome-4.7.0/css/font-awesome.min.css">
@@ -33,8 +34,8 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
-            <li><a class="nav-link" href="<?= $RouteHelper->getPathFor() ?>">Home</a></li>
-            <li><a class="nav-link" href="<?= $RouteHelper->getPathFor('about') ?>">About</a></li>
+            <li><a class="nav-link" href="<?= $RouteHelper->getPathFor() ?>">Accueil</a></li>
+            <li><a class="nav-link" href="<?= $RouteHelper->getPathFor('about') ?>">A propos</a></li>
             <li><a class="nav-link" href="<?= $RouteHelper->getPathFor('logout') ?>">Déconnexion</a></li>
           </ul>
         </div>
@@ -42,6 +43,6 @@
           
     <?php foreach ($flash->getMessages() as $key => $flashs): ?>
       <?php foreach ($flashs as $flashMsg): ?>
-        <div class="grey alert-<?= $key ?>"><a onclick="location.reload()">X</a><?php echo $flashMsg ?></div>
+        <div class="grey alert-<?= $key ?>"><a onclick="location.reload()"></a><?php echo $flashMsg ?></div>
       <?php endforeach ?>
     <?php endforeach ?>
