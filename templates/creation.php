@@ -81,7 +81,7 @@
 					</div>
 					<label class="col-form-label">Nombre de place de l'option</label> <!-- max=max nombre total et uniquement si plusieurs options-->
 					<div class="form-group col-sm-2">
-						<input type="number" class="form-control" aria-describedby="sizing-addon2" name="place_option1">
+						<input type="number" class="form-control" aria-describedby="sizing-addon2" name="nb_place_option1">
 					</div>	
    					<button type="button" class="btn btn-outline-secondary" style="padding: 15px; text-align: center;" onclick="addForm()"><font size=12>+</font></button>
 	   			</div>
