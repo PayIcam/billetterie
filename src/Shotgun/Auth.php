@@ -9,28 +9,28 @@ class Auth{
     private $casUrl;
 
     function __construct($casUrl){
-        global $bdd;
+        global $bdd_Auth;
         $this->casUrl = $casUrl;
-        $this->roles = $bdd->query('SELECT * FROM roles');
+        $this->roles = $bdd_Auth->query('SELECT * FROM roles');
     }
     function setFlashCtrl($flash){
         $this->flash = $flash;
     }
 
     function login($d){
-        global $bdd;
+        global $bdd_Auth;
 
         $d = array(
             'email' => $d['email'],
             'password' => md5($d['password'])
         );
 
-        $return = $bdd->prepare('SELECT administrateurs.id, administrateurs.email,administrateurs.nom,administrateurs.prenom,administrateurs.online,roles.name,roles.slug,roles.level FROM administrateurs LEFT JOIN roles ON administrateurs.role_id=roles.id WHERE email=:email AND password=:password');
+        $return = $bdd_Auth->prepare('SELECT administrateurs.id, administrateurs.email,administrateurs.nom,administrateurs.prenom,administrateurs.online,roles.name,roles.slug,roles.level FROM administrateurs LEFT JOIN roles ON administrateurs.role_id=roles.id WHERE email=:email AND password=:password');
         $return = $return->execute($d)->fetchAll();
         if (empty($return)) {
             // $this->flash->addMessage('warning', "Vous n'avez pas les droits d'accéder au site.<br>Faites la demande aux responsables au besoin.");
             return false;
-        }else if($return['online'] == 1 && $return['level'] != 0){ // si l'utilisateur est actif dans la BDD
+        }else if($return['online'] == 1 && $return['level'] != 0){ // si l'utilisateur est actif dans la bdd_Auth
             $_SESSION['Auth'] = array();
             $_SESSION['Auth'] = $return;
             return true;
@@ -41,7 +41,7 @@ class Auth{
     }
 
     function loginUsingConf($d){
-        global $bdd, $settings;
+        global $bdd_Auth, $settings;
         $this->roles = $settings['settings']['Auth']['roles'];
 
         $d = array(
@@ -60,7 +60,7 @@ class Auth{
         if (empty($return)) {
             // $this->flash->addMessage('warning', "Vous n'avez pas les droits d'accéder au site.<br>Faites la demande aux responsables au besoin.");
             return false;
-        }else if($return['online'] == 1 && $return['level'] != 0){ // si l'utilisateur est actif dans la BDD
+        }else if($return['online'] == 1 && $return['level'] != 0){ // si l'utilisateur est actif dans la bdd_Auth
             $_SESSION['Auth'] = array();
             $_SESSION['Auth'] = $return;
             return true;
@@ -71,7 +71,7 @@ class Auth{
     }
 
     function loginUsingCas($ticket, $service){
-        global $bdd;
+        global $bdd_Auth;
         $CAS = new \Shotgun\Cas($this->casUrl);
 
         try {
@@ -80,15 +80,15 @@ class Auth{
             $this->flash->addMessage('warning', $e->getMessage());
             return false;
         }
-        if (!empty($userEmail) && $bdd->query('SELECT COUNT(*) FROM administrateurs WHERE email = "'.$userEmail.'"')->fetch()['COUNT(*)'] == 1) {
-            $return = $bdd->query('SELECT administrateurs.id, administrateurs.email,administrateurs.nom,administrateurs.prenom,administrateurs.online,roles.name,roles.slug,roles.level FROM administrateurs LEFT JOIN roles ON administrateurs.role_id=roles.id WHERE administrateurs.email = "'.$userEmail.'"');
+        if (!empty($userEmail) && $bdd_Auth->query('SELECT COUNT(*) FROM administrateurs WHERE email = "'.$userEmail.'"')->fetch()['COUNT(*)'] == 1) {
+            $return = $bdd_Auth->query('SELECT administrateurs.id, administrateurs.email,administrateurs.nom,administrateurs.prenom,administrateurs.online,roles.name,roles.slug,roles.level FROM administrateurs LEFT JOIN roles ON administrateurs.role_id=roles.id WHERE administrateurs.email = "'.$userEmail.'"');
             $return = $return->fetchAll();
             $return = $return[0];
 
             if (empty($return)) {
                 $this->flash->addMessage('warning', "Vous n'avez pas les droits d'accéder au site.<br>Faites la demande aux responsables au besoin.");
                 return false;
-            }else if($return['online'] == 1 && $return['level'] != 0){ // si l'utilisateur est actif dans la BDD
+            }else if($return['online'] == 1 && $return['level'] != 0){ // si l'utilisateur est actif dans la bdd_Auth
                 $_SESSION['Auth'] = array();
                 $_SESSION['Auth'] = $return;
                 $_SESSION['Auth']['loggedUsingCas'] = true;
@@ -206,7 +206,7 @@ class Auth{
 
     // -------------------- Getters -------------------- //
     public function getLevels($key = 'slug'){
-        global $bdd;
+        global $bdd_Auth;
         if ($key != 'slug' || $key != 'id')
             $key = 'slug';
 
@@ -217,7 +217,7 @@ class Auth{
         return $roles;
     }
     public function getRoles($key = 'id'){
-        global $bdd;
+        global $bdd_Auth;
         if ($key != 'slug' || $key != 'id')
             $key = 'id';
 
