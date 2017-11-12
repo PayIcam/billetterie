@@ -11,10 +11,25 @@ $_POST['public_cible'] = "119";
 $_POST['nom_option1'] = 'option1';
 $_POST['prix_option1'] = '15';
 $_POST['nb_place_option1'] = '10';
-$_POST['nom_option2'] = 'option2';
-$_POST['prix_option2'] = '20';
-$_POST['nb_place_option2'] = '30';
+$_POST['nom_option2'] = '';
+$_POST['prix_option2'] = null;
+$_POST['nb_place_option2'] = '';
 
+//on supprimes les valeurs nulles ou vides
+$post_tampon=[];
+foreach ($_POST as $nom => $value)
+{
+	if (!is_null($value) && !$value=='')
+	{
+		$post_tampon[$nom]=$value;
+	}
+}
+$_POST=$post_tampon;
+
+//on verifis les valeures bizarres et on remplace les caractères incorrectes 
+// foreach($_POST as $nom => $value)
+// 	$_POST[$key]=Securise::html($value);
+// 	$_POST[$key]=nettoyer($value);
 
 // on importe l'objet PDO crée dans les dépendance
 global $bdd;
@@ -54,12 +69,12 @@ foreach ($_POST as $name => $value)
 			}
 			else
 			{
-				throw Exception("post incorrect");
+				throw new Exception("post incorrect");
 			}
 		}
 		else
 		{
-			throw Exception("post incorrect");
+			throw new Exception("post incorrect");
 		}
 	}	
 }
@@ -94,7 +109,7 @@ foreach($info_option as $rang => $list_enreg)
 
 		$liste_prix=preg_grep('#prix#',array_keys($list_enreg));
 		$ajout_option->bindParam('prix',$list_enreg[reset($liste_prix)], PDO::PARAM_INT);
-		
+
 		$liste_nb_place=preg_grep('#nb_place#',array_keys($list_enreg));
 		$ajout_option->bindParam('nb_dispo_tot',$list_enreg[reset($liste_nb_place)], PDO::PARAM_INT);
 
@@ -103,8 +118,7 @@ foreach($info_option as $rang => $list_enreg)
 	}
 	else
 	{
-		throw Exception('il manque des elements dans le post');
+		throw new Exception('il manque des elements dans le post');
 	}
-}
-
+}z
 ?>
