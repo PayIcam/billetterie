@@ -120,5 +120,5 @@ foreach($info_option as $rang => $list_enreg)
 	{
 		throw new Exception('il manque des elements dans le post');
 	}
-}z
+}
 ?>
