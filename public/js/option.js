@@ -69,7 +69,8 @@ function suppr_option(){
 }
 
 function ajoutJS(){
-		nom_option2.value=nom_option_js2.value;
+		alert(nom_option2.value);
+		alert(nom_option_js2.value);
 
 	for (var iter = 2; iter<=compteur; iter++){
 		nom_option2.value=nom_option_js2.value;
