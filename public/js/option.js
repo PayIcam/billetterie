@@ -17,7 +17,7 @@
 			var nom = document.createElement("input"); //input nom option
 			nom.setAttribute('type',"text");
 			nom.setAttribute('class',"form-control");
-			nom.setAttribute('name',"nom_option_js" + compteur);
+			nom.setAttribute('name',"nom_option_js");
 			nom.setAttribute('id',"nom_option_js" + compteur);
 			div1.appendChild(nom);
 
@@ -69,10 +69,13 @@ function suppr_option(){
 }
 
 function ajoutJS(){
-		alert(nom_option2.value);
-		alert(nom_option_js2.value);
+		// alert(nom.id);
+		// alert(document.formulaire.div_option.divrow.nom_option_js2.value);
 
-	for (var iter = 2; iter<=compteur; iter++){
-		nom_option2.value=nom_option_js2.value;
-	}
+	// for (var iter = 2; iter<=compteur; iter++){
+		var j = 'azerty';
+		var tamere = getElementsbyId(nom_option_js).innerHTML;
+		alert(tamere.value);
+		document.formulaire.nom_option2.value=j;
+	// }
 }
