@@ -1,19 +1,8 @@
 
 
 <?php
-// //valeures de test
-// $_POST['nom_shotgun'] = "magrite";
-// $_POST['date_debut'] = "2017-10-10 00:00:00";
-// $_POST['date_fin'] = "2017-10-11 00:00:00";
-// $_POST['descr'] = "test";
-// $_POST['nb_place_tot'] = "100";
-// $_POST['public_cible'] = "119";
-// $_POST['nom_option1'] = 'option1';
-// $_POST['prix_option1'] = '15';
-// $_POST['nb_place_option1'] = '10';
-// $_POST['nom_option2'] = '';
-// $_POST['prix_option2'] = null;
-// $_POST['nb_place_option2'] = '';
+
+var_dump($_POST);
 
 //on supprimes les valeurs nulles ou vides
 $post_tampon=[];
@@ -33,6 +22,13 @@ $_POST=$post_tampon;
 
 // on importe l'objet PDO crée dans les dépendance
 global $bdd;
+global $bdd_payicam;
+
+//on va chercher l'id de la fondation cible
+$select_cible=$bdd_payicam->prepare('SELECT t_fundation_fun.fun_id
+								FROM t_fundation_fun
+								WHERE t_fundation_fun.fun_name= ?');
+$select_cible->execute(array($_POST['public_cible']));
 
 //on prepare la requete pour enregistrer le shotgun
 $ajout_shotgun=$bdd->prepare('INSERT INTO shotgun_desc(id_shotgun,nom_shotgun,date_debut,date_fin,descr,nb_place_tot,public_cible) 

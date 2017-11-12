@@ -4,7 +4,7 @@ global $bdd_payicam;
 
 $mail=$_SESSION['Auth']['email'];
 
-$select_droit=$bdd_payicam->prepare('SELECT tj_usr_fun_ufu.fun_id, t_fundation_fun.fun_name 
+$select_droit=$bdd_payicam->prepare('SELECT t_fundation_fun.fun_name 
 							FROM tj_usr_fun_ufu
 							INNER JOIN t_fundation_fun
 							ON (t_fundation_fun.fun_id = tj_usr_fun_ufu.fun_id OR tj_usr_fun_ufu.fun_id IS NULL)
@@ -14,12 +14,10 @@ $select_droit=$bdd_payicam->prepare('SELECT tj_usr_fun_ufu.fun_id, t_fundation_f
 
 $select_droit->execute(array($mail));
 
-$ls_droit=[];
 $ls_nom_droit=[];
 
 while($droit = $select_droit->fetch())
 {
-	$ls_droit[]=$droit['fun_id'];
 	$ls_nom_droit[]=$droit['fun_name'];
 }
 
@@ -66,11 +64,11 @@ while($droit = $select_droit->fetch())
 				</div>
 				<div id="public_cible" class="form-group col-sm-3">
 					<label>Public cible</label>
-					<select class="form-control" id="public_cible">
+					<select type="select" class="form-control" id="public_cible" name="public_cible">
 				    	<?php 
 				    	foreach($ls_nom_droit as $nom)	
 				    	{
-				    		echo("<option>".$nom."</option>"); 
+				    		echo("<option value=".$nom.">".$nom."</option>"); 
 				    	}
 				    	?>
 				    	
