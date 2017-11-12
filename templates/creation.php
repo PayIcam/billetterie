@@ -25,12 +25,12 @@
 				<div class="form-row col-md-12">
 					<div id="div_date_debut" class="form-group col-sm-2">
 						<label>Date de début</label>
-					    <input id="date_debut" class="form-control" name="date_debut" type="datetime" value="<?php echo date("d-m-Y H:i");?>">
+					    <input id="date_debut" class="form-control" name="date_debut" type="datetime" value="<?php echo date("d-m-Y H:i:s");?>">
 					</div>
 					<div id="div_date_fin" class="form-group col-sm-2">
 						<label>Date de fin</label>
 					    <input id="date_fin" type="datetime" class="form-control" name="date_fin" value="<?php $d=strtotime("tomorrow");
-					    echo date("d-m-Y H:i",$d); ?>">
+					    echo date("d-m-Y H:i:s",$d); ?>">
 					</div>
 				</div>
 				</div>
