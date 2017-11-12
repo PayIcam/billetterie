@@ -3,7 +3,7 @@
 <body>
 	<container>
 	<div class="col-md-offset-1 col-md-6">
-		<form method="post" action="<?= $RouteHelper->getPathFor('confirm') ?>" id="formulaire">
+		<form method="post" action="<?= $RouteHelper->getPathFor('enreg') ?>" id="formulaire">
 			<fieldset>
 			<legend>Nouveau Shotgun</legend>
 				
