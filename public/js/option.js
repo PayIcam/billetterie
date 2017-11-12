@@ -3,8 +3,35 @@
 	function addForm(){
 		if (compteur<10){
 			compteur++;
+			if (compteur==2){
+
+				var label_nb_place = document.createElement("label");
+				var text_nb_place = document.createTextNode("Nombre de place de l'option");
+				label_nb_place.setAttribute('class', "col-form-label");
+				label_nb_place.setAttribute('id', 'label_nb');
+				label_nb_place.appendChild(text_nb_place);
+				
+				var nb_place = document.createElement("input");
+				nb_place.setAttribute('type', "number");
+				nb_place.setAttribute('class', "form-control");
+				nb_place.setAttribute('aria-describedby', "sizing-addon2");
+				nb_place.setAttribute('name', "nb_place_option_js1");
+				nb_place.setAttribute('id', 'input_place');
+				div_label.appendChild(label_nb_place);
+				div_place_option.appendChild(nb_place);
+
+
+				var bouton_suppr = document.createElement("input");
+				bouton_suppr.setAttribute('type', "button");
+				bouton_suppr.setAttribute('class', "btn btn-outline-danger");
+				bouton_suppr.setAttribute('id', 'bouton');
+				bouton_suppr.setAttribute('onclick', "suppr_option()");
+				bouton_suppr.setAttribute('value', "Supprimer");
+				div_bouton.appendChild(bouton_suppr);
+			}
 			var divrow = document.createElement("div");//mise en page pour que ça tienne sur 1 ligne
 			divrow.setAttribute('class',"form-row col-md-12");
+			divrow.setAttribute('id',compteur);
 
 			var div1 = document.createElement("div");
 			div1.setAttribute('class',"form-group col-md-3");
@@ -59,6 +86,7 @@
 			divrow.appendChild(div3);
 			div_option.appendChild(divrow);
 			nom.focus();
+
 		}
 		else{
 			alert("Nombre max d'option atteint!");
@@ -67,6 +95,24 @@
 
 
 function suppr_option(){
+
+	var element = document.getElementById(compteur);
+	while (element.firstChild) {
+	  element.removeChild(element.firstChild);
+	}
+	element.parentNode.removeChild(element);
+	
+	compteur = compteur-1;
+	if (compteur==1){
+
+		var jen = document.getElementById('label_nb');
+		var ai = document.getElementById('input_place');
+		var marre = document.getElementById('bouton');
+		jen.parentNode.removeChild(jen);
+		ai.parentNode.removeChild(ai);
+		marre.parentNode.removeChild(marre);
+
+	}
 
 }
 
@@ -77,6 +123,7 @@ function ajoutJS(){
 	// 	document.formulaire.opt.value = document.getElementById('nom_option_js'+iter).value;
 	// }
 	if (compteur>=2) { //OUI C'EST MOCHE T'AS QU'A FAIRE MIEUX
+		document.formulaire.nb_place_option1.value = document.getElementById('nb_place_option_js1').value;
 		document.formulaire.nom_option2.value = document.getElementById('nom_option_js2').value;
 		document.formulaire.prix_option2.value = document.getElementById('prix_option_js2').value;
 		document.formulaire.nb_place_option2.value = document.getElementById('nb_place_option_js2').value;
