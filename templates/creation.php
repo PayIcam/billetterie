@@ -38,8 +38,11 @@ while($droit = $select_droit->fetch())
 				</div>
 				<br>
 
-				<div class="col-md-10">
-  				</div>
+				<div class="col-md-10"> 
+        			<label>Description du Shotgun</label> 
+        			<textarea class="form-control" id="descr" rows="4" name="descr"></textarea> 
+        		</div> 
+        		<br>   
 
 				<br>
 				<div class="form-row col-md-12">
