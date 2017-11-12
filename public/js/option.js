@@ -26,13 +26,14 @@
 
 			var label2 = document.createElement("label"); //input element, text
 			label2.setAttribute('class',"col-form-label");
-			var text2 = document.createTextNode("Prix option ");
+			var text2 = document.createTextNode("Prix option");
 			label2.appendChild(text2)
 
 			var prix = document.createElement("input"); //input prix option
 			prix.setAttribute('class',"form-control");
 			prix.setAttribute('type',"number");
-			prix.setAttribute('name',"prix" + compteur);
+			prix.setAttribute('name',"prix_option_js" + compteur);
+			prix.setAttribute('id',"prix_option_js" + compteur);
 			div2.appendChild(prix);
 
 			var div3 = document.createElement("div");
@@ -46,7 +47,8 @@
 			var place = document.createElement("input"); //input nombre place option
 			place.setAttribute('class',"form-control");
 			place.setAttribute('type',"number");
-			place.setAttribute('name',"place" + compteur);
+			place.setAttribute('name',"nb_place_option_js" + compteur);
+			place.setAttribute('id',"nb_place_option_js" + compteur);
 			div3.appendChild(place);
 
 			divrow.appendChild(label1);
@@ -69,10 +71,55 @@ function suppr_option(){
 }
 
 function ajoutJS(){
-		alert(nom_option2.value);
-		alert(nom_option_js2.value);
 
-	for (var iter = 2; iter<=compteur; iter++){
-		nom_option2.value=nom_option_js2.value;
+	// for (var iter = 2; iter<=compteur; iter++){   Marche pas pour raison inconnue
+	// 	var opt = window['nom_option' + iter];
+	// 	document.formulaire.opt.value = document.getElementById('nom_option_js'+iter).value;
+	// }
+	if (compteur>=2) { //OUI C'EST MOCHE T'AS QU'A FAIRE MIEUX
+		document.formulaire.nom_option2.value = document.getElementById('nom_option_js2').value;
+		document.formulaire.prix_option2.value = document.getElementById('prix_option_js2').value;
+		document.formulaire.nb_place_option2.value = document.getElementById('nb_place_option_js2').value;
+		if (compteur>=3){
+			document.formulaire.nom_option3.value = document.getElementById('nom_option_js3').value;
+			document.formulaire.prix_option3.value = document.getElementById('prix_option_js3').value;
+			document.formulaire.nb_place_option3.value = document.getElementById('nb_place_option_js3').value;
+			if (compteur>=4){
+				document.formulaire.nom_option4.value = document.getElementById('nom_option_js4').value;
+				document.formulaire.prix_option4.value = document.getElementById('prix_option_js4').value;
+				document.formulaire.nb_place_option4.value = document.getElementById('nb_place_option_js4').value;
+				if (compteur>=5){
+					document.formulaire.nom_option5.value = document.getElementById('nom_option_js5').value;
+					document.formulaire.prix_option5.value = document.getElementById('prix_option_js5').value;
+					document.formulaire.nb_place_option5.value = document.getElementById('nb_place_option_js5').value;
+					if (compteur>=6) {
+						document.formulaire.nom_option6.value = document.getElementById('nom_option_js6').value;
+						document.formulaire.prix_option6.value = document.getElementById('prix_option_js6').value;
+						document.formulaire.nb_place_option6.value = document.getElementById('nb_place_option_js6').value;
+						if (compteur>=7){
+							document.formulaire.nom_option7.value = document.getElementById('nom_option_js7').value;
+							document.formulaire.prix_option7.value = document.getElementById('prix_option_js7').value;
+							document.formulaire.nb_place_option7.value = document.getElementById('nb_place_option_js7').value;
+							if (compteur>=8){
+								document.formulaire.nom_option8.value = document.getElementById('nom_option_js8').value;
+								document.formulaire.prix_option8.value = document.getElementById('prix_option_js8').value;
+								document.formulaire.nb_place_option8.value = document.getElementById('nb_place_option_js8').value;
+								if (compteur>=9){
+									document.formulaire.nom_option9.value = document.getElementById('nom_option_js9').value;
+									document.formulaire.prix_option9.value = document.getElementById('prix_option_js9').value;
+									document.formulaire.nb_place_option9.value = document.getElementById('nb_place_option_js9').value;
+									if (compteur>=10){
+										document.formulaire.nom_option10.value = document.getElementById('nom_option_js10').value;
+										document.formulaire.place_option10.value = document.getElementById('prix_option_js10').value;
+										document.formulaire.nb_place_option10.value = document.getElementById('nb_place_option_js10').value;
+										
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }

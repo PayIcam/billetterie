@@ -27,34 +27,31 @@ while($droit = $select_droit->fetch())
 <body>
 	<container>
 	<div class="col-md-offset-1 col-md-6">
-		<form method="post" action="<?= $RouteHelper->getPathFor('enreg') ?>" id="formulaire">
-			<fieldset>
+		<form method="post" action="<?= $RouteHelper->getPathFor('enreg') ?>" name="formulaire">
+			<fieldset name='field'>
 			<legend>Nouveau Shotgun</legend>
-				
-
 				<div class="form-group col-md-6" id="nom">
 				<label class="col-form-label">Nom du Shotgun</label>
 				<input type="text" class="form-control" aria-describedby="sizing-addon2" name="nom_shotgun">
 				</div>
 				<br>
 
-				<div class="col-md-10">
-    			<label>Description du Shotgun</label>
-    			<textarea class="form-control" id="description" rows="4" name="descr"></textarea>
-  				</div>
-  				<br>	
-    </div> 
+				<div class="col-md-10"> 
+        			<label>Description du Shotgun</label> 
+        			<textarea class="form-control" id="descr" rows="4" name="descr"></textarea> 
+        		</div> 
+        		<br>   
 
 				<br>
 				<div class="form-row col-md-12">
 					<div id="div_date_debut" class="form-group col-sm-2">
 						<label>Date de début</label>
-					    <input id="date_debut" class="form-control" name="date_debut" type="datetime" value="<?php echo date("d-m-Y H:i:s");?>">
+						<input id="date_debut" class="form-control" name="date_debut" type="datetime" value="<?php echo date("d-m-Y H:i:s");?>">
 					</div>
 					<div id="div_date_fin" class="form-group col-sm-2">
 						<label>Date de fin</label>
-					    <input id="date_fin" type="datetime" class="form-control" name="date_fin" value="<?php $d=strtotime("tomorrow");
-					    echo date("d-m-Y H:i:s",$d); ?>">
+						<input id="date_fin" type="datetime" class="form-control" name="date_fin" value="<?php $d=strtotime("tomorrow");
+						echo date("d-m-Y H:i:s",$d); ?>">
 					</div>
 				</div>
 				</div>
@@ -88,47 +85,54 @@ while($droit = $select_droit->fetch())
 					<div class="form-group col-sm-2">
 						<input type="number" class="form-control" aria-describedby="sizing-addon2" name="nb_place_option1" id=1>
 					</div>	
-					<div>	<!-- inputs cachés pour stocker les valeurs des input générées par js, c'est moche mais pas moyen de les récupérer autrement -->
-						<input type="hidden" name="nom_option2" id=2>
-						<input type="hidden" name="prix_option2" id=2>
-						<input type="hidden" name="nb_place_option2" id=2>
-						<input type="hidden" name="nom_option3" id=3>
-						<input type="hidden" name="prix_option3" id=3>
-						<input type="hidden" name="nb_place_option3" id=3>
-						<input type="hidden" name="nom_option4" id=4>
-						<input type="hidden" name="prix_option4" id=4>
-						<input type="hidden" name="nb_place_option4" id=4>
-						<input type="hidden" name="nom_option5" id=5>
-						<input type="hidden" name="prix_option5" id=5>
-						<input type="hidden" name="nb_place_option5" id=5>
-						<input type="hidden" name="nom_option6" id=6>
-						<input type="hidden" name="prix_option6" id=6>
-						<input type="hidden" name="nb_place_option6" id=6>
-						<input type="hidden" name="nom_option7" id=7>
-						<input type="hidden" name="prix_option7" id=7>
-						<input type="hidden" name="nb_place_option7" id=7>
-						<input type="hidden" name="nom_option8" id=8>
-						<input type="hidden" name="prix_option8" id=8>
-						<input type="hidden" name="nb_place_option8" id=8>
-						<input type="hidden" name="nom_option9" id=9>
-						<input type="hidden" name="prix_option9" id=9>
-						<input type="hidden" name="nb_place_option9" id=9>
-						<input type="hidden" name="nom_option10" id=10>
-						<input type="hidden" name="prix_option10" id=10>
-						<input type="hidden" name="nb_place_option10" id=10>
+					<div name='input_js'>	<!-- inputs cachés pour stocker les valeurs des input générées par js, c'est moche mais pas moyen de les récupérer autrement -->
+						<input type="hidden" value="" name="nom_option2" id=2>
+						<input type="hidden" value="" name="prix_option2" id=2>
+						<input type="hidden" value="" name="nb_place_option2" id=2>
+						<input type="hidden" value="" name="nom_option3" id=3>
+						<input type="hidden" value="" name="prix_option3" id=3>
+						<input type="hidden" value="" name="nb_place_option3" id=3>
+						<input type="hidden" value="" name="nom_option4" id=4>
+						<input type="hidden" value="" name="prix_option4" id=4>
+						<input type="hidden" value="" name="nb_place_option4" id=4>
+						<input type="hidden" value="" name="nom_option5" id=5>
+						<input type="hidden" value="" name="prix_option5" id=5>
+						<input type="hidden" value="" name="nb_place_option5" id=5>
+						<input type="hidden" value="" name="nom_option6" id=6>
+						<input type="hidden" value="" name="prix_option6" id=6>
+						<input type="hidden" value="" name="nb_place_option6" id=6>
+						<input type="hidden" value="" name="nom_option7" id=7>
+						<input type="hidden" value="" name="prix_option7" id=7>
+						<input type="hidden" value="" name="nb_place_option7" id=7>
+						<input type="hidden" value="" name="nom_option8" id=8>
+						<input type="hidden" value="" name="prix_option8" id=8>
+						<input type="hidden" value="" name="nb_place_option8" id=8>
+						<input type="hidden" value="" name="nom_option9" id=9>
+						<input type="hidden" value="" name="prix_option9" id=9>
+						<input type="hidden" value="" name="nb_place_option9" id=9>
+						<input type="hidden" value="" name="nom_option10" id=10>
+						<input type="hidden" value="" name="prix_option10" id=10>
+						<input type="hidden" value="" name="nb_place_option10" id=10>
 					</div>
-	   			</div>
-		    </div>
+				
+				</div>
+			</div>
 			</fieldset>	
 					<div class="form-group col-sm-2">
-   					<input type="button" class="btn btn-outline-secondary" id ="ajout" onclick="addForm()" value="Ajouter option"></input>
-   					</div>
+					<input type="button" class="btn btn-outline-secondary" id ="ajout" onclick="addForm()" value="Ajouter option"></input>
+					</div>
 	<div class="form-row col-md-8">
-		<input type="submit" class="btn btn-primary" value="Valider" onclick="ajoutJS()" >
+		<input type="submit" class="btn btn-primary" value="Valider" onclick="ajoutJS()">
 		<br>
 	</div>
 		</form>
 	</div>
+	<script type="text/javascript">
+		
+		// jsvar=10;
+		// document.formulaire.nom_option2.value = jsvar;
+	
+	</script>
 </container>
 </body>
 </html>
