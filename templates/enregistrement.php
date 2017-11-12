@@ -1,19 +1,19 @@
 
 
 <?php
-//valeures de test
-$_POST['nom_shotgun'] = "magrite";
-$_POST['date_debut'] = "2017-10-10 00:00:00";
-$_POST['date_fin'] = "2017-10-11 00:00:00";
-$_POST['descr'] = "test";
-$_POST['nb_place_tot'] = "100";
-$_POST['public_cible'] = "119";
-$_POST['nom_option1'] = 'option1';
-$_POST['prix_option1'] = '15';
-$_POST['nb_place_option1'] = '10';
-$_POST['nom_option2'] = '';
-$_POST['prix_option2'] = null;
-$_POST['nb_place_option2'] = '';
+// //valeures de test
+// $_POST['nom_shotgun'] = "magrite";
+// $_POST['date_debut'] = "2017-10-10 00:00:00";
+// $_POST['date_fin'] = "2017-10-11 00:00:00";
+// $_POST['descr'] = "test";
+// $_POST['nb_place_tot'] = "100";
+// $_POST['public_cible'] = "119";
+// $_POST['nom_option1'] = 'option1';
+// $_POST['prix_option1'] = '15';
+// $_POST['nb_place_option1'] = '10';
+// $_POST['nom_option2'] = '';
+// $_POST['prix_option2'] = null;
+// $_POST['nb_place_option2'] = '';
 
 //on supprimes les valeurs nulles ou vides
 $post_tampon=[];
@@ -121,4 +121,6 @@ foreach($info_option as $rang => $list_enreg)
 		throw new Exception('il manque des elements dans le post');
 	}
 }
+echo("magrite");
+header($RouteHelper->getPathFor('confirm?reussite=true'));
 ?>
