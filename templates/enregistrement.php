@@ -1,19 +1,19 @@
 
 
 <?php
-//valeures de test
-$_POST['nom_shotgun'] = "magrite";
-$_POST['date_debut'] = "2017-10-10 00:00:00";
-$_POST['date_fin'] = "2017-10-11 00:00:00";
-$_POST['descr'] = "test";
-$_POST['nb_place_tot'] = "100";
-$_POST['public_cible'] = "119";
-$_POST['nom_option1'] = 'option1';
-$_POST['prix_option1'] = '15';
-$_POST['nb_place_option1'] = '10';
-$_POST['nom_option2'] = '';
-$_POST['prix_option2'] = null;
-$_POST['nb_place_option2'] = '';
+// //valeures de test
+// $_POST['nom_shotgun'] = "magrite";
+// $_POST['date_debut'] = "2017-10-10 00:00:00";
+// $_POST['date_fin'] = "2017-10-11 00:00:00";
+// $_POST['descr'] = "test";
+// $_POST['nb_place_tot'] = "100";
+// $_POST['public_cible'] = "119";
+// $_POST['nom_option1'] = 'option1';
+// $_POST['prix_option1'] = '15';
+// $_POST['nb_place_option1'] = '10';
+// $_POST['nom_option2'] = '';
+// $_POST['prix_option2'] = null;
+// $_POST['nb_place_option2'] = '';
 
 //on supprimes les valeurs nulles ou vides
 $post_tampon=[];
@@ -39,8 +39,13 @@ $ajout_shotgun=$bdd->prepare('INSERT INTO shotgun_desc(id_shotgun,nom_shotgun,da
 										VALUES(DEFAULT,:nom_shotgun,:date_debut,:date_fin,:descr,:nb_place_tot,:public_cible)');
 
 $ajout_shotgun->bindParam('nom_shotgun', $_POST['nom_shotgun'], PDO::PARAM_STR);
-$ajout_shotgun->bindParam('date_debut', $_POST['date_debut']);
-$ajout_shotgun->bindParam('date_fin', $_POST['date_fin']);
+
+$date_debut_UE = date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $_POST['date_debut'])));
+$ajout_shotgun->bindParam('date_debut', $date_debut_UE, PDO::PARAM_STR);
+
+$date_fin_UE = date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $_POST['date_fin'])));
+$ajout_shotgun->bindParam('date_fin', $date_fin_UE, PDO::PARAM_STR);
+
 $ajout_shotgun->bindParam('descr', $_POST['descr'], PDO::PARAM_STR);
 $ajout_shotgun->bindParam('nb_place_tot', $_POST['nb_place_tot'], PDO::PARAM_INT);
 $ajout_shotgun->bindParam('public_cible', $_POST['public_cible'], PDO::PARAM_STR);
@@ -121,4 +126,6 @@ foreach($info_option as $rang => $list_enreg)
 		throw new Exception('il manque des elements dans le post');
 	}
 }
+echo("magrite");
+header($RouteHelper->getPathFor('confirm?reussite=true'));
 ?>

@@ -1,5 +1,31 @@
-<html>
+<?php 
 
+global $bdd_payicam;
+
+$mail=$_SESSION['Auth']['email'];
+
+$select_droit=$bdd_payicam->prepare('SELECT tj_usr_fun_ufu.fun_id, t_fundation_fun.fun_name 
+							FROM tj_usr_fun_ufu
+							INNER JOIN t_fundation_fun
+							ON (t_fundation_fun.fun_id = tj_usr_fun_ufu.fun_id OR tj_usr_fun_ufu.fun_id IS NULL)
+							INNER JOIN ts_user_usr
+							ON ts_user_usr.usr_id=tj_usr_fun_ufu.usr_id
+							WHERE (ts_user_usr.usr_mail= ? AND tj_usr_fun_ufu.ufu_removed IS NULL)');
+
+$select_droit->execute(array($mail));
+
+$ls_droit=[];
+$ls_nom_droit=[];
+
+while($droit = $select_droit->fetch())
+{
+	$ls_droit[]=$droit['fun_id'];
+	$ls_nom_droit[]=$droit['fun_name'];
+}
+
+?>
+
+<html>
 <body>
 	<container>
 	<div class="col-md-offset-1 col-md-6">
@@ -13,11 +39,7 @@
 				<br>
 
 				<div class="col-md-10">
-				<label>Description du Shotgun</label>
-				<textarea class="form-control" id="description" rows="4" name="description"></textarea>
-				</div>
-				<br>	
-	</div> 
+  				</div>
 
 				<br>
 				<div class="form-row col-md-12">
@@ -35,6 +57,18 @@
 				<div id="nb_place" class="form-group col-sm-3">
 					<label>Nombre de place total</label>
 					<input type="number" class="form-control" name="nb_place_tot">
+				</div>
+				<div id="public_cible" class="form-group col-sm-3">
+					<label>Public cible</label>
+					<select class="form-control" id="public_cible">
+				    	<?php 
+				    	foreach($ls_nom_droit as $nom)	
+				    	{
+				    		echo("<option>".$nom."</option>"); 
+				    	}
+				    	?>
+				    	
+    				</select>
 				</div>
 				<br>
 				<div class="form-row col-md-12" name="div_option" id="div_option">

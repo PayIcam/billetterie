@@ -28,13 +28,18 @@ $container['logger'] = function ($c) {
 ///////////////////////////
 
 
-$confSQL = $settings['settings']['confSQL'];
-$confSQL_Auth = $settings['settings']['confSQL_Auth'];
+$confSQL_shotgun = $settings['settings']['confSQL_global']['confSQL_shotgun'];
+$confSQL_Auth = $settings['settings']['confSQL_global']['confSQL_Auth'];
+$confSQL_payicam = $settings['settings']['confSQL_global']['confSQL_payicam'];
 
 try{    $bdd_Auth = new PDO('mysql:host='.$confSQL_Auth['sql_host'].';dbname='.$confSQL_Auth['sql_db'].';charset=utf8',$confSQL_Auth['sql_user'], $confSQL_Auth['sql_pass'],array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ));} // WTF
 catch(Exception $e){        die('Erreur : '.$e->getMessage());};
 
-try{    $bdd = new PDO('mysql:host='.$confSQL['sql_host'].';dbname='.$confSQL['sql_db'].';charset=utf8',$confSQL['sql_user'], $confSQL['sql_pass'],array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ));} // WTF
+try{    $bdd = new PDO('mysql:host='.$confSQL_shotgun['sql_host'].';dbname='.$confSQL_shotgun['sql_db'].';charset=utf8',$confSQL_shotgun['sql_user'], $confSQL_shotgun['sql_pass'],array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ));} // WTF
+catch(Exception $e){        die('Erreur : '.$e->getMessage());};
+
+
+try{    $bdd_payicam = new PDO('mysql:host='.$confSQL_payicam['sql_host'].';dbname='.$confSQL_payicam['sql_db'].';charset=utf8',$confSQL_payicam['sql_user'], $confSQL_payicam['sql_pass'],array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ));} // WTF
 catch(Exception $e){        die('Erreur : '.$e->getMessage());};
 
 $Auth = new \Shotgun\Auth($settings['settings']['casUrl']);
