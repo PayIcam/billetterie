@@ -1,0 +1,11 @@
+#table_availabilities table tr
+{
+    height: 20px;
+}
+#table_availabilities button
+{
+    width: 20px;
+    height: 20px;
+    font-size: 0.8em;
+    padding: 0px;
+}
