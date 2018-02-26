@@ -1,0 +1,28 @@
+#nb_entrees
+{
+	font-size: 3vh;
+	position: absolute;
+	right: 8vw;
+	top: 3vh;
+	width: 12vw;
+}
+
+#connexion
+{
+	display: flex;
+	flex-direction: column;
+	max-width: 400px;
+	padding: 30vh 0 30vh 0;
+	margin: 0 auto;
+}
+
+#connexion *
+{
+	font-size: 20px;
+	margin: 5px 0 5px 0;
+}
+
+#tableau
+{
+	font-size: 18px;
+}
