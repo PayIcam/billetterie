@@ -8,11 +8,12 @@
 
     <link rel="stylesheet" type="text/css" href="fonts/css/format.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 </head>
 <body>
-
     <div class="container">
         <div class="jumbotron text-center">
             <h1> Créez une billeterie </h1>
@@ -148,7 +149,7 @@
                                     <div id="site_price_quota_guests" class="row">
                                         <div id="site_only_price" class="col-sm-4 form-group">
                                             <label for="site_only_input_price">Prix de la sélection :</label>
-                                            <input type="number" value=100 step="0.01" class="form-control" name="selection_price" id="site_only_input_price" aria-describedby="site_only_input_price_help" placeholder="Prix à fixer à la sélection" rows=3>
+                                            <input type="number" step="0.01" class="form-control" name="selection_price" id="site_only_input_price" aria-describedby="site_only_input_price_help" placeholder="Prix à fixer à la sélection" rows=3>
                                             <small id="site_only_input_price_help" class="form-text text-muted">Définissez le prix s'appliquant à votre sélection.</small>
                                         </div>
 
@@ -296,8 +297,7 @@
         </form>
     </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
     <script src="formulaire.js"></script>
 
 </body>
