@@ -8,7 +8,7 @@ $("#availability_complement").hide();
 $("form").submit(function(event) {event.preventDefault()});
 
 $("form")[0].reset();
-$("#errors").hide();
+$("#specific_message").hide();
 $("#table_row_example").hide();
 
 function efface_specifications()
@@ -54,23 +54,91 @@ function question_change()
     }
     if(all_questions_checked())
     {
-        $('#availability_complement').show();
+        $('#availability_complement').fadeIn();
 
         if($("input:radio[name='guests']:checked").val()==0)
         {
             $("#site_only_input_guest_number").val(0);
             $("#promo_only_input_guest_number").val(0);
             $("#site_and_promo_only_input_guest_number").val(0);
+            $("#graduated_only_input_guest_number").val(0);
 
-            $("#site_only_guest_number").hide();
-            $("#promo_only_guest_number").hide();
-            $("#site_and_promo_only_guest_number").hide();
+            $("#site_only_guest_number").fadeOut();
+            $("#promo_only_guest_number").fadeOut();
+            $("#site_and_promo_only_guest_number").fadeOut();
+            $("#graduated_only_guest_number").fadeOut();
+
+            $("#table_availabilities #specification_table tbody tr :nth-child(6)").blur();
+            $("#table_availabilities #specification_table tbody tr :nth-child(6)").unbind('dblclick');
         }
         else
         {
-            $("#site_only_guest_number").show();
-            $("#promo_only_guest_number").show();
-            $("#site_and_promo_only_guest_number").show();
+            $("#site_only_guest_number").fadeIn();
+            $("#promo_only_guest_number").fadeIn();
+            $("#site_and_promo_only_guest_number").fadeIn();
+            $("#graduated_only_guest_number").fadeIn();
+
+            $("#table_availabilities #specification_table tbody tr :nth-child(6)").dblclick(function()
+                {
+                    var current_value =$(this).text();
+                    $(this).html("<input class='form-control' min=0 type='number' value='" + current_value + "' >");
+                    $(this).children().focus();
+                    $(this).children().blur(function()
+                        {
+                            var input_value =($(this).val()!="") ? $(this).val() : 0;
+                            $(this).parent().text(input_value);
+                        });
+                });
+        }
+
+        if($("input:radio[name=graduated_icam]:checked").val()==1)
+        {
+            $("#graduated").fadeIn();
+        }
+        else
+        {
+            $("#graduated").fadeOut();
+        }
+
+        if($("input:radio[name=permanents]:checked").val()==1)
+        {
+            var permanent_row_there = false;
+            $("#table_availabilities #specification_table tbody tr").each(function()
+                {
+                    if($(this).children(":nth-child(2)").text()=='Tous' && $(this).children(":nth-child(3)").text()=='Permanents')
+                    {
+                        console.log('already present');
+                        return permanent_row_there = true;
+                    }
+                });
+            if(permanent_row_there)
+            {
+                console.log('already present ffs')
+            }
+            else
+            {
+                console.log('addition');
+                add_row('Tous', 'Permanents', 0, 0, 0);
+                var message = '<div class="alert alert-info alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Double-cliquez</strong> sur les champs prix, promos et nombre d\'invités pour changer les valeurs de base ! <br>Pour valider les changements, <strong>cliquez autre part</strong>' + '</div>';
+                $("#table_availabilities #specification_table tbody tr:last :nth-child(7)").children().remove();
+                $("#specific_message").fadeIn().append(message);
+            }
+        }
+        else
+        {
+            $("#graduated").fadeOut();
+            $("#table_availabilities #specification_table tbody tr").each(function()
+                {
+                    if($(this).children(":nth-child(2)").text()=='Tous' && $(this).children(":nth-child(3)").text()=='Permanents')
+                    {
+                        console.log('removed the permanent row');
+                        $(this).remove();
+                    }
+                    else
+                    {
+                        console.log('not present already');
+                    }
+                });
         }
     }
 }
@@ -98,7 +166,7 @@ function add_row(site, promo, prix, quota=null, guest_number=0)
             if(site_etudiee == site && promo_etudiee == promo)
             {
                 var message = '<div class="alert alert-danger alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Attention ! </strong> La promo ' + promo + ' du site '+ site + ' est déjà présente dans le tableau. Nous ne l\'avons donc pas ajoutée.' + '</div>';
-                $("#errors").show().append(message);
+                $("#specific_message").fadeIn().append(message);
                 return error = true;
             }
         });
@@ -127,7 +195,7 @@ function add_row(site, promo, prix, quota=null, guest_number=0)
         previous_row = $("#table_availabilities #table_row_example tr");
         if(previous_row.length ==0)
         {
-            $("#errors").show().append('<div class="alert alert-danger alert-dismissible"> Il y a eu un problème, rechargez la page, et contactez nous ! Merci ! </div>')
+            $("#specific_message").fadeIn().append('<div class="alert alert-danger alert-dismissible"> Il y a eu un problème, rechargez la page, et contactez nous ! Merci ! </div>')
         }
     }
 
@@ -151,56 +219,65 @@ function add_row(site, promo, prix, quota=null, guest_number=0)
 
     new_row.children(":nth-child(4)").dblclick(function() {
         var current_value =$(this).text();
-        $(this).html("<input class='form-control' type='number' step='0.01' value='" + current_value.slice(0,-1) + "' >");
-        $(this).focus();
+        $(this).html("<input class='form-control' type='number' min=0 step=0.01 value='" + current_value.slice(0,-1) + "' >");
+        $(this).children().focus();
         $(this).children().blur(function()
             {
-                var input_value = $(this).val();
+                var input_value =($(this).val()!="") ? $(this).val() : 0;
                 $(this).parent().text(input_value+'€');
             });
         });
 
     new_row.children(":nth-child(5)").dblclick(function() {
         var current_value =$(this).text();
-        $(this).html("<input class='form-control' type='number' value='" + current_value + "' >");
-        $(this).focus();
+        $(this).html("<input class='form-control' type='number' min=0 value='" + current_value + "' >");
+        $(this).children().focus();
         $(this).children().blur(function()
             {
-                var input_value = $(this).val();
+                var input_value =($(this).val()!="") ? $(this).val() : 0;
                 $(this).parent().text(input_value);
             });
         });
 
-    new_row.children(":nth-child(6)").dblclick(function() {
-        var current_value =$(this).text();
-        $(this).html("<input class='form-control' type='number' value='" + current_value + "' >");
-        $(this).focus();
-        $(this).children().blur(function()
-            {
-                var input_value = $(this).val();
-                $(this).parent().text(input_value);
+    if($("input:radio[name='guests']:checked").val()==1)
+    {
+        new_row.children(":nth-child(6)").dblclick(function() {
+            var current_value =$(this).text();
+            $(this).html("<input class='form-control' type='number' min=0 value='" + current_value + "' >");
+            $(this).children().focus();
+            $(this).children().blur(function()
+                {
+                    var input_value =($(this).val()!="") ? $(this).val() : 0;
+                    $(this).parent().text(input_value);
+                });
             });
-        });
+    }
 
     table_body.append(new_row);
 }
 
 $("#ajout_site").click(function()
     {
-        $("#errors").children().remove();
+        $("#specific_message").children().remove();
         ajout_site();
     }
 );
 $("#ajout_promo").click(function()
     {
-        $("#errors").children().remove();
+        $("#specific_message").children().remove();
         ajout_promo();
     }
 );
 $("#ajout_site_and_promo").click(function()
     {
-        $("#errors").children().remove();
+        $("#specific_message").children().remove();
         ajout_site_and_promo();
+    }
+);
+$("#ajout_graduated").click(function()
+    {
+        $("#specific_message").children().remove();
+        ajout_graduated();
     }
 );
 
@@ -248,6 +325,23 @@ function ajout_site_and_promo()
     {
         var site = $(this).val();
         $("#site_and_promo_choice_promo option:selected").each(function()
+        {
+            var promo = $(this).val();
+            add_row(site, promo, price, quota, guest_number);
+        });
+    });
+}
+
+function ajout_graduated()
+{
+    var price = $("#graduated_only_input_price").val();
+    var quota = $("#graduated_only_input_quota").val();
+    var guest_number = $("#graduated_only_input_guest_number").val();
+
+    $("#graduated_choice_site option:selected").each(function()
+    {
+        var site = $(this).val();
+        $("#graduated_choice_promo option:selected").each(function()
         {
             var promo = $(this).val();
             add_row(site, promo, price, quota, guest_number);

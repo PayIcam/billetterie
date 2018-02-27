@@ -94,9 +94,6 @@
                     $(function () {
                         $('#ticketing_dates input').click(function()
                         {
-                            console.log('AHHHHH');
-                            console.log($(this).next('span'));
-                            console.log($(this).next('span').children());
                             $(this).next('span').click();
                         });
 
@@ -201,7 +198,7 @@
                                 </tbody>
                             </table>
 
-                            <div id="errors"></div>
+                            <div id="specific_message"></div>
                         </div>
 
                         <div class="panel-group" id="accordion_accessibility_choice">
@@ -246,7 +243,7 @@
 
                                     <br>
 
-                                    <button id="ajout_site" class="btn btn-success">Ajouter ce/ces sites</button>
+                                    <button id="ajout_site" class="btn btn-success">Ajouter ce/ces sites d'étudiants</button>
                                 </div>
                             </div>
 
@@ -257,7 +254,6 @@
                                     </h3>
                                 </div>
                                 <div id="promo_specification" class="panel-collapse collapse panel-body">
-
 
                                     <div id="promo_complement" class="form-group">
                                         <label for="promo_choice">Promo:</label>
@@ -300,7 +296,7 @@
 
                                     <br>
 
-                                    <button id="ajout_promo" class="btn btn-success">Ajouter ce/ces promos</button>
+                                    <button id="ajout_promo" class="btn btn-success">Ajouter ce/ces promos d'étudiants</button>
                                 </div>
                             </div>
 
@@ -365,7 +361,65 @@
 
                                     <br>
 
-                                    <button id="ajout_site_and_promo" class="btn btn-success">Ajouter ces promos pour les sites sélectionnés</button>
+                                    <button id="ajout_site_and_promo" class="btn btn-success">Ajouter ces promos d'étudiants pour les sites sélectionnés</button>
+                                </div>
+                            </div>
+
+                            <div id="graduated" class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion_accessibility_choice" href="#graduated_specification"> Ajoutez les diplomés par promo et site</a>
+                                    </h3>
+                                </div>
+                                <div id="graduated_specification" class="panel-collapse collapse panel-body">
+
+                                    <div class="row">
+                                        <div class="form-group col-sm-6">
+                                            <label for="graduated_choice_site">Site:</label>
+                                            <select multiple class="form-control" aria-describedby="graduated_choice_help_site" id="graduated_choice_site" height=60px size="4">
+                                                <option disabled> Choisissez parmi les sites </option>
+                                                <option>Lille</option>
+                                                <option>Toulouse</option>
+                                                <option>Nantes</option>
+                                            </select>
+                                            <small id="graduated_choice_help_site" class="form-text text-muted"> Choisissez le ou les sites ...<br> PS: Utilisez Ctrl pour sélectionner plusieurs options, ou laissez le bouton de la souris appuyé, puis déplacez là.</small>
+                                        </div>
+
+                                        <div class="form-group col-sm-6">
+                                            <label for="graduated_choice_promo">Promo:</label>
+                                            <select multiple class="form-control" aria-describedby="graduated_choice_help_promo" id="graduated_choice_promo" size="4">
+                                                <option disabled> Choisissez parmi les promos</option>
+                                                <option>117</option>
+                                                <option>116</option>
+                                                <option>115</option>
+                                            </select>
+                                            <small id="graduated_choice_help_promo" class="form-text text-muted"> Et les promos correspondantes ! <br>PS: Utilisez Ctrl pour sélectionner plusieurs options, ou laissez le bouton de la souris appuyé, puis déplacez là.</small>
+                                        </div>
+                                    </div>
+
+                                    <div id="graduated_price_quota_guests" class="row">
+                                        <div id="graduated_only_price" class="col-sm-4 form-group">
+                                            <label for="graduated_only_input_price">Prix de la sélection :</label>
+                                            <input type="number" step="0.01" class="form-control" name="selection_price" id="graduated_only_input_price" aria-describedby="graduated_only_input_price_help" placeholder="Prix à fixer à la sélection" rows=3>
+                                            <small id="graduated_only_input_price_help" class="form-text text-muted">Définissez le prix s'appliquant à votre sélection.</small>
+                                        </div>
+
+                                        <div id="graduated_only_quota" class="col-sm-4 form-group">
+                                            <label for="graduated_only_input_quota">Quota pour chaque élément de la sélection :</label>
+                                            <input type="number" class="form-control" name="selection_quota" id="graduated_only_input_quota" aria-describedby="graduated_only_input_quota_help" placeholder="Quota pour chaque élément" rows=3>
+                                            <small id="graduated_only_input_quota_help" class="form-text text-muted">Définissez le quota pour chaque élément sélectionné</small>
+                                        </div>
+
+                                        <div id="graduated_only_guest_number" class="col-sm-4 form-group">
+                                            <label for="graduated_only_input_guest_number">Nombre d'invités par étudiant par promo</label>
+                                            <input type="number" class="form-control" name="selection_guest_number" id="graduated_only_input_guest_number" aria-describedby="graduated_only_input_guest_number_help" placeholder="Nombre d'invités par étudiant" rows=3>
+                                            <small id="graduated_only_input_guest_number_help" class="form-text text-muted">Définissez le nombre d'invités par étudiant.</small>
+                                        </div>
+                                    </div>
+
+                                    <br>
+
+                                    <button id="ajout_graduated" class="btn btn-success">Ajouter ces promos de diplomés pour les sites sélectionnés</button>
                                 </div>
                             </div>
                         </div>
