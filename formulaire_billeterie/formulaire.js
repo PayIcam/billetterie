@@ -4,12 +4,12 @@
  *
  */
 
-
 $("#availability_complement").hide();
 $("form").submit(function(event) {event.preventDefault()});
 
 $("form")[0].reset();
 $("#errors").hide();
+$("#table_row_example").hide();
 
 function efface_specifications()
 {
@@ -75,14 +75,21 @@ function question_change()
     }
 }
 
-$("input:radio[name='all_students']").is("checked");
+$("#table_availabilities #specification_table tbody tr :nth-child(7)").children().click(function()
+    {
+        var confirm_delete = window.confirm("Voulez vous vraiment supprimer cette promo ?");
+        if(confirm_delete)
+        {
+            $(this).parent().parent().remove();
+        }
+    });
 
 function add_row(site, promo, prix, quota=null, guest_number=0)
 {
     function check_not_present(site, promo)
     {
         error = false;
-        $("#table_availabilities tbody tr").each(function()
+        $("#specification_table tbody tr").each(function()
         {
             var ligne_etudiee = $(this);
             var site_etudiee = ligne_etudiee.children(":nth-child(2)").text();
@@ -106,15 +113,25 @@ function add_row(site, promo, prix, quota=null, guest_number=0)
     }
 
     var row_not_present_yet = check_not_present(site, promo);
+
     if(!row_not_present_yet)
     {
         return false;
     }
 
-    var table_body = $("#table_availabilities tbody");
-    var previous_row =$("#table_availabilities tbody tr:last");
-    var previous_index =$("#table_availabilities tbody tr:last th").text();
+    var table_body = $("#table_availabilities #specification_table tbody");
+    var previous_row =$("#table_availabilities #specification_table tbody tr:last");
 
+    if(previous_row.length ==0)
+    {
+        previous_row = $("#table_availabilities #table_row_example tr");
+        if(previous_row.length ==0)
+        {
+            $("#errors").show().append('<div class="alert alert-danger alert-dismissible"> Il y a eu un problème, rechargez la page, et contactez nous ! Merci ! </div>')
+        }
+    }
+
+    var previous_index =$("#table_availabilities tbody tr:last th").text();
     var new_row = previous_row.clone();
 
     new_row.children(":nth-child(1)").text(parseInt(previous_index)+1);
@@ -223,8 +240,6 @@ function ajout_promo()
 }
 function ajout_site_and_promo()
 {
-    console.log('mdr');
-    console.log($("#site_and_promo_only_input_guest_number"));
     var price = $("#site_and_promo_only_input_price").val();
     var quota = $("#site_and_promo_only_input_quota").val();
     var guest_number = $("#site_and_promo_only_input_guest_number").val();

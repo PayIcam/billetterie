@@ -8,9 +8,14 @@
 
     <link rel="stylesheet" type="text/css" href="fonts/css/format.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"> </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+
 
 </head>
 <body>
@@ -50,9 +55,67 @@
 
                 <div class="form-group">
                     <label for="event_description">Quota de places disponibles pour votre évènement :</label>
-                    <input type="number" class="form-control" name="event_description" id="event_description" aria-describedby="quota_place_help" placeholder="Nombre de places" rows=3>
+                    <input type="number" min=0 class="form-control" name="event_description" id="event_description" aria-describedby="quota_place_help" placeholder="Nombre de places" rows=3>
                     <small id="quota_place_help" class="form-text text-muted">Il ne sera pas possible de dépasser ce quota, les inscriptions se bloqueront automatiquement une fois ce nombre atteint.</small>
                 </div>
+
+
+
+                <div id="ticketing_dates">
+                    <div class='form-group'>
+                        <label for="ticketing_start_date">Début des inscriptions :</label>
+                        <div class='input-group date' id='start_date_div'>
+                            <input type='text' class="form-control" name="ticketing_start_date" id="ticketing_start_date" aria-describedby="ticketing_start_date_help" placeholder="Ouverture de la billeterie" />
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                        <small id="ticketing_start_date_help" class="form-text text-muted">A la date indiquée, la billeterie de votre évènement deviendra ouverte au public ciblé automatiquement.</small>
+                    </div>
+                    <div class='form-group'>
+                        <label for="ticketing_end_date">Fin des inscriptions :</label>
+                        <div class='input-group date' id='end_date_div'>
+                            <input type='text' class="form-control" name="ticketing_end_date" id="ticketing_end_date" aria-describedby="ticketing_end_date_help" placeholder="Fermeture de la billeterie"/>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                        <small id="ticketing_end_date_help" class="form-text text-muted">A la date indiquée, la billeterie de votre évènement deviendra ouverte au public ciblé automatiquement.</small>
+                    </div>
+                </div>
+
+                <script type="text/javascript">
+                /**
+                 * Small script mostly taken from Bootstrap.
+                 *
+                 * It denies the user the possibility of setting the ticketing start date anterior to the ticketing end date.
+                 *
+                 * What I added ensured that when you clicked on the input itself, it would trigger the click on the gliphicon, thus opening
+                 * the date choice.
+                 */
+                    $(function () {
+                        $('#ticketing_dates input').click(function()
+                        {
+                            console.log('AHHHHH');
+                            console.log($(this).next('span'));
+                            console.log($(this).next('span').children());
+                            $(this).next('span').click();
+                        });
+
+                        $('#start_date_div').datetimepicker({
+                            sideBySide: true
+                        });
+                        $('#end_date_div').datetimepicker({
+                            sideBySide: true,
+                            useCurrent: false //Important! See issue #1075
+                        });
+                        $("#start_date_div").on("dp.change", function (e) {
+                            $('#end_date_div').data("DateTimePicker").minDate(e.date);
+                        });
+                        $("#end_date_div").on("dp.change", function (e) {
+                            $('#start_date_div').data("DateTimePicker").maxDate(e.date);
+                        });
+                    });
+                </script>
+
             </div>
 
             <br>
@@ -88,7 +151,22 @@
                     <div id="availability_complement">
                         <div id="table_availabilities">
                             <p>Ajoutez les promos qui doivent participer à qui vous ouvrez votre évènement ci dessous en indiquant le site et la promo !</p>
-                            <table class="table">
+
+                            <div id="table_row_example">
+                            <table>
+                                <tr>
+                                    <th>0</th>
+                                    <td>Lille</td>
+                                    <td>120</td>
+                                    <td>0€</td>
+                                    <td>500</td>
+                                    <td>3</td>
+                                    <td><button id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></td>
+                                </tr>
+                            </table>
+                            </div>
+
+                            <table id="specification_table" class="table">
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>
@@ -166,7 +244,7 @@
                                         </div>
                                     </div>
 
-                                    <br> <br>
+                                    <br>
 
                                     <button id="ajout_site" class="btn btn-success">Ajouter ce/ces sites</button>
                                 </div>
@@ -220,7 +298,7 @@
                                         </div>
                                     </div>
 
-                                    <br> <br>
+                                    <br>
 
                                     <button id="ajout_promo" class="btn btn-success">Ajouter ce/ces promos</button>
                                 </div>
@@ -285,7 +363,7 @@
                                         </div>
                                     </div>
 
-                                    <br> <br>
+                                    <br>
 
                                     <button id="ajout_site_and_promo" class="btn btn-success">Ajouter ces promos pour les sites sélectionnés</button>
                                 </div>
