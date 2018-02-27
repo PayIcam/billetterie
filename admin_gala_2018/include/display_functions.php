@@ -42,38 +42,6 @@ function ajustement_creneau($creneau, $echo=true)
     }
     return $creneau;
 }
-
-///////////////////////////////////
-// PAS UTILE, REFAIT EN 2 LIGNES //
-///////////////////////////////////
-
-// function set_start_lign($page)
-// {
-//     if (preg_match("#^[1-9][0-9]*$#", $_POST['page']))
-//     {
-//         $page = $_POST['page'];
-//         $start_lign= 25*($page-1);
-//     }
-//     else
-//     {
-//         $start_lign=0;
-//     }
-//     return $start_lign;
-// }
-// function nombre_de_pages($entrees, $step)
-// {
-//     if(gettype($entrees/$step)!='integer')
-//     {
-//         $nb_de_pages = intval($entrees/$step)+1;
-//     }
-//     else
-//     {
-//         $nb_de_pages = $entrees/$step;
-//     }
-//     return $nb_de_pages;
-// }
-
-
 function four_chars_bracelet_id($bracelet_id)
 {
     $id = strval($bracelet_id);
@@ -269,7 +237,6 @@ function adjust_hour_data($hour_data, $hour_groups)
         if($hour['day'] == $first_day)
         {
             $day1[] = array();
-
         }
         else
         {

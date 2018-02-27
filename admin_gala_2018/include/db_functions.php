@@ -13,7 +13,6 @@ function connect_to_db($conf)
         die('erreur:'.$e->getMessage());
     }
 }
-
 function nb_participants()
 {
     global $bd;
@@ -40,15 +39,6 @@ function select_single_lign($id)
     $edit_data = $edit_query -> fetch();
     return $edit_data;
 }
-function select_single_lign_payicam($id)
-{
-    global $bd;
-    $edit_query = $bd->prepare('SELECT * FROM guests WHERE id =:id and paiement = "PayIcam" ');
-    $edit_query->execute(array('id' => $id));
-    $edit_data = $edit_query -> fetch();
-    return $edit_data;
-}
-
 function nombre_invites($participant)
 {
     global $bd;
@@ -59,25 +49,7 @@ function nombre_invites($participant)
         $nb_invite = $nb_invite->fetch()['nb'];
 
         $total =8;
-        // switch ($participant['promo'])
-        // {
-        //     case 120:
-        //     {
-        //         $total = 3;
-        //         break;
-        //     }
-        //     case 119:
-        //     case 118:
-        //     {
-        //         $total = 2;
-        //         break;
-        //     }
-        //     default:
-        //     {
-        //         $total =1;
-        //         break;
-        //     }
-        // }
+
         $message = $nb_invite . "/" . $total;
         return $message;
     }
@@ -96,20 +68,6 @@ function set_invites($id)
     foreach($invites_id as $invite)
     {
         $invite_data = select_single_lign($invite['guest_id']);
-        $invites_data[] = $invite_data;
-    }
-    return $invites_data;
-}
-function set_invites_payicam($id)
-{
-    global $bd;
-    $invites_id = $bd->prepare('SELECT guest_id FROM icam_has_guest WHERE icam_id =:icam_id');
-    $invites_id -> execute(array('icam_id' => $id));
-    $invites_id = $invites_id->fetchall();
-
-    foreach($invites_id as $invite)
-    {
-        $invite_data = select_single_lign_payicam($invite['guest_id']);
         $invites_data[] = $invite_data;
     }
     return $invites_data;
