@@ -15,8 +15,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
-
-
 </head>
 <body>
     <div class="container">
@@ -54,12 +52,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="event_description">Quota de places disponibles pour votre évènement :</label>
-                    <input type="number" min=0 class="form-control" name="event_description" id="event_description" aria-describedby="quota_place_help" placeholder="Nombre de places" rows=3>
+                    <label for="event_quota">Quota de places disponibles pour votre évènement :</label>
+                    <input type="number" min=0 class="form-control" name="event_description" id="event_quota" aria-describedby="quota_place_help" placeholder="Nombre de places" rows=3>
                     <small id="quota_place_help" class="form-text text-muted">Il ne sera pas possible de dépasser ce quota, les inscriptions se bloqueront automatiquement une fois ce nombre atteint.</small>
                 </div>
-
-
 
                 <div id="ticketing_dates">
                     <div class='form-group'>
@@ -120,9 +116,7 @@
             <div class="availability">
 
                 <h3 aria-describedby="availability_help">II) Accesibilité de votre évènement :</h3>
-                <small id="availability_help">Répondez aux questions suivantes pour accéder à la suite du formulaire.</small>
-                <br>
-                <br>
+                <small id="availability_help">Répondez aux questions suivantes pour accéder à la suite du formulaire.</small> <br> <br>
 
                 <div id="basic_availability">
 
@@ -142,6 +136,12 @@
                     <div class="form-check">
                         <label class="radio-inline"><input type="radio" name="guests" value=1>Oui</label>
                         <label class="radio-inline"><input type="radio" name="guests" value=0>Non</label>
+                    </div>
+                    <br>
+                    <label>Proposez vous des options facultatives, gratuites ou payantes ?</label>
+                    <div class="form-check">
+                        <label class="radio-inline"><input type="radio" name="options" value=1>Oui</label>
+                        <label class="radio-inline"><input type="radio" name="options" value=0>Non</label>
                     </div>
                     <br>
 
@@ -176,25 +176,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <th>1</th>
-                                        <td>Lille</td>
-                                        <td>120</td>
-                                        <td>0€</td>
-                                        <td>500</td>
-                                        <td>3</td>
-                                        <td><button id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>2</th>
-                                        <td>Lille</td>
-                                        <td>119</td>
-                                        <td>21€</td>
-                                        <td>200</td>
-                                        <td>1</td>
-                                        <td><button id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></td>
-                                    </tr>
                                 </tbody>
                             </table>
 
@@ -205,9 +186,9 @@
 
                             <div class="panel panel-default">
                                 <div class="panel-heading">
-                                    <h3 class="panel-title">
+                                    <h4 class="panel-title">
                                         <a data-toggle="collapse" data-parent="#accordion_accessibility_choice" href="#site_specification"> Ajoutez par site</a>
-                                    </h3>
+                                    </h4>
                                 </div>
                                 <div id="site_specification" class="panel-collapse collapse panel-body">
                                     <label for="site_choice">Site:</label>
@@ -249,9 +230,9 @@
 
                             <div class="panel panel-default">
                                 <div class="panel-heading">
-                                    <h3 class="panel-title">
+                                    <h4 class="panel-title">
                                         <a data-toggle="collapse" data-parent="#accordion_accessibility_choice" href="#promo_specification"> Ajoutez par promo</a>
-                                    </h3>
+                                    </h4>
                                 </div>
                                 <div id="promo_specification" class="panel-collapse collapse panel-body">
 
@@ -302,9 +283,9 @@
 
                             <div class="panel panel-default">
                                 <div class="panel-heading">
-                                    <h3 class="panel-title">
+                                    <h4 class="panel-title">
                                         <a data-toggle="collapse" data-parent="#accordion_accessibility_choice" href="#site_and_promo_specification"> Ajoutez par promo et site</a>
-                                    </h3>
+                                    </h4>
                                 </div>
                                 <div id="site_and_promo_specification" class="panel-collapse collapse panel-body">
 
@@ -367,9 +348,9 @@
 
                             <div id="graduated" class="panel panel-default">
                                 <div class="panel-heading">
-                                    <h3 class="panel-title">
+                                    <h4 class="panel-title">
                                         <a data-toggle="collapse" data-parent="#accordion_accessibility_choice" href="#graduated_specification"> Ajoutez les diplomés par promo et site</a>
-                                    </h3>
+                                    </h4>
                                 </div>
                                 <div id="graduated_specification" class="panel-collapse collapse panel-body">
 
@@ -426,9 +407,20 @@
                     </div>
                 </div>
             </div>
+
+            <div id="options">
+
+                <h3 aria-describedby="option_help">III) Choix de vos options :</h3>
+                <small id="option_help">Il est possible d'ajouter des options facultatives à votre évènement, payantes ou gratuites.</small> <br><br>
+
+                <div class="panel-group" id="option_accordion">
+
+
+
+                </div>
+            </div>
         </form>
     </div>
-
 
     <script src="formulaire.js"></script>
 
