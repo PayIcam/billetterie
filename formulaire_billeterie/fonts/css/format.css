@@ -1,8 +1,8 @@
-#table_availabilities table tr
+table tr
 {
     height: 20px;
 }
-#table_availabilities button
+button[class="btn btn-danger"]
 {
     width: 20px;
     height: 20px;
