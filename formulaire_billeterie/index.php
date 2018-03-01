@@ -413,6 +413,8 @@
                 <h3 aria-describedby="option_help">III) Choix de vos options :</h3>
                 <small id="option_help">Il est possible d'ajouter des options facultatives à votre évènement, payantes ou gratuites.</small> <br><br>
 
+                <button class="btn btn-success" id="add_option_button"><span class="glyphicon glyphicon-plus" title="Ajoutez une option"></span></button>
+
                 <div class="panel-group" id="option_accordion">
 
 

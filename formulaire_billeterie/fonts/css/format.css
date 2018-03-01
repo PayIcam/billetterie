@@ -9,3 +9,7 @@ button[class="btn btn-danger"]
     font-size: 0.8em;
     padding: 0px;
 }
+#add_option_button
+{
+    margin-bottom: 15px;
+}
