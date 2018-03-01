@@ -47,6 +47,11 @@ function initialisation_formulaire()
     prepare_accessibility_add_buttons('promo');
     prepare_accessibility_add_buttons('site_and_promo');
     prepare_accessibility_add_buttons('graduated');
+
+    $("#options #add_option_button").click(function()
+    {
+        add_option(get_last_html_option_id()+1);
+    })
 }
 
 /**
@@ -152,7 +157,7 @@ function question_change()
 
             $("#table_availabilities #specification_table tbody tr").each(function()
                 {
-                    if($(this).children(":nth-child(3)").text().inArray(valeurs_promos_diplomees))
+                    if($.inArray($(this).children(":nth-child(3)").text(), valeurs_promos_diplomees)!= -1)
                     {
                         $(this).remove();
                     }
@@ -193,13 +198,15 @@ function question_change()
         {
             $("#options").fadeIn();//On les affiche.
 
-            add_option(1);//On ajoute une option de base.
-            cache_parties_option();
-            attach_option_events();
+            if($("#options #option_accordion").children().length==0)
+            {
+                add_option(1);//On ajoute une option de base.
+            }
 
             $("input:radio[name=options]").unbind('change');//On empèche de rechanger bêtement.
             $("input:radio[name=options][value=0]:not(.bound_click)").addClass('bound_click').click(function()//Si on clique sur le bouton "pas d'options".
                 {
+
                     var confirm_click = window.confirm("Si vous cliquez sur confirmer, vous allez annuler tout ce que vous avez fait sur vos options, est-ce ce que vous souhaitez ?");//On affiche une demande de confirmation
                     if(confirm_click)//S'il confirme
                     {
@@ -378,7 +385,7 @@ function add_row(site, promo, prix=null, quota=null, guest_number=0)
         $(this).children().focus();//focus sur l'input pour que l'évènement blur(perte de focus) ait un sens.
         $(this).children().blur(function()//Quand on perd le focus.
             {
-                var input_value =($(this).val()!="") ? Math.round($(this).val(), 2) : 0; //On arrondit au centime au cas ou l'utilisateur soit vicieux.
+                var input_value =($(this).val()!="" && $(this).val()>0) ? Math.round($(this).val(), 2) : 0; //On arrondit au centime au cas ou l'utilisateur soit vicieux. On a pensé à toi celui qui met des négatifs fdp
                 $(this).parent().text(input_value+'€');//On l'affiche à la place de l'input.
             });//Disparition de l'input si on clique ailleurs.
         });//On ajoute la possibilité de changer les valeurs des lignes une fois inscrites en cliquant simplement dessus. L'input disparait une fois qu'on clique ailleurs. Ceci s'applique au changement de prix.
@@ -389,7 +396,7 @@ function add_row(site, promo, prix=null, quota=null, guest_number=0)
         $(this).children().focus();
         $(this).children().blur(function()
             {
-                var input_value =($(this).val()!="") ? Math.round($(this).val(), 0) : 0;
+                var input_value =($(this).val()!="" && $(this).val()>0) ? Math.round($(this).val(), 0) : 0;
                 $(this).parent().text(input_value);
             });
         });//same pour le changement de quota
@@ -402,11 +409,10 @@ function add_row(site, promo, prix=null, quota=null, guest_number=0)
             $(this).children().focus();
             $(this).children().blur(function()
                 {
-                    var input_value =($(this).val()!="") ? Math.round($(this).val(), 0) : 0;
+                    var input_value =($(this).val()!="" && $(this).val()>0) ? Math.round($(this).val(), 0) : 0;
                     $(this).parent().text(input_value);
                 });
             });//same pour le changement de nombre d'invités
     }
-
     table_body.append(new_row); //Evidemment on ajoute tout ça.
 }
