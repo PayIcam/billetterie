@@ -422,6 +422,8 @@
         </form>
     </div>
 
+    <script src="event_functions.js"></script>
+    <script src="option_functions.js"></script>
     <script src="formulaire.js"></script>
 
 </body>
