@@ -1,12 +1,12 @@
 <?php
 
-function add_option($option_number)
+function add_option_html_code($option_number)
 {
     ?>
-                    <div class="panel panel-default">
+                    <div id=<?= '"all_option_' . $option_number . '_accordion"' ?> class="panel panel-default">
                         <div class="panel-heading">
                             <div class="panel-title">
-                                <a data-toggle="collapse" data-parent="#option_accordion" href=<?= '"#option_'.$option_number.'"'; ?> >Option sans nom</a>
+                                <a data-toggle="collapse" data-parent="#option_accordion" href=<?= '"#option_'.$option_number.'"'; ?> >Option sans nom   <span class="glyphicon glyphicon-trash" style="color: red"></span></a>
                             </div>
                         </div>
 
@@ -30,11 +30,11 @@ function add_option($option_number)
                                 </div>
 
                                 <label>Quel est le type de l'option que vous proposez ?</label>
-                                <div class="form-check" aria-describedby="option_accessibility_help">
+                                <div class="form-check" aria-describedby="option_type_help">
                                     <label class="radio-inline"><input type="radio" name="option_type" value="Checkbox">Checkbox</label>
                                     <label class="radio-inline"><input type="radio" name="option_type" value="Select">Select</label>
                                 </div>
-                                <small id="option_accessibility_help">
+                                <small id="option_type_help">
                                     <br>
                                     Une checkbox ne permet qu'un seul choix, simple, alors qu'un select, plus précis, permet un choix parmi une liste de propositions. <br>
                                     Une checkbox est donc adaptée à une question de type : "Venez vous le matin ?"<br>
@@ -75,7 +75,7 @@ function add_option($option_number)
                                 </div>
                                 <div class="select_type">
                                     <h5>Option de type select :</h5>
-                                    <table class="specification_table table">
+                                    <table class="select_table table">
                                         <thead>
                                             <tr>
                                                 <th scope="col">#</th>
@@ -141,7 +141,7 @@ function add_option($option_number)
 
 if(isset($_GET['option_number']))
 {
-    add_option($_GET['option_number']);
+    add_option_html_code($_GET['option_number']);
 }
 else
 {
