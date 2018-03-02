@@ -37,6 +37,12 @@ function initialisation_formulaire()
     $("#table_row_example").hide();//On cache l'example servant uniquement à être cloné et afficher les infos sur les promos venant dans le tableau
 
     $("#options").hide();//On cache la partie traitant des options
+    $("#submit_form_div").hide();//On cache le bouton de submit
+
+    $("select[multiple]").each(function()
+    {
+        $(this).attr('size', $(this).children("option").length);
+    });//On définit pile la taille qu'il faut à tous les select de type multiple.
 
     add_event_change_to_radio_input('graduated_icam');
     add_event_change_to_radio_input('permanents');
@@ -52,6 +58,11 @@ function initialisation_formulaire()
     {
         add_option(get_last_html_option_id()+1);
     })
+
+    $("#submit_form").click(function()
+    {
+        check_whole_form()
+    });
 }
 
 /**
@@ -77,6 +88,8 @@ function question_change()
 
     if(all_questions_checked())
     {
+        $("#submit_form_div").fadeIn();//On affiche le bouton de submit
+
         $('#availability_complement').fadeIn();//Si toutes les questions sont cochées, l'utilisateur peux passer à la partie traitant d'ajouter des participants à son évènement
 
         if($("input:radio[name='guests']:checked").val()==1)//Si l'utilisateur répond "Oui" à la question "Voulez vous des invités ?"
@@ -306,7 +319,7 @@ function prepare_event_accessibility_row_addition(type)
  * @param {int} quota
  * @param {int} guest_number
  */
-function add_row(site, promo, prix=null, quota=null, guest_number=0)
+function add_row(site, promo, prix=0, quota=null, guest_number=0)
 {
     /**
      * On vérifie simplement que la promo n'est pas déjà présente.
@@ -362,13 +375,22 @@ function add_row(site, promo, prix=null, quota=null, guest_number=0)
     var previous_index =$("#table_availabilities tbody tr:last th").text();
     var new_row = previous_row.clone();//On clone la ligne, et on change toutes les valeurs
 
+    if(quota==0)
+    {
+        quota = '';
+    }
+    if(prix=='')
+    {
+        prix =0;
+    }
+
     new_row.children(":nth-child(1)").text(parseInt(previous_index)+1);
     new_row.children(":nth-child(2)").text(site);
     new_row.children(":nth-child(3)").text(promo);
     new_row.children(":nth-child(4)").text(prix+"€");
     new_row.children(":nth-child(5)").text(quota);
     new_row.children(":nth-child(6)").text(guest_number);
-    new_row.children(":nth-child(7)").html('<button id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>'); //Potentiellement, il n'y avait pas de bouton supprimer (si on l'avait justement enlevé pour les promos permanents & invités), il faut donc le rajouter au cas où.
+    new_row.children(":nth-child(7)").html('<button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>'); //Potentiellement, il n'y avait pas de bouton supprimer (si on l'avait justement enlevé pour les promos permanents & invités), il faut donc le rajouter au cas où.
     new_row.children(":nth-child(7)").children().click(function()
     {
         var confirm_delete = window.confirm("Voulez vous vraiment supprimer cette promo ?");
@@ -396,7 +418,7 @@ function add_row(site, promo, prix=null, quota=null, guest_number=0)
         $(this).children().focus();
         $(this).children().blur(function()
             {
-                var input_value =($(this).val()!="" && $(this).val()>0) ? Math.round($(this).val(), 0) : 0;
+                var input_value =($(this).val()!="" && $(this).val()>0) ? Math.round($(this).val(), 0) : '';
                 $(this).parent().text(input_value);
             });
         });//same pour le changement de quota

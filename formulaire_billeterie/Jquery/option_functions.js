@@ -6,11 +6,10 @@
  */
 function add_option(option_number)
 {
-    $.ajax('add_option.php', {
+    $.ajax('Html/add_option.php', {
         type: 'GET', //C'est bien du GET qu'il faut envoyer
         data: {option_number: option_number}, //On oublie pas de définir l'id à donner
         dataType: 'html', //C'est bien du html qu'on récupère
-        timeout: 1000,
         success: function(data)
         {
             $("#options #option_accordion").append(data); //Si ça a marché, on ajoute juste les données à la page dans l'accordéon.
@@ -76,6 +75,11 @@ function attach_option_events()
      */
     function add_select_row(name, price)
     {
+        if(price == '')
+        {
+            price = 0;
+        }
+
         var index = $(".select_table tbody").children().length==0 ? 1 : parseInt($(".select_table tbody tr:last th").text())+1;//Un petit ternaire, ça fait jamais de mal (L'index doit valoir soit 1, soit le précédent index +1);
 
         var row = $("<tr></tr>");//On crée de toute pièce notre ligne à ajouter, en effet, elle est pas bien grande, ça évite d'avoir des problèmes en clonant, s'il n'y a rien auparavant.
@@ -83,7 +87,7 @@ function attach_option_events()
         $("<td></td>").text(name).appendTo(row);
         $("<td></td>").text(price+'€').appendTo(row);
 
-        var delete_button = $("<td></td>").html('<button id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>')//Comme d'hab, un bouton servant à supprimer la ligne
+        var delete_button = $("<td></td>").html('<button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>')//Comme d'hab, un bouton servant à supprimer la ligne
         delete_button.children().click(function()
         {
             var confirm_delete = window.confirm("Voulez vous vraiment enlever cette sous-option ?");
@@ -117,8 +121,7 @@ function attach_option_events()
             $(this).parents(".panel-default").remove();
         }
     });
-
-    $("#options .panel-default:not(.already_added) .option_generalities input[name=option_type]").change(function()//Si on change le type de l'option, il y a du traitement à faire.
+    $("#options .panel-default:not(.already_added) .option_generalities input[class=option_type_input]").change(function()//Si on change le type de l'option, il y a du traitement à faire.
     {
         $(this).parents(".option_generalities").siblings(".option_type_complement").fadeIn();//De base, rien n'est coché, on va donc afficher la partie générale (les 2 autres sont encore cachées)
 
@@ -134,7 +137,7 @@ function attach_option_events()
         }
     });
 
-    $(document).on('input', '#options .panel-default:not(.already_added) .option_type_complement .checkbox_type input[name=checkbox_price]', function()//On affiche en dynamique la gueule du label du checkbox ! Stylé !
+    $('#options .panel-default:not(.already_added) .option_type_complement .checkbox_type input[name=checkbox_price]').on('change keyup', function()//On affiche en dynamique la gueule du label du checkbox ! Stylé !
     {
         $("#options .option_type_complement .checkbox_type .checkbox_example label").text(function()
         {
@@ -155,12 +158,12 @@ function attach_option_events()
         $(this).prev().find("input[name=select_price]").val('');
     });
 
-    $(document).on('input', "#options .panel-default:not(.already_added) .option_generalities input[name=option_name]", function()//On change le label du select entier de l'exemple sur un keyup du nom de l'option
+    $("#options .panel-default:not(.already_added) .option_generalities input[name=option_name]").keyup(function()//On change le label du select entier de l'exemple sur un keyup du nom de l'option
     {
         $("#options .option_type_complement .select_type .select_example label").text($(this).val() + ': ');
     });
 
-    $("#options .panel-default:not(.already_added) .option_generalities input[name=everyone_has_option]").change(function()//Si on fait joujou avec le bouton "tout le monde a accès à l'option", on reset l'accessibilité
+    $("#options .panel-default:not(.already_added) .option_generalities input[class=option_accessibility_input]").change(function()//Si on fait joujou avec le bouton "tout le monde a accès à l'option", on reset l'accessibilité
     {
         $(this).parents(".option_generalities").siblings('.option_accessibility').children(".option_accessibility_restart").click();
 
@@ -183,7 +186,7 @@ function attach_option_events()
         new_rows.children(":nth-child(5)").remove();
         new_rows.children(":nth-child(4)").remove();
 
-        new_rows.children(":nth-child(4)").html('<button id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>');
+        new_rows.children(":nth-child(4)").html('<button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>');
         new_rows.children(":nth-child(4)").children().click(function()//Et voilà, si on clique ici, on vire bien la promo.
         {
             var confirm_delete = window.confirm("Voulez vous vraiment enlever l'accès à votre option à cette promo ?");
