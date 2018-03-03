@@ -73,12 +73,10 @@ function attach_option_events()
      * @param {string} name
      * @param {int} price
      */
-    function add_select_row(name, price)
+    function add_select_row(name, price, quota)
     {
-        if(price == '')
-        {
-            price = 0;
-        }
+        quota = (quota==0 | quota<0 | isNaN(quota)) ? '' : Math.round(quota);
+        price = (price== '' | price<0 | isNaN(price)) ? 0 : arrondi_centieme(price);
 
         var index = $(".select_table tbody").children().length==0 ? 1 : parseInt($(".select_table tbody tr:last th").text())+1;//Un petit ternaire, ça fait jamais de mal (L'index doit valoir soit 1, soit le précédent index +1);
 
@@ -86,6 +84,8 @@ function attach_option_events()
         $("<th></th>").text(index).appendTo(row);
         $("<td></td>").text(name).appendTo(row);
         $("<td></td>").text(price+'€').appendTo(row);
+        $("<td></td>").text(quota).appendTo(row);
+
 
         var delete_button = $("<td></td>").html('<button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>')//Comme d'hab, un bouton servant à supprimer la ligne
         delete_button.children().click(function()
@@ -147,15 +147,17 @@ function attach_option_events()
         });
     });
 
-    $(".panel-default:not(.already_added) .ajout_select").click(function()//En gros, je veux ajouter une ligne quand on clique sur ajouter une ligne. Et je l'ajoute aussi dans l'exemple pour faire joli
+    $(".panel-default:not(.already_added) .ajout_select").click(function()//En gros, je veux ajouter une ligne quand on clique sur ajouter une ligne. Et je l'ajoute aussi dans le select de l'exemple pour faire joli
     {
         var name = $(this).prev().find("input[name=select_name]").val();
         var price = $(this).prev().find("input[name=select_price]").val();
-        add_select_row(name, price);
+        var quota = $(this).prev().find("input[name=select_quota]").val();
+        add_select_row(name, price, quota);
         $("<option></option>").text(name + '(' + price + '€)').appendTo("#options .option_type_complement .select_type .select_example select");
         $(this).prev().find("input[name=select_name]").val('');//A la fin, je vide les inputs, et je refocus sur le name, comme ça il peux aller vite
         $(this).prev().find("input[name=select_name]").focus();
         $(this).prev().find("input[name=select_price]").val('');
+        $(this).prev().find("input[name=select_quota]").val('');
     });
 
     $("#options .panel-default:not(.already_added) .option_generalities input[name=option_name]").keyup(function()//On change le label du select entier de l'exemple sur un keyup du nom de l'option

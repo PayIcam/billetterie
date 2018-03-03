@@ -64,6 +64,10 @@ function initialisation_formulaire()
         check_whole_form()
     });
 }
+function arrondi_centieme(nombre)
+{
+    return Math.round(100*nombre)/100;
+}
 
 /**
  * * Fonction appelée sur un trigger de la fonction change sur les input du formulaire dans la première partie.
@@ -123,6 +127,7 @@ function question_change()
             if(!guests_row_there)//Si ce n'est pas le cas, on l'ajoute.
             {
                 add_row('Tous', 'Invités', 0, 0, 0);
+                $("#options .option_accessibility .option_accessibility_restart").click();//Du coup on restart l'accessibilité des options
                 $("#table_availabilities #specification_table tbody tr:last :nth-child(7)").children().remove();
 
                 var message = '<div class="alert alert-info alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Cliquez</strong> sur les champs prix, promos et nombre d\'invités pour changer les valeurs de base ! <br>Pour valider les changements, <strong>cliquez autre part</strong>' + '</div>';//On ajoute un joli message expliquant comment éditer.
@@ -190,6 +195,7 @@ function question_change()
             if(!permanent_row_there)//Si elle n'y est pas
             {
                 add_row('Tous', 'Permanents', 0, 0, 0);//On l'ajoute
+                $("#options .option_accessibility .option_accessibility_restart").click();//Du coup on restart l'accessibilité des options
                 $("#table_availabilities #specification_table tbody tr:last :nth-child(7)").children().remove();//On enlève la possibilité de supprimer la ligne
 
                 var message = '<div class="alert alert-info alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Cliquez</strong> sur les champs prix, promos et nombre d\'invités pour changer les valeurs de base ! <br>Pour valider les changements, <strong>cliquez autre part</strong>' + '</div>';//On crée le tooltip ...
@@ -315,11 +321,11 @@ function prepare_event_accessibility_row_addition(type)
  *
  * @param {string} site
  * @param {string} promo
- * @param {float} prix
+ * @param {float} price
  * @param {int} quota
  * @param {int} guest_number
  */
-function add_row(site, promo, prix=0, quota=null, guest_number=0)
+function add_row(site, promo, price=0, quota='', guest_number=0)
 {
     /**
      * On vérifie simplement que la promo n'est pas déjà présente.
@@ -360,6 +366,10 @@ function add_row(site, promo, prix=0, quota=null, guest_number=0)
         return false; //On arrète tout, le message d'erreur a déjà été envoyé, il est temps de se barrer
     }
 
+    price = (price== '' | price<0 | isNaN(price)) ? 0 : arrondi_centieme(price);//On corrige les inputs avec du ternaire pour ne pas avoir de conneries.
+    quota = (quota==0 | quota<0 | isNaN(quota)) ? '' : Math.round(quota);
+    guest_number = (guest_number== '' | guest_number<0 | isNaN(guest_number)) ? 0 : Math.round(guest_number);
+
     var table_body = $("#table_availabilities #specification_table tbody");
     var previous_row =$("#table_availabilities #specification_table tbody tr:last");//On récupère la ligne précédente dans la table AFFICHEE, celle dans laquelle on ajoute
 
@@ -375,19 +385,10 @@ function add_row(site, promo, prix=0, quota=null, guest_number=0)
     var previous_index =$("#table_availabilities tbody tr:last th").text();
     var new_row = previous_row.clone();//On clone la ligne, et on change toutes les valeurs
 
-    if(quota==0)
-    {
-        quota = '';
-    }
-    if(prix=='')
-    {
-        prix =0;
-    }
-
     new_row.children(":nth-child(1)").text(parseInt(previous_index)+1);
     new_row.children(":nth-child(2)").text(site);
     new_row.children(":nth-child(3)").text(promo);
-    new_row.children(":nth-child(4)").text(prix+"€");
+    new_row.children(":nth-child(4)").text(price+"€");
     new_row.children(":nth-child(5)").text(quota);
     new_row.children(":nth-child(6)").text(guest_number);
     new_row.children(":nth-child(7)").html('<button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>'); //Potentiellement, il n'y avait pas de bouton supprimer (si on l'avait justement enlevé pour les promos permanents & invités), il faut donc le rajouter au cas où.
@@ -407,7 +408,7 @@ function add_row(site, promo, prix=0, quota=null, guest_number=0)
         $(this).children().focus();//focus sur l'input pour que l'évènement blur(perte de focus) ait un sens.
         $(this).children().blur(function()//Quand on perd le focus.
             {
-                var input_value =($(this).val()!="" && $(this).val()>0) ? Math.round($(this).val(), 2) : 0; //On arrondit au centime au cas ou l'utilisateur soit vicieux. On a pensé à toi celui qui met des négatifs fdp
+                var input_value =($(this).val()!="" && $(this).val()>0) ? arrondi_centieme($(this).val()) : 0; //On arrondit au centime au cas ou l'utilisateur soit vicieux. On a pensé à toi celui qui met des négatifs fdp
                 $(this).parent().text(input_value+'€');//On l'affiche à la place de l'input.
             });//Disparition de l'input si on clique ailleurs.
         });//On ajoute la possibilité de changer les valeurs des lignes une fois inscrites en cliquant simplement dessus. L'input disparait une fois qu'on clique ailleurs. Ceci s'applique au changement de prix.

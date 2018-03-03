@@ -66,6 +66,11 @@ function check_whole_form()
                 add_error('Option : ' + option_name + ' : Vous n\'avez pas coché le type de l\'option');
                 form_is_correct = 0;
             }
+            if(!$(this).find("input[class=option_active_input]").is(":checked"))
+            {
+                add_error('Option : ' + option_name + ' : Vous n\'avez pas précisé si votre option devait être active dès maintenant');
+                form_is_correct = 0;
+            }
             if(!$(this).find("input[class=option_accessibility_input]").is(":checked"))
             {
                 add_error('Option : ' + option_name + ' : Vous n\'avez pas coché l\'accessibilité de l\'option');
@@ -84,6 +89,16 @@ function check_whole_form()
                 if($(this).find('.select_table tbody tr').length ==0)
                 {
                     add_error('Option : ' + option_name + ' : Il n\'y a rien dans votre select');
+                    form_is_correct = 0;
+                }
+                if($(this).find('.select_table tbody tr').length ==1)
+                {
+                    add_error('Option : ' + option_name + ' : Votre select ne contient qu\'une sous option. Utilisez plutôt un Checkbox...');
+                    form_is_correct = 0;
+                }
+                if(!$(this).find('.select_type .select_option_mandatory_input').is(":checked"))
+                {
+                    add_error('Option : ' + option_name + ' : Le select est-il obligatoire ?');
                     form_is_correct = 0;
                 }
             }

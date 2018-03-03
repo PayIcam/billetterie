@@ -29,26 +29,24 @@ function add_option_html_code($option_number)
                                     <small id=<?= '"option_'.$option_number.'_quota_help"'; ?> class="form-text text-muted">Il ne sera pas possible de dépasser ce quota, cette option se bloquera automatiquement une fois ce nombre atteint.</small>
                                 </div>
 
-                                <div class="form-group">
-                                    <input id=<?= '"option_'.$option_number.'_is_active"'; ?> type="checkbox" data-toggle="toggle" data-on="Activée" data-off="Désactivée" aria-describedby=<?= '"option_'.$option_number.'_is_active_help"'; ?> >
-                                    <label for=<?= '"option_'.$option_number.'_is_active"'; ?> >Activer votre option dès maintenant ?</label><br>
-                                    <small id=<?= '"option_'.$option_number.'_is_active_help"'; ?> >Vous pouvez laisser ce bouton décoché le temps de préparer votre option, et le rendre actif au moment venu. Si ce bouton n'est pas coché, mais que la billeterie est active, alors l'option ne sera pas proposée. Si vous avez prévu d'activer votre option dès l'ouverture de la billeterie, activez le dès maintenant ;)</small>
+                                <label>Activer votre option dès maintenant ?</label>
+                                <div class="form-check" aria-describedby=<?= '"option_'.$option_number.'_is_active_help"'; ?> >
+                                    <label class="radio-inline"><input type="radio" class="option_active_input" name=<?= '"option_'.$option_number.'_is_active"'; ?> value=1 required>Oui</label>
+                                    <label class="radio-inline"><input type="radio" class="option_active_input" name=<?= '"option_'.$option_number.'_is_active"'; ?> value=0>Non</label>
                                 </div>
+                                <small id=<?= '"option_'.$option_number.'_is_active_help"'; ?> >Vous pouvez cliquer sur "Non" le temps de préparer votre option, et le rendre actif au moment venu. Si vous n'avez pas coché le "Oui", mais que la billeterie est active, alors l'option ne sera pas proposée. Si vous avez prévu d'activer votre option dès l'ouverture de la billeterie, activez le dès maintenant ;)</small><br><br>
 
                                 <label>Quel est le type de l'option que vous proposez ?</label>
                                 <div class="form-check" aria-describedby=<?= '"option_'.$option_number.'_type_help"'; ?> >
                                     <label class="radio-inline"><input type="radio" class="option_type_input" name=<?= '"option_'.$option_number.'_type"'; ?> value="Checkbox" required>Checkbox</label>
                                     <label class="radio-inline"><input type="radio" class="option_type_input" name=<?= '"option_'.$option_number.'_type"'; ?> value="Select">Select</label>
                                 </div>
-                                <small id=<?= '"option_'.$option_number.'_type_help"'; ?> >
-                                    <br>
+                                <small style="font-size: 0.8em;" id=<?= '"option_'.$option_number.'_type_help"'; ?> >
                                     Une checkbox ne permet qu'un seul choix, simple, alors qu'un select, plus précis, permet un choix parmi une liste de propositions. <br>
                                     Une checkbox est donc adaptée à une question de type : "Venez vous le matin ?"<br>
                                     Un select est par contre adaptée à une question de type : "Venez vous le matin, le midi, ou le soir ?"<br>
-                                    <br>
-                                    Pour l'exemple nous vous décrivons les deux types en questions (non stylisés).<br>Pas d'inquiétudes, cocher ces exemples ou non est sans effet !<br>
-                                    Ceci est une checkbox : Matin : <input type="checkbox"> <br>
-                                    Ceci est un select : <select><option>Matin</option><option>Midi</option><option>Soir</option></select> <br> <br>
+                                    Pour l'exemple nous vous décrivons les deux types en questions (non stylisés). Pas d'inquiétudes, cocher ces exemples ou non est sans effet !<br>
+                                    Ceci est une checkbox : Matin : <input type="checkbox"> Ceci est un select : <select><option>Matin</option><option>Midi</option><option>Soir</option></select> <br> <br>
                                 </small>
 
                                 <label>Votre option est-t-elle accessible à tous les participants définis au dessus ?</label>
@@ -81,12 +79,21 @@ function add_option_html_code($option_number)
                                 </div>
                                 <div class="select_type">
                                     <h5>Option de type select :</h5>
+
+                                    <label>Rendre votre option obligatoire ?</label>
+                                    <div class="form-check" aria-describedby=<?= '"select_option_'.$option_number.'_is_mandatory_help"'; ?> >
+                                        <label class="radio-inline"><input type="radio" class="select_option_mandatory_input" name=<?= '"select_option_'.$option_number.'_is_mandatory"'; ?> value=1 required>Oui</label>
+                                        <label class="radio-inline"><input type="radio" class="select_option_mandatory_input" name=<?= '"select_option_'.$option_number.'_is_mandatory"'; ?> value=0>Non</label>
+                                    </div>
+                                    <small id=<?= '"select_option_'.$option_number.'_is_mandatory_help"'; ?> >Vous pouvez rendre une option select obligatoire, afin de forcer à faire un choix parmi les différents proposés. Notamment, cela peux être pratique dans le cas de plusieurs sous-options gratuites, pour forcer l'utilisateur à en saisir une ! (Créneaux pour le Gala par exemple)</small>
+
                                     <table class="select_table table">
                                         <thead>
                                             <tr>
                                                 <th scope="col">#</th>
                                                 <th scope="col">Nom</th>
                                                 <th scope="col">Prix</th>
+                                                <th scope="col">Quota</th>
                                                 <th scope="col">Supprimer</th>
                                             </tr>
                                         </thead>
@@ -95,16 +102,22 @@ function add_option_html_code($option_number)
                                     </table>
 
                                     <div class="row">
-                                        <div class="form-group col-sm-6 option_select_name">
+                                        <div class="form-group col-sm-4 option_select_name">
                                             <label for=<?= '"option_'.$option_number.'_select_name_input"'; ?>>Nom de la sous-option:</label>
                                             <input type="text" class="form-control" name="select_name" id=<?= '"option_'.$option_number.'_select_name_input"'; ?> aria-describedby=<?= '"option_'.$option_number.'_select_name_input_help"'; ?> placeholder="Nom la sous-option">
                                             <small id=<?= '"option_'.$option_number.'_select_name_input_help"'; ?> class="form-text text-muted">Définissez le nom de votre sous-option.</small> <br>
                                         </div>
 
-                                        <div class="form-group col-sm-6 option_select_price">
+                                        <div class="form-group col-sm-4 option_select_price">
                                             <label for=<?= '"option_'.$option_number.'_select_price_input"'; ?> >Prix de la sous-option:</label>
-                                            <input type="number" step="0.01" class="form-control" name="select_price" id=<?= '"option_'.$option_number.'_select_price_input"'; ?> aria-describedby=<?= '"option_'.$option_number.'_select_price_input_help"'; ?> placeholder="Prix à fixer à la sélection">
+                                            <input type="number" step=0.01 min=0 class="form-control" name="select_price" id=<?= '"option_'.$option_number.'_select_price_input"'; ?> aria-describedby=<?= '"option_'.$option_number.'_select_price_input_help"'; ?> placeholder="Prix à fixer à la sélection">
                                             <small id=<?= '"option_'.$option_number.'_select_price_input_help"'; ?> class="form-text text-muted">Définissez le prix de votre sous-option.</small> <br>
+                                        </div>
+
+                                        <div class="form-group col-sm-4 option_select_quota">
+                                            <label for=<?= '"option_'.$option_number.'_select_quota_input"'; ?> >Quota de la sous-option:</label>
+                                            <input type="number" min=0 class="form-control" name="select_quota" id=<?= '"option_'.$option_number.'_select_quota_input"'; ?> aria-describedby=<?= '"option_'.$option_number.'_select_quota_input_help"'; ?> placeholder="Prix à fixer à la sélection">
+                                            <small id=<?= '"option_'.$option_number.'_select_quota_input_help"'; ?> class="form-text text-muted">Définissez le quota de votre sous-option.</small> <br>
                                         </div>
                                     </div>
 
