@@ -330,59 +330,14 @@
                                 </div>
                             </div>
 
-                            <div id="graduated" class="panel panel-default"><!--Les diplômés, un gros CC de la partie du dessus, en changeant les noms-->
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">
-                                        <a data-toggle="collapse" data-parent="#accordion_accessibility_choice" href="#graduated_specification"> Ajoutez les diplomés par promo et site</a>
-                                    </h4>
-                                </div>
-                                <div id="graduated_specification" class="panel-collapse collapse panel-body">
-
-                                    <div class="row">
-                                        <div class="form-group col-sm-6">
-                                            <label for="graduated_choice_site">Site:</label>
-                                            <select multiple class="form-control" aria-describedby="graduated_choice_help_site" id="graduated_choice_site" height=60px>
-                                                <option disabled> Choisissez parmi les sites </option>
-                                                <?php insert_as_select_option($sites); ?>
-                                            </select>
-                                            <small id="graduated_choice_help_site" class="form-text text-muted"> Choisissez le ou les sites ...<br> PS: Utilisez Ctrl pour sélectionner plusieurs options, ou laissez le bouton de la souris appuyé, puis déplacez là.</small>
-                                        </div>
-
-                                        <div class="form-group col-sm-6">
-                                            <label for="graduated_choice_promo">Promo:</label>
-                                            <select multiple class="form-control" aria-describedby="graduated_choice_help_promo" id="graduated_choice_promo">
-                                                <option disabled> Choisissez parmi les promos</option>
-                                                <?php insert_as_select_option($graduated_promos); ?>
-                                            </select>
-                                            <small id="graduated_choice_help_promo" class="form-text text-muted"> Et les promos correspondantes ! <br>PS: Utilisez Ctrl pour sélectionner plusieurs options, ou laissez le bouton de la souris appuyé, puis déplacez là.</small>
-                                        </div>
-                                    </div>
-
-                                    <div id="graduated_price_quota_guests" class="row">
-                                        <div id="graduated_only_price" class="col-sm-4 form-group">
-                                            <label for="graduated_only_input_price">Prix de la sélection :</label>
-                                            <input type="number" step="0.01" class="form-control" name="selection_price" id="graduated_only_input_price" aria-describedby="graduated_only_input_price_help" placeholder="Prix à fixer à la sélection" rows=3>
-                                            <small id="graduated_only_input_price_help" class="form-text text-muted">Définissez le prix s'appliquant à votre sélection.</small>
-                                        </div>
-
-                                        <div id="graduated_only_quota" class="col-sm-4 form-group">
-                                            <label for="graduated_only_input_quota">Quota pour chaque élément de la sélection :</label>
-                                            <input type="number" class="form-control" name="selection_quota" id="graduated_only_input_quota" aria-describedby="graduated_only_input_quota_help" placeholder="Quota pour chaque élément" rows=3>
-                                            <small id="graduated_only_input_quota_help" class="form-text text-muted">Définissez le quota pour chaque élément sélectionné</small>
-                                        </div>
-
-                                        <div id="graduated_only_guest_number" class="col-sm-4 form-group">
-                                            <label for="graduated_only_input_guest_number">Nombre d'invités par étudiant par promo</label>
-                                            <input type="number" class="form-control" name="selection_guest_number" id="graduated_only_input_guest_number" aria-describedby="graduated_only_input_guest_number_help" placeholder="Nombre d'invités par étudiant" rows=3>
-                                            <small id="graduated_only_input_guest_number_help" class="form-text text-muted">Définissez le nombre d'invités par étudiant.</small>
-                                        </div>
-                                    </div>
-
-                                    <br>
-
-                                    <button type="button" id="ajout_graduated" class="btn btn-success">Ajouter ces promos de diplomés pour les sites sélectionnés</button>
-                                </div>
+                            <div id="graduated" class="panel panel-default"><!-- Vestige de l'ancien code, regardez les premiers sur Commit si vous êtes curieux -->
+                                <div id="graduated_promos_infos">
+                                    <select id="graduated_promos_select">
+                                    <?php insert_as_select_option($graduated_promos); ?>
+                                    </select>
+                                </div><!--Ce select sert quand même être cloné, et ajouté ailleurs-->
                             </div>
+
                         </div>
                     </div>
                 </div>

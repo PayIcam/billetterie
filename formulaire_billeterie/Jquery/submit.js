@@ -155,9 +155,9 @@ function check_then_submit_form(event)
             var name = $(this).find("input[name=option_name]").val();
             var description = $(this).find("textarea[name=option_description]").val();
             var quota = $(this).find("input[name=option_quota]").val();
-
             var type = $(this).find("input[class=option_type_input]:checked").val();
-
+            var is_active = $(this).find(".option_active_input").val();
+            var is_mandatory = $(this).find(".select_option_mandatory_input").val();
 
             if(type=='Checkbox')
             {
@@ -168,19 +168,14 @@ function check_then_submit_form(event)
                 var specification = get_select_infos($(this).find('.select_table tbody tr'));
             }
 
-            if($("input:radio[class=option_accessibility_input]:checked").val()=='Checkbox')
-            {
-                var option_accessibility = $(this).find("input[class=option_accessibility_input]").val();
-            }
-            else
-            {
-                var option_accessibility = get_option_accessibility_info($(this).find('.option_accessibility_table tr'));
-            }
-            var option = {name: name, description: description, quota: quota, type: type, type_specification: specification, accessibility: option_accessibility};
+            var option_accessibility = get_option_accessibility_info($(this).find('.option_accessibility_table tbody tr'));//Affichée ou non, elle est tt le tps correcte
+
+            var option = {name: name, description: description, quota: quota, is_active: is_active, is_mandatory: is_mandatory, type: type, type_specification: specification, accessibility: option_accessibility};
             options.push(option);
         });
         return options;
     }
+
     $("#erreurs_submit").empty();
 
     if(check_form()==1)
@@ -199,7 +194,6 @@ function check_then_submit_form(event)
             option_details_input.val(option_details_json);
             $("#input_additions").append(option_details_input);
         }
-        // event.preventDefault();
     }
     else
     {
