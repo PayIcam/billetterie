@@ -20,7 +20,7 @@ function add_option_html_code($option_number)
 
                                 <div class="form-group">
                                     <label for=<?= '"option_'.$option_number.'_description"'; ?> >Description de votre option :</label>
-                                    <textarea class="form-control" name="option_description" id=<?= '"option_'.$option_number.'_description"'; ?> placeholder="Descrivez rapidement votre option"></textarea>
+                                    <textarea class="form-control" name="option_description" id=<?= '"option_'.$option_number.'_description"'; ?> placeholder="Descrivez rapidement votre option" required></textarea>
                                 </div>
 
                                 <div class="form-group">
@@ -68,7 +68,7 @@ function add_option_html_code($option_number)
                                     <h5>Option de type checkbox :</h5>
                                     <div class="form-group option_checkbox_price">
                                         <label for=<?= '"option_'.$option_number.'_checkbox_price_input"'; ?> >Prix de l'option:</label>
-                                        <input type="number" step="0.01" class="form-control" name="checkbox_price" id=<?= '"option_'.$option_number.'_checkbox_price_input"'; ?> aria-describedby=<?= '"option_'.$option_number.'_checkbox_price_input_help"'; ?> placeholder="Prix à fixer à la sélection" required>
+                                        <input type="number" step="0.01" class="form-control" name="checkbox_price" id=<?= '"option_'.$option_number.'_checkbox_price_input"'; ?> aria-describedby=<?= '"option_'.$option_number.'_checkbox_price_input_help"'; ?> placeholder="Prix à fixer à la sélection">
                                         <small id=<?= '"option_'.$option_number.'_checkbox_price_input_help"'; ?> class="form-text text-muted">Définissez le prix de votre option checkbox.</small> <br>
                                     </div>
                                     <div class="checkbox_example form-check">
@@ -82,7 +82,7 @@ function add_option_html_code($option_number)
 
                                     <label>Rendre votre option obligatoire ?</label>
                                     <div class="form-check" aria-describedby=<?= '"select_option_'.$option_number.'_is_mandatory_help"'; ?> >
-                                        <label class="radio-inline"><input type="radio" class="select_option_mandatory_input" name=<?= '"select_option_'.$option_number.'_is_mandatory"'; ?> value=1 required>Oui</label>
+                                        <label class="radio-inline"><input type="radio" class="select_option_mandatory_input" name=<?= '"select_option_'.$option_number.'_is_mandatory"'; ?> value=1>Oui</label>
                                         <label class="radio-inline"><input type="radio" class="select_option_mandatory_input" name=<?= '"select_option_'.$option_number.'_is_mandatory"'; ?> value=0>Non</label>
                                     </div>
                                     <small id=<?= '"select_option_'.$option_number.'_is_mandatory_help"'; ?> >Vous pouvez rendre une option select obligatoire, afin de forcer à faire un choix parmi les différents proposés. Notamment, cela peux être pratique dans le cas de plusieurs sous-options gratuites, pour forcer l'utilisateur à en saisir une ! (Créneaux pour le Gala par exemple)</small>

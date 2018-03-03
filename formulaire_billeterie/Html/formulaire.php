@@ -37,7 +37,7 @@
 
         <br>
 
-        <form method="post" action="ajout_billeterie.php">
+        <form method="post" action="php/ajout_billeterie.php">
 
             <div class="general_infos">
 
@@ -50,7 +50,7 @@
 
                 <div class="form-group">
                     <label for="event_description">Description de votre évènement :</label>
-                    <textarea class="form-control" name="event_description" id="event_description" placeholder="Descrivez rapidement votre évènement"></textarea>
+                    <textarea class="form-control" name="event_description" id="event_description" placeholder="Descrivez rapidement votre évènement" required></textarea>
                 </div>
 
                 <div class="form-group">
@@ -200,7 +200,7 @@
                                     <label for="site_choice">Site:</label>
                                     <select multiple class="form-control" aria-describedby="site_choice_help" id="site_choice">
                                         <option disabled> Choisissez les sites qui participent à votre évènement </option>
-                                        <?php insert_as_select_option($sites); ?><!--On récupère la liste des sites grâce à un petit bout de Php-->
+                                        <?php insert_as_select_option($sites); ?><!--On récupère la liste des sites grâce à un petit bout de php-->
                                     </select>
                                     <small id="site_choice_help" class="form-text text-muted"> Les sites renseignés ici auront accès à la billeterie de votre évènement. <br> PS: Utilisez Ctrl pour sélectionner plusieurs options, ou laissez le bouton de la souris appuyé, puis déplacez là.</small>
 
@@ -381,7 +381,8 @@
                                     <br>
 
                                     <button type="button" id="ajout_graduated" class="btn btn-success">Ajouter ces promos de diplomés pour les sites sélectionnés</button>
-                                </di                            </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -407,10 +408,10 @@
         </form>
     </div>
 
-    <script src="Jquery/submit.js"></script>
-    <script src="Jquery/event_functions.js"></script>
-    <script src="Jquery/option_functions.js"></script>
-    <script src="Jquery/formulaire.js"></script>
+    <script src="jquery/submit.js"></script>
+    <script src="jquery/event_functions.js"></script>
+    <script src="jquery/option_functions.js"></script>
+    <script src="jquery/formulaire.js"></script>
 
 </body>
 </html>

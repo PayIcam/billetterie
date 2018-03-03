@@ -6,7 +6,7 @@
  */
 function add_option(option_number)
 {
-    $.ajax('Html/add_option.php', {
+    $.ajax('html/add_option.php', {
         type: 'GET', //C'est bien du GET qu'il faut envoyer
         data: {option_number: option_number}, //On oublie pas de définir l'id à donner
         dataType: 'html', //C'est bien du html qu'on récupère

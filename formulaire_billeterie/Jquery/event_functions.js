@@ -26,10 +26,8 @@ function initialisation_formulaire()
         );
     }
 
-    $("form").submit(function(event)
-        {
-            event.preventDefault() //On ne veux pas que le formulaire se submit en cliquant sur n'importe quel bouton, un bouton sera affiché pour ça, une fois les bonnes infos saisies
-        });
+    $("form").submit(check_then_submit_form);//On fait appel à la fonction qui permet de check tout le form, et le submit
+
     $("form")[0].reset(); //On reset le formulaire, pour ne pas garder les infos dans le cache du navigateur.
 
     $("#availability_complement").hide();//On cache la partie indiquant qui aura accès à l'évènement de base, elle sera affichée quand l'utilisateur aura avancé dans le formulaire
@@ -38,6 +36,7 @@ function initialisation_formulaire()
 
     $("#options").hide();//On cache la partie traitant des options
     $("#submit_form_div").hide();//On cache le bouton de submit
+    $("#input_additions").hide();//On cache les inputs hidden
 
     $("select[multiple]").each(function()
     {
@@ -57,11 +56,6 @@ function initialisation_formulaire()
     $("#options #add_option_button").click(function()
     {
         add_option(get_last_html_option_id()+1);
-    })
-
-    $("#submit_form").click(function()
-    {
-        check_whole_form()
     });
 }
 function arrondi_centieme(nombre)
