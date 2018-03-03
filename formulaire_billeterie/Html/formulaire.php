@@ -111,7 +111,7 @@
                 </script>
 
                 <div class="form-group">
-                    <input id="event_is_active" type="checkbox" data-toggle="toggle" data-on="Activer" data-off="Désactiver" aria-describedby="event_is_active_help">
+                    <input id="event_is_active" name="event_is_active" type="checkbox" data-toggle="toggle" data-on="Activer" data-off="Désactiver" aria-describedby="event_is_active_help" value=1>
                     <label for="event_is_active">Activer votre billeterie dès maintenant ?</label><br>
                     <small id="event_is_active_help">Vous pouvez laisser ce bouton décoché le temps de préparer votre billeterie, et le rendre actif au moment venu. Attention, ce bouton est prioritaire sur la date d'activation de votre billeterie. Pour qu'il soit possible de s'inscrire, il faut être entre les deux dates ET que ce bouton soit coché.</small>
                 </div>

@@ -155,9 +155,11 @@ function check_then_submit_form(event)
             var name = $(this).find("input[name=option_name]").val();
             var description = $(this).find("textarea[name=option_description]").val();
             var quota = $(this).find("input[name=option_quota]").val();
-            var type = $(this).find("input[class=option_type_input]").val();
 
-            if($("input:radio[class=option_type_input]:checked").val()=='Checkbox')
+            var type = $(this).find("input[class=option_type_input]:checked").val();
+
+
+            if(type=='Checkbox')
             {
                 var specification = {price: $(this).find("input[name=checkbox_price]").val()};
             }
@@ -185,8 +187,8 @@ function check_then_submit_form(event)
     {
         var event_accessibility = get_accessibility_infos();
         var event_accessibility_json = JSON.stringify(event_accessibility);
-        var event_accessibility_input = "<input type='hidden' name='event_accessibility_json'>";
-        $(event_accessibility_input).val(event_accessibility_json);
+        var event_accessibility_input = $("<input type='hidden' name='event_accessibility_json'>");
+        event_accessibility_input.val(event_accessibility_json);
         $("#input_additions").append(event_accessibility_input);
 
         if($("input:radio[name=options]:checked").val()==1)
@@ -197,6 +199,7 @@ function check_then_submit_form(event)
             option_details_input.val(option_details_json);
             $("#input_additions").append(option_details_input);
         }
+        // event.preventDefault();
     }
     else
     {

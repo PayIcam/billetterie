@@ -28,7 +28,7 @@ function initialisation_formulaire()
 
     $("form").submit(check_then_submit_form);//On fait appel à la fonction qui permet de check tout le form, et le submit
 
-    $("form")[0].reset(); //On reset le formulaire, pour ne pas garder les infos dans le cache du navigateur.
+    // $("form")[0].reset(); //On reset le formulaire, pour ne pas garder les infos dans le cache du navigateur.
 
     $("#availability_complement").hide();//On cache la partie indiquant qui aura accès à l'évènement de base, elle sera affichée quand l'utilisateur aura avancé dans le formulaire
     $("#specific_message").hide();//On cache le div contenant de futurs messages d'erreurs.

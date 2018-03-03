@@ -43,7 +43,6 @@ function get_last_html_option_id()
         return id_number;
     }
 }
-
 /**
  * Le gros du formulaire des options est récupéré en ajax, et n'est donc pas présent au chargement de la page.
  * Il y a toutefois des parties du formulaire à cacher, affichées ensuite selon les actions de l'utilisateur.
@@ -51,10 +50,10 @@ function get_last_html_option_id()
  */
 function cache_parties_option()
 {
-    $(".option_accessibility").hide();
-    $(".option_type_complement").hide();
-    $(".checkbox_type").hide();
-    $(".select_type").hide();
+    $(".panel-default:not(.already_added) .option_accessibility").hide();
+    $(".panel-default:not(.already_added) .option_type_complement").hide();
+    $(".panel-default:not(.already_added) .checkbox_type").hide();
+    $(".panel-default:not(.already_added) .select_type").hide();
 }
 /**
  * Cette fonction sert à attacher tous les éléments nécessaires à la bonne marche de la partie option du code.
@@ -73,12 +72,10 @@ function attach_option_events()
      * @param {string} name
      * @param {int} price
      */
-    function add_select_row(name, price, quota)
+    function add_select_row(index, name, price, quota)
     {
         quota = (quota==0 | quota<0 | isNaN(quota)) ? '' : Math.round(quota);
         price = (price== '' | price<0 | isNaN(price)) ? 0 : arrondi_centieme(price);
-
-        var index = $(".select_table tbody").children().length==0 ? 1 : parseInt($(".select_table tbody tr:last th").text())+1;//Un petit ternaire, ça fait jamais de mal (L'index doit valoir soit 1, soit le précédent index +1);
 
         var row = $("<tr></tr>");//On crée de toute pièce notre ligne à ajouter, en effet, elle est pas bien grande, ça évite d'avoir des problèmes en clonant, s'il n'y a rien auparavant.
         $("<th></th>").text(index).appendTo(row);
@@ -104,7 +101,7 @@ function attach_option_events()
             }
         });
         delete_button.appendTo(row);
-        row.appendTo(".select_table tbody");
+        return row;
     }
 
     $("#options .panel-default:not(.already_added) .option_generalities input[name=option_name]").keyup(function()//On veux changer le nom affiché sur le header de l'accordéon (de base, c'était Option sans nom)
@@ -152,8 +149,11 @@ function attach_option_events()
         var name = $(this).prev().find("input[name=select_name]").val();
         var price = $(this).prev().find("input[name=select_price]").val();
         var quota = $(this).prev().find("input[name=select_quota]").val();
-        add_select_row(name, price, quota);
-        $("<option></option>").text(name + '(' + price + '€)').appendTo("#options .option_type_complement .select_type .select_example select");
+        var index = $(this).siblings(".select_table").find("tbody").children().length==0 ? 1 : parseInt($(".select_table tbody tr:last th").text())+1;//Un petit ternaire, ça fait jamais de mal (L'index doit valoir soit 1, soit le précédent index +1);
+        var row = add_select_row(index, name, price, quota);
+        row.appendTo($(this).siblings(".select_table").find("tbody"));
+
+        $("<option></option>").text(name + '(' + price + '€)').appendTo($(this).siblings('.select_example').find("select"));
         $(this).prev().find("input[name=select_name]").val('');//A la fin, je vide les inputs, et je refocus sur le name, comme ça il peux aller vite
         $(this).prev().find("input[name=select_name]").focus();
         $(this).prev().find("input[name=select_price]").val('');
