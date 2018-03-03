@@ -122,9 +122,7 @@ function check_then_submit_form(event)
             var row = {site: site, promo: promo, price: price, quota: quota, guest_number:guest_number};
             rows.push(row);
         });
-        var rows_json = JSON.stringify(rows);
-
-        return rows_json;
+        return rows;
     }
     function get_options_infos()
     {
@@ -163,6 +161,7 @@ function check_then_submit_form(event)
             var description = $(this).find("textarea[name=option_description]").val();
             var quota = $(this).find("input[name=option_quota]").val();
             var type = $(this).find("input[class=option_type_input]").val();
+
             if($("input:radio[class=option_type_input]:checked").val()=='Checkbox')
             {
                 var specification = {price: $(this).find("input[name=checkbox_price]").val()};
@@ -191,13 +190,16 @@ function check_then_submit_form(event)
     {
         var event_accessibility = get_accessibility_infos();
         var event_accessibility_json = JSON.stringify(event_accessibility);
-        var event_accessibility_input = "<input type='hidden' name='event_accessibility_json' value='" + event_accessibility_json + "''>";
+        var event_accessibility_input = "<input type='hidden' name='event_accessibility_json'>";
+        $(event_accessibility_input).val(event_accessibility_json);
         $("#input_additions").append(event_accessibility_input);
+
         if($("input:radio[name=options]:checked").val()==1)
         {
-            option_details = get_options_infos();
-            option_details_json = JSON.stringify(option_details);
-            var option_details_input = "<input type='hidden' name='option_details_json' value='" + option_details_json + "'>";
+            var option_details = get_options_infos();
+            var option_details_json = JSON.stringify(option_details);
+            var option_details_input = $('<input type="hidden" name="option_details_json" >');
+            option_details_input.val(option_details_json);
             $("#input_additions").append(option_details_input);
         }
     }
