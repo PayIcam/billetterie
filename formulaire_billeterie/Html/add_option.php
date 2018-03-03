@@ -25,7 +25,7 @@ function add_option_html_code($option_number)
 
                                 <div class="form-group">
                                     <label for=<?= '"option_'.$option_number.'_quota"'; ?> >Quota de places disponibles pour votre option :</label>
-                                    <input type="number" min=0 class="form-control" name="option_quota" id=<?= '"option_'.$option_number.'_quota"'; ?> aria-describedby=<?= '"option_'.$option_number.'_quota_help"'; ?> placeholder="Nombre de places" required>
+                                    <input type="number" min=0 class="form-control" name="option_quota" id=<?= '"option_'.$option_number.'_quota"'; ?> aria-describedby=<?= '"option_'.$option_number.'_quota_help"'; ?> placeholder="Nombre de places">
                                     <small id=<?= '"option_'.$option_number.'_quota_help"'; ?> class="form-text text-muted">Il ne sera pas possible de dépasser ce quota, cette option se bloquera automatiquement une fois ce nombre atteint.</small>
                                 </div>
 

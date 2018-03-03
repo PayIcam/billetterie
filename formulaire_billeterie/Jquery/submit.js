@@ -51,11 +51,6 @@ function check_then_submit_form(event)
                 add_error('L\'option ' + option_name + ' est incomplète : La description de l\'option n\'est pas définie');
                 form_is_correct = 0;
             }
-            if($(this).find("input[name=option_quota]").val()=='')
-            {
-                add_error('L\'option ' + option_name + ' est incomplète : Le quota de l\'option n\'est pas défini');
-                form_is_correct = 0;
-            }
             if(!$(this).find("input[class=option_type_input]").is(":checked"))
             {
                 add_error('L\'option ' + option_name + ' est incomplète : Vous n\'avez pas coché le type de l\'option');
