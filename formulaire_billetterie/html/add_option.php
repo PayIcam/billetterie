@@ -34,7 +34,7 @@ function add_option_html_code($option_number, $option=null, $option_specificatio
                                     <label class="radio-inline"><input <?= isset($option['is_active']) ? ($option['is_active']==1 ? 'checked' : '') : '' ?> type="radio" class="option_active_input" name=<?= '"option_'.$option_number.'_is_active"'; ?> value=1 required>Oui</label>
                                     <label class="radio-inline"><input <?= isset($option['is_active']) ? ($option['is_active']==0 ? 'checked' : '') : '' ?> type="radio" class="option_active_input" name=<?= '"option_'.$option_number.'_is_active"'; ?> value=0>Non</label>
                                 </div>
-                                <small id=<?= '"option_'.$option_number.'_is_active_help"'; ?> >Vous pouvez cliquer sur "Non" le temps de préparer votre option, et le rendre actif au moment venu. Si vous n'avez pas coché le "Oui", mais que la billeterie est active, alors l'option ne sera pas proposée. Si vous avez prévu d'activer votre option dès l'ouverture de la billeterie, activez le dès maintenant ;)</small><br><br>
+                                <small id=<?= '"option_'.$option_number.'_is_active_help"'; ?> >Vous pouvez cliquer sur "Non" le temps de préparer votre option, et le rendre actif au moment venu. Si vous n'avez pas coché le "Oui", mais que la billetterie est active, alors l'option ne sera pas proposée. Si vous avez prévu d'activer votre option dès l'ouverture de la billetterie, activez le dès maintenant ;)</small><br><br>
 
                                 <label>Quel est le type de l'option que vous proposez ?</label>
                                 <div class="form-check" aria-describedby=<?= '"option_'.$option_number.'_type_help"'; ?> >
@@ -155,6 +155,11 @@ function add_option_html_code($option_number, $option=null, $option_specificatio
 
                                 <button type="button" class="btn btn-info option_accessibility_restart">Réinitialiser les promos ayant accès à l'option</button>
 
+                                <?php if(isset($option))
+                                {
+                                    echo '<input class="option_id_value" value="'.$option['option_id'].'" name="option_'.$option_number.'_id" type="hidden" >';
+                                }
+                                ?>
                             </div>
                         </div>
                     </div>

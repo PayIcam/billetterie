@@ -6,21 +6,19 @@ function initialisation_formulaire()
 {
     function prepare_accessibility_add_buttons(type)
     {
-        $("#ajout_" + type).click(function()//Fait référence au bouton "Ajouter ce/ces sites"
-            {
-                $("#specific_message").children().remove();//On vire les messages affichés auparavant pour pas en avoir une blinde.
-                prepare_event_accessibility_row_addition(type);
-                $("#options .option_accessibility .option_accessibility_restart").click();//On restart toutes les accessibilités des options, vu qu'on ajoute une promo.
-            }
-        );
+        $("#ajout_" + type).click(function()//Fait référence au bouton "Ajouter ce/ces sites/promos"
+        {
+            $("#specific_message").children().remove();//On vire les messages affichés auparavant pour pas en avoir une blinde.
+            prepare_event_accessibility_row_addition(type);
+            $("#options .option_accessibility .option_accessibility_restart").click();//On restart toutes les accessibilités des options, vu qu'on ajoute une promo.
+        });
     }
 
     $("form")[0].reset(); //On reset le formulaire, pour ne pas garder les infos dans le cache du navigateur.
 
     $("#specific_message").hide();//On cache le div contenant de futurs messages d'erreurs.
     $("#table_row_example").hide();//On cache l'example servant uniquement à être cloné et afficher les infos sur les promos venant dans le tableau
-    $("#graduated").hide();
-    // $("#graduated #graduated_promos_infos").hide();//On cache le select contenant toutes les promos des diplomés ayant encore PI. (il sera cloné)
+    $("#graduated").hide();//On cache le select contenant toutes les promos des diplomés ayant encore PI. (il sera cloné)
 
     $("#options").hide();//On cache la partie traitant des options
     $("#submit_form_div").hide();//On cache le bouton de submit
@@ -30,6 +28,16 @@ function initialisation_formulaire()
     {
         $(this).attr('size', $(this).children("option").length);
     });//On définit pile la taille qu'il faut à tous les select de type multiple.
+
+    $(".availability #specification_table tbody tr").children(":nth-child(7)").children().click(function()
+    {
+        var confirm_delete = window.confirm("Voulez vous vraiment supprimer cette promo ? ");
+        if(confirm_delete)
+        {
+            $(this).parent().parent().remove();
+            $("#options .option_accessibility .option_accessibility_restart").click();
+        }
+    });
 
     question_change();
 
@@ -49,7 +57,6 @@ function arrondi_centieme(nombre)
 {
     return Math.round(100*nombre)/100;
 }
-
 /**
  * * Fonction appelée sur un trigger de la fonction change sur les input du formulaire dans la première partie.
  *
@@ -95,7 +102,8 @@ function question_change()
             $("#table_availabilities #specification_table tbody tr :nth-child(6)").click(function()
             {
                 var current_value =$(this).text();
-                $(this).html("<input class='form-control' min=0 type='number' value='" + current_value + "' >");
+                $(this).html("<input class='form-control' min=0 type='number'>");
+                $(this).children().val(current_value);
                 $(this).children().focus();
                 $(this).children().blur(function()
                     {

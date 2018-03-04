@@ -1,5 +1,12 @@
 <?php
 
+function insert_as_select_option($array_to_insert)
+{
+    foreach ($array_to_insert as $element)
+    {
+        echo '<option>'. $element[0] .'</option>';
+    }
+}
 function connect_to_db($conf)
 {
     try
@@ -70,7 +77,7 @@ function insert_select_options($option_specifications)
     foreach($option_specifications as $option_specification)
     {
         ?>
-        <option><?= $option_specification->name . '(' . $option_specification->price . '€)' ?></option>
+        <option><?= $option_specification->name . '(' . $option_specification->price . ')' ?></option>
         <?php
     }
 }
@@ -117,7 +124,7 @@ function get_event_radio_values($promos_specifications)
         {
             $guests = 1;
         }
-        elseif(get_promo_name($promo_specifications['promo_id']) == 'permanents')
+        elseif(get_promo_name($promo_specifications['promo_id']) == 'Permanents')
         {
             $permanents = 1;
         }
@@ -149,24 +156,29 @@ function get_sites()
     $sites = $sites->fetchAll();
     return $sites;
 }
-function insert_as_select_option($array_to_insert)
-{
-    foreach ($array_to_insert as $element)
-    {
-        echo '<option>'. $element[0] .'</option>';
-    }
-}
 function insert_event_details($table_event_data)
 {
     global $db;
     $event_insertion = $db->prepare('INSERT INTO events(name, description, is_active, has_guests, ticketing_start_date, ticketing_end_date, total_quota) VALUES (:name, :description, :is_active, :has_guests, :ticketing_start_date, :ticketing_end_date, :total_quota)');
     return $event_insertion->execute($table_event_data);
 }
+function update_event_details($table_event_data)
+{
+    global $db;
+    $event_update = $db->prepare('UPDATE events SET name = :name, description = :description, is_active = :is_active, has_guests = :has_guests, ticketing_start_date = :ticketing_start_date, ticketing_end_date = :ticketing_end_date, total_quota = :total_quota WHERE event_id = :event_id');
+    return $event_update->execute($table_event_data);
+}
 function insert_specification_details($table_specification_data)
 {
     global $db;
     $specification_insertion = $db->prepare('INSERT INTO promos_site_specifications(event_id, site_id, promo_id, price, quota, guest_number) VALUES (:event_id, :site_id, :promo_id, :price, :quota, :guest_number)');
     return $specification_insertion->execute($table_specification_data);
+}
+function delete_specification_details($event_id)
+{
+    global $db;
+    $specification_deletion = $db->prepare('DELETE FROM promos_site_specifications WHERE event_id = :event_id');
+    return $specification_deletion->execute(array("event_id" => $event_id));
 }
 function get_promo_id($name)
 {
@@ -209,9 +221,34 @@ function insert_option($table_option_data)
     $option_insertion = $db->prepare('INSERT INTO options(name, description, is_active, is_mandatory, type, quota, specifications, event_id) VALUES (:name, :description, :is_active, :is_mandatory, :type, :quota, :specifications, :event_id)');
     return $option_insertion->execute($table_option_data);
 }
+function update_option($table_option_data)
+{
+    global $db;
+    $option_update = $db->prepare('UPDATE options SET name= :name, description= :description, is_active= :is_active, is_mandatory= :is_mandatory, type= :type, quota= :quota, specifications= :specifications, event_id= :event_id WHERE event_id= :event_id and option_id= :option_id');
+    return $option_update->execute($table_option_data);
+}
+function delete_option($ids)
+{
+    global $db;
+    $option_deletion = $db->prepare('DELETE FROM options WHERE event_id= :event_id and option_id= :option_id');
+    return $option_deletion->execute($ids);
+}
+function get_options_from_event($event_id)
+{
+    global $db;
+    $option_ids = $db->prepare('SELECT option_id FROM options where event_id = :event_id');
+    $option_ids->execute(array("event_id"=>$event_id));
+    return $option_ids->fetchAll();
+}
 function insert_option_accessibility($option_accessibility)
 {
     global $db;
     $option_accessibility_insertion = $db->prepare('INSERT INTO promo_site_has_options VALUES (:event_id, :site_id, :promo_id, :option_id)');
     return $option_accessibility_insertion->execute($option_accessibility);
+}
+function delete_previous_option_accessibility($id)
+{
+    global $db;
+    $option_accessibility_deletion = $db->prepare('DELETE FROM promo_site_has_options WHERE event_id = :event_id');
+    return $option_accessibility_deletion->execute($id);
 }

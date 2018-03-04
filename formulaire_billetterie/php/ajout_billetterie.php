@@ -27,34 +27,15 @@ if(isset($_POST))
     $event_promos = json_decode($event_accessibility_json);
     foreach($event_promos as $promo_data)
     {
-        if($promo_data->site=='Tous')
-        {
-            $sites_id = get_sites_id();
-            foreach($sites_id as $site_id)
-            {
-                $table_specifications = array(
-                    "event_id" => $event_id,
-                    "site_id" => $site_id['site_id'],
-                    "promo_id" => get_promo_id($promo_data->promo),
-                    "price" => $promo_data->price,
-                    "quota" => $promo_data->quota,
-                    "guest_number" => $promo_data->guest_number
-                    );
-                insert_specification_details($table_specifications);
-            }
-        }
-        else
-        {
-            $table_specifications = array(
-                "event_id" => $event_id,
-                "site_id" => get_site_id($promo_data->site),
-                "promo_id" => get_promo_id($promo_data->promo),
-                "price" => $promo_data->price,
-                "quota" => $promo_data->quota,
-                "guest_number" => $promo_data->guest_number
-                );
-            insert_specification_details($table_specifications);
-        }
+        $table_specifications = array(
+            "event_id" => $event_id,
+            "site_id" => get_site_id($promo_data->site),
+            "promo_id" => get_promo_id($promo_data->promo),
+            "price" => $promo_data->price,
+            "quota" => $promo_data->quota,
+            "guest_number" => $promo_data->guest_number
+            );
+        insert_specification_details($table_specifications);
     }
 
     //just for checking

@@ -2,9 +2,9 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <meta name="description" content="Cette page Web a pour but de définir les informations propres à la billeterie, à l'aide d'un formulaire. Une fois ce fait, il est possible d'éditer ces informations, et de lancer la billeterie.">
+    <meta name="description" content="Cette page Web a pour but de définir les informations propres à la billetterie, à l'aide d'un formulaire. Une fois ce fait, il est possible d'éditer ces informations, et de lancer la billetterie.">
 
-    <title> Définissez votre billeterie ! </title>
+    <title> Définissez votre billetterie ! </title>
 
     <link rel="stylesheet" type="text/css" href="fonts/css/format.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -21,23 +21,23 @@
 <body>
     <div class="container">
         <div class="jumbotron text-center">
-            <h1> Créez une billeterie </h1>
+            <h1> Créez une billetterie </h1>
             <br>
-            <h2> Définissez la billeterie que vous souhaitez utiliser, et présentez brièvement votre évènement ! </h2> <br>
+            <h2> Définissez la billetterie que vous souhaitez utiliser, et présentez brièvement votre évènement ! </h2> <br>
 
             <p class="text-justify">
-                Vous pouvez créer une billeterie sur PayIcam pour votre évènement. <br>
-                La billeterie est prévue pour des évènements de taille relativement importante, évènements qui sont trop évolués pour être inclus dans le Shotgun. <br>
+                Vous pouvez créer une billetterie sur PayIcam pour votre évènement. <br>
+                La billetterie est prévue pour des évènements de taille relativement importante, évènements qui sont trop évolués pour être inclus dans le Shotgun. <br>
                 Contactez nous pour bien remplir les informations et ne pas faire d'erreurs ! <br>
                 <br>
                 Vous pourrez toujours éditer les informations contenues dans le formualire après l'avoir créé. <br>
-                Evitez par contre d'éditer les informations une fois la billeterie lancée sans maitriser ce que vous faites. <br>
+                Evitez par contre d'éditer les informations une fois la billetterie lancée sans maitriser ce que vous faites. <br>
             </p>
         </div>
 
         <br>
 
-        <form method="post" action="php/<?= isset($event) ? 'edit_billeterie.php?event_id='.$event_id : 'ajout_billeterie.php' ?>">
+        <form method="post" action="php/<?= isset($event) ? 'edit_billetterie.php?event_id='.$event_id : 'ajout_billetterie.php' ?>">
 
             <div class="general_infos">
 
@@ -63,20 +63,20 @@
                     <div class='form-group'>
                         <label for="ticketing_start_date">Début des inscriptions :</label>
                         <div class='input-group date' id='start_date_div'>
-                            <input value="<?= $event['ticketing_start_date'] ?? '' ?>" type='text' class="form-control" name="ticketing_start_date" id="ticketing_start_date" aria-describedby="ticketing_start_date_help" placeholder="Ouverture de la billeterie" required>
+                            <input value="<?= $event['ticketing_start_date'] ?? '' ?>" type='text' class="form-control" name="ticketing_start_date" id="ticketing_start_date" aria-describedby="ticketing_start_date_help" placeholder="Ouverture de la billetterie" required>
                             <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                         </div>
-                        <small id="ticketing_start_date_help" class="form-text text-muted">A la date indiquée, la billeterie de votre évènement deviendra ouverte au public ciblé automatiquement.</small>
+                        <small id="ticketing_start_date_help" class="form-text text-muted">A la date indiquée, la billetterie de votre évènement deviendra ouverte au public ciblé automatiquement.</small>
                     </div>
                     <div class='form-group'>
                         <label for="ticketing_end_date">Fin des inscriptions :</label>
                         <div class='input-group date' id='end_date_div'>
-                            <input value="<?= $event['ticketing_end_date'] ?? '' ?>" type='text' class="form-control" name="ticketing_end_date" id="ticketing_end_date" aria-describedby="ticketing_end_date_help" placeholder="Fermeture de la billeterie" required>
+                            <input value="<?= $event['ticketing_end_date'] ?? '' ?>" type='text' class="form-control" name="ticketing_end_date" id="ticketing_end_date" aria-describedby="ticketing_end_date_help" placeholder="Fermeture de la billetterie" required>
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
                         </div>
-                        <small id="ticketing_end_date_help" class="form-text text-muted">A la date indiquée, la billeterie de votre évènement deviendra ouverte au public ciblé automatiquement.</small>
+                        <small id="ticketing_end_date_help" class="form-text text-muted">A la date indiquée, la billetterie de votre évènement deviendra ouverte au public ciblé automatiquement.</small>
                     </div>
                 </div>
                 <script type="text/javascript">
@@ -112,8 +112,8 @@
 
                 <div class="form-group">
                     <input id="event_is_active" name="event_is_active" type="checkbox" data-toggle="toggle" data-on="Activer" data-off="Désactiver" aria-describedby="event_is_active_help" value=1>
-                    <label for="event_is_active">Activer votre billeterie dès maintenant ?</label><br>
-                    <small id="event_is_active_help">Vous pouvez laisser ce bouton décoché le temps de préparer votre billeterie, et le rendre actif au moment venu. Attention, ce bouton est prioritaire sur la date d'activation de votre billeterie. Pour qu'il soit possible de s'inscrire, il faut être entre les deux dates ET que ce bouton soit coché.</small>
+                    <label for="event_is_active">Activer votre billetterie dès maintenant ?</label><br>
+                    <small id="event_is_active_help">Vous pouvez laisser ce bouton décoché le temps de préparer votre billetterie, et le rendre actif au moment venu. Attention, ce bouton est prioritaire sur la date d'activation de votre billetterie. Pour qu'il soit possible de s'inscrire, il faut être entre les deux dates ET que ce bouton soit coché.</small>
                     <?php if(isset($event['is_active']))
                     {
                         if ($event['is_active']==1)
@@ -210,7 +210,7 @@
                                         <option disabled> Choisissez les sites qui participent à votre évènement </option>
                                         <?php insert_as_select_option($sites); ?><!--On récupère la liste des sites grâce à un petit bout de php-->
                                     </select>
-                                    <small id="site_choice_help" class="form-text text-muted"> Les sites renseignés ici auront accès à la billeterie de votre évènement. <br> PS: Utilisez Ctrl pour sélectionner plusieurs options, ou laissez le bouton de la souris appuyé, puis déplacez là.</small>
+                                    <small id="site_choice_help" class="form-text text-muted"> Les sites renseignés ici auront accès à la billetterie de votre évènement. <br> PS: Utilisez Ctrl pour sélectionner plusieurs options, ou laissez le bouton de la souris appuyé, puis déplacez là.</small>
 
                                     <br><br>
 
@@ -254,7 +254,7 @@
                                             <option disabled> Choisissez les promos qui participent à votre évènement (indépendamment de leur site) </option>
                                             <?php insert_as_select_option($student_promos); ?>
                                         </select>
-                                        <small id="promo_choice_help" class="form-text text-muted"> Les promos renseignées ici auront accès à la billeterie de votre évènement. Attention, ce sera valable pour tous les sites. <br>PS: Utilisez Ctrl pour sélectionner plusieurs options, ou laissez le bouton de la souris appuyé, puis déplacez là.</small>
+                                        <small id="promo_choice_help" class="form-text text-muted"> Les promos renseignées ici auront accès à la billetterie de votre évènement. Attention, ce sera valable pour tous les sites. <br>PS: Utilisez Ctrl pour sélectionner plusieurs options, ou laissez le bouton de la souris appuyé, puis déplacez là.</small>
                                     </div>
 
 
@@ -364,12 +364,13 @@
             </div>
 
             <div id="submit_form_div" class="text-center"><!--Basique, c'est notre bouton de submit, il ne s'affiche pas dès le début d'ailleurs cf JS -->
-                <button id="submit_form" class="btn btn-success" type="submit">Créez votre évènement !</button>
+                <button id="submit_form" class="btn btn-success" type="submit"><?= isset($event) ? 'Editez ' : 'Créez ' ?>votre évènement !</button>
             </div>
 
             <div id="erreurs_submit"></div><!--On va mettre ici des erreurs qui s'affichent si on a mal submit -->
 
-            <div id="input_additions"></div><!--On va mettre ici des inputs hidden juste avant d'envoyer les données. Ils contiennent des données grâce au JSON.stringify(). -->
+            <div id="input_additions">
+            </div><!--On va mettre ici des inputs hidden juste avant d'envoyer les données. Ils contiennent des données grâce au JSON.stringify(). -->
         </form>
     </div>
 
@@ -377,6 +378,24 @@
     <script src="jquery/event_functions.js"></script>
     <script src="jquery/option_functions.js"></script>
     <script src="jquery/formulaire.js"></script>
-
+    <script src="jquery/edit.js"></script>
+    <script>
+        $(document).ready(function()
+        {
+            <?php
+            if(isset($event))
+            {?>
+                edit_no_options_action();
+                <?php
+                if(isset($options))
+                {
+                    ?>
+                    attach_option_events();
+                    edit_options_action();
+                    <?php
+                }
+            }?>
+        });
+    </script>
 </body>
 </html>

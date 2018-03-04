@@ -83,7 +83,6 @@ function attach_option_events()
         $("<td></td>").text(price+'€').appendTo(row);
         $("<td></td>").text(quota).appendTo(row);
 
-
         var delete_button = $("<td></td>").html('<button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>')//Comme d'hab, un bouton servant à supprimer la ligne
         delete_button.children().click(function()
         {

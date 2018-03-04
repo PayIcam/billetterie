@@ -25,12 +25,12 @@ function check_then_submit_form(event)
         }
         if($('input[name=ticketing_start_date]').val()=='')
         {
-            add_error('La date d\'ouverture de votre billeterie n\'est pas définie...');
+            add_error('La date d\'ouverture de votre billetterie n\'est pas définie...');
             form_is_correct = 0;
         }
         if($('input[name=ticketing_end_date]').val()=='')
         {
-            add_error('La date de fermeture de votre billeterie n\'est pas définie...');
+            add_error('La date de fermeture de votre billetterie n\'est pas définie...');
             form_is_correct = 0;
         }
         if($('#specification_table tbody tr').length==0)
@@ -170,7 +170,9 @@ function check_then_submit_form(event)
 
             var option_accessibility = get_option_accessibility_info($(this).find('.option_accessibility_table tbody tr'));//Affichée ou non, elle est tt le tps correcte
 
-            var option = {name: name, description: description, quota: quota, is_active: is_active, is_mandatory: is_mandatory, type: type, type_specification: specification, accessibility: option_accessibility};
+            var option_id = $(this).find(".option_id_value").val();
+
+            var option = {option_id: option_id, name: name, description: description, quota: quota, is_active: is_active, is_mandatory: is_mandatory, type: type, type_specification: specification, accessibility: option_accessibility};
             options.push(option);
         });
         return options;
