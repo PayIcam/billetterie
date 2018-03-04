@@ -37,7 +37,7 @@
 
         <br>
 
-        <form method="post" action="php/ajout_billeterie.php">
+        <form method="post" action="php/<?= isset($event) ? 'edit_billeterie.php?event_id='.$event_id : 'ajout_billeterie.php' ?>">
 
             <div class="general_infos">
 
@@ -45,17 +45,17 @@
 
                 <div class="form-group">
                     <label for="event_name">Nom de votre évènement :</label>
-                    <input type="text" class="form-control" name="event_name" id="event_name" placeholder="Nom de l'évènement" autofocus required>
+                    <input value="<?= $event['name'] ?? '' ?>" type="text" class="form-control" name="event_name" id="event_name" placeholder="Nom de l'évènement" autofocus required>
                 </div>
 
                 <div class="form-group">
                     <label for="event_description">Description de votre évènement :</label>
-                    <textarea class="form-control" name="event_description" id="event_description" placeholder="Descrivez rapidement votre évènement" required></textarea>
+                    <textarea class="form-control" name="event_description" id="event_description" placeholder="Descrivez rapidement votre évènement" required><?= $event['description'] ?? '' ?></textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="event_quota">Quota de places disponibles pour votre évènement :</label>
-                    <input type="number" min=0 class="form-control" name="event_quota" id="event_quota" aria-describedby="quota_place_help" placeholder="Nombre de places" required>
+                    <input value="<?= $event['total_quota'] ?? '' ?>" type="number" min=0 class="form-control" name="event_quota" id="event_quota" aria-describedby="quota_place_help" placeholder="Nombre de places" required>
                     <small id="quota_place_help" class="form-text text-muted">Il ne sera pas possible de dépasser ce quota, les inscriptions se bloqueront automatiquement une fois ce nombre atteint.</small>
                 </div>
 
@@ -63,7 +63,7 @@
                     <div class='form-group'>
                         <label for="ticketing_start_date">Début des inscriptions :</label>
                         <div class='input-group date' id='start_date_div'>
-                            <input type='text' class="form-control" name="ticketing_start_date" id="ticketing_start_date" aria-describedby="ticketing_start_date_help" placeholder="Ouverture de la billeterie" required>
+                            <input value="<?= $event['ticketing_start_date'] ?? '' ?>" type='text' class="form-control" name="ticketing_start_date" id="ticketing_start_date" aria-describedby="ticketing_start_date_help" placeholder="Ouverture de la billeterie" required>
                             <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                         </div>
                         <small id="ticketing_start_date_help" class="form-text text-muted">A la date indiquée, la billeterie de votre évènement deviendra ouverte au public ciblé automatiquement.</small>
@@ -71,7 +71,7 @@
                     <div class='form-group'>
                         <label for="ticketing_end_date">Fin des inscriptions :</label>
                         <div class='input-group date' id='end_date_div'>
-                            <input type='text' class="form-control" name="ticketing_end_date" id="ticketing_end_date" aria-describedby="ticketing_end_date_help" placeholder="Fermeture de la billeterie" required>
+                            <input value="<?= $event['ticketing_end_date'] ?? '' ?>" type='text' class="form-control" name="ticketing_end_date" id="ticketing_end_date" aria-describedby="ticketing_end_date_help" placeholder="Fermeture de la billeterie" required>
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
@@ -114,6 +114,13 @@
                     <input id="event_is_active" name="event_is_active" type="checkbox" data-toggle="toggle" data-on="Activer" data-off="Désactiver" aria-describedby="event_is_active_help" value=1>
                     <label for="event_is_active">Activer votre billeterie dès maintenant ?</label><br>
                     <small id="event_is_active_help">Vous pouvez laisser ce bouton décoché le temps de préparer votre billeterie, et le rendre actif au moment venu. Attention, ce bouton est prioritaire sur la date d'activation de votre billeterie. Pour qu'il soit possible de s'inscrire, il faut être entre les deux dates ET que ce bouton soit coché.</small>
+                    <?php if(isset($event['is_active']))
+                    {
+                        if ($event['is_active']==1)
+                        {
+                            ?> <script> $("#event_is_active").click(); </script> <?php
+                        }
+                    }?>
                 </div>
 
             </div>
@@ -128,26 +135,26 @@
 
                     <label>Autorisez vous l'accès de votre évènement aux promos diplomées ayant toujours un compte PayIcam?</label>
                     <div class="form-check"><!--Si on dit oui, on pourra choisir parmi une liste de promos de diplômés ayant accès à PI-->
-                        <label class="radio-inline"><input type="radio" name="graduated_icam" value=1 required>Oui</label>
-                        <label class="radio-inline"><input type="radio" name="graduated_icam" value=0>Non</label>
+                        <label class="radio-inline"><input <?= isset($event_radios['graduated']) ? ($event_radios['graduated']==1 ? 'checked' : '') : '' ?> type="radio" name="graduated_icam" value=1 required>Oui</label>
+                        <label class="radio-inline"><input <?= isset($event_radios['graduated']) ? ($event_radios['graduated']==0 ? 'checked' : '') : '' ?> type="radio" name="graduated_icam" value=0>Non</label>
                     </div>
                     <br>
                     <label>Autorisez vous l'accès de votre évènement aux permanents?</label>
                     <div class="form-check"><!--Si on dit oui, on accepte tous les permanents, la ligne apparait dans le tableau ci dessous, plus qu'à edit-->
-                        <label class="radio-inline"><input type="radio" name="permanents" value=1 required>Oui</label>
-                        <label class="radio-inline"><input type="radio" name="permanents" value=0>Non</label>
+                        <label class="radio-inline"><input <?= isset($event_radios['permanents']) ? ($event_radios['permanents']==1 ? 'checked' : '') : '' ?> type="radio" name="permanents" value=1 required>Oui</label>
+                        <label class="radio-inline"><input <?= isset($event_radios['permanents']) ? ($event_radios['permanents']==0 ? 'checked' : '') : '' ?> type="radio" name="permanents" value=0>Non</label>
                     </div>
                     <br>
                     <label>Est-il possible d'inviter des personnes extérieures?</label>
                     <div class="form-check"><!--Si on clique sur oui, on peux définir le nombre d'invités par promo, sinon, il vaut 0-->
-                        <label class="radio-inline"><input type="radio" name="guests" value=1 required>Oui</label>
-                        <label class="radio-inline"><input type="radio" name="guests" value=0>Non</label>
+                        <label class="radio-inline"><input <?= isset($event_radios['guests']) ? ($event_radios['guests']==1 ? 'checked' : '') : '' ?> type="radio" name="guests" value=1 required>Oui</label>
+                        <label class="radio-inline"><input <?= isset($event_radios['guests']) ? ($event_radios['guests']==0 ? 'checked' : '') : '' ?> type="radio" name="guests" value=0>Non</label>
                     </div><!--ça ajoute aussi une promo invités pour définir leur prix et quotas (ils peuvent pas avoir d'invités par contre mdr)-->
                     <br>
                     <label>Proposez vous des options facultatives, gratuites ou payantes ?</label>
                     <div class="form-check"><!--Si on clique sur Oui, on affiche en dynamique les options en bas-->
-                        <label class="radio-inline"><input type="radio" name="options" value=1 required>Oui</label>
-                        <label class="radio-inline"><input type="radio" name="options" value=0>Non</label>
+                        <label class="radio-inline"><input <?= isset($event_radios['options']) ? ($event_radios['options']==1 ? 'checked' : '') : '' ?> type="radio" name="options" value=1 required>Oui</label>
+                        <label class="radio-inline"><input <?= isset($event_radios['options']) ? ($event_radios['options']==0 ? 'checked' : '') : '' ?> type="radio" name="options" value=0>Non</label>
                     </div>
                     <br>
 
@@ -182,6 +189,7 @@
                                     </tr>
                                 </thead>
                                 <tbody><!--Le tbody va se remplir dynamiquement grâce à Jquery, pas d'inquiétudes-->
+                                    <?php isset($promos_specifications) ? insert_event_accessibility_rows($promos_specifications) : '' ?>
                                 </tbody>
                             </table>
 
@@ -350,7 +358,9 @@
 
                 <button type="button" class="btn btn-success" id="add_option_button"><span class="glyphicon glyphicon-plus" title="Ajoutez une option"></span></button><!--Petit bouton sympa permettant d'ajouter une option à la main.-->
 
-                <div class="panel-group" id="option_accordion"></div><!--On va avoir TOUTES nos options ici, on les ajoute avec un peu d'AJAX-->
+                <div class="panel-group" id="option_accordion">
+                    <?php isset($options) ? add_options_previously_defined($options) : '' ?>
+                </div><!--On va avoir TOUTES nos options ici, on les ajoute avec un peu d'AJAX-->
             </div>
 
             <div id="submit_form_div" class="text-center"><!--Basique, c'est notre bouton de submit, il ne s'affiche pas dès le début d'ailleurs cf JS -->
