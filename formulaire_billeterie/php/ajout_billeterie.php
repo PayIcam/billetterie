@@ -69,10 +69,6 @@ if(isset($_POST))
         $options = json_decode($options_json);
         foreach($options as $option)
         {
-            var_dump($option);
-            var_dump($option->type_specification);
-            var_dump($option->accessibility);
-
             $quota = ($option->quota=='') ? null : $option->quota;
 
             $table_option_data = array(

@@ -13,6 +13,121 @@ function connect_to_db($conf)
         die('erreur:'.$e->getMessage());
     }
 }
+function insert_event_accessibility_rows($promos_specifications)
+{
+    $numero = 1;
+    foreach($promos_specifications as $promo_specifications)
+    {
+        ?>
+        <tr>
+            <th><?= $numero ?></th>
+            <td><?= get_site_name($promo_specifications['site_id']) ?></td>
+            <td><?= get_promo_name($promo_specifications['promo_id']) ?></td>
+            <td><?= $promo_specifications['price']?></td>
+            <td><?= $promo_specifications['quota']?></td>
+            <td><?= $promo_specifications['guest_number']?></td>
+            <td><button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></td>
+        </tr>
+        <?php
+        $numero+=1;
+    }
+}
+function insert_option_accessibility_rows($promo_options)
+{
+    $numero = 1;
+    foreach($promo_options as $promo_option)
+    {
+        ?>
+        <tr>
+            <th><?= $numero ?></th>
+            <td><?= get_site_name($promo_option['site_id']) ?></td>
+            <td><?= get_promo_name($promo_option['promo_id']) ?></td>
+            <td><button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></td>
+        </tr>
+        <?php
+        $numero+=1;
+    }
+}
+function insert_option_select_rows($option_specifications)
+{
+    $numero = 1;
+    foreach($option_specifications as $option_specification)
+    {
+        ?>
+        <tr>
+            <th><?= $numero ?></th>
+            <td><?= $option_specification->name ?></td>
+            <td><?= $option_specification->price ?></td>
+            <td><?= $option_specification->quota ?></td>
+            <td><button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></td>
+        </tr>
+        <?php
+        $numero+=1;
+    }
+}
+function insert_select_options($option_specifications)
+{
+    foreach($option_specifications as $option_specification)
+    {
+        ?>
+        <option><?= $option_specification->name . '(' . $option_specification->price . '€)' ?></option>
+        <?php
+    }
+}
+function add_options_previously_defined($options)
+{
+    global $db;
+    global $event_id;
+    global $promos_specifications;
+
+    $compteur=0;
+    foreach($options as $option)
+    {
+        $compteur++;
+
+        $promo_options_query = $db->prepare('SELECT * FROM promo_site_has_options WHERE event_id=:event_id and option_id=:option_id');
+        $promo_options_query->execute(array('event_id'=>$event_id, 'option_id'=>$option['option_id']));
+        $promo_options = $promo_options_query->fetchAll();
+
+        if(count($promo_options) == count($promos_specifications))
+        {
+            $all_opt = array("everyone_has_option" => 1);
+        }
+        else
+        {
+            $all_opt = array("everyone_has_option" => 0);
+        }
+        $option = array_merge($option, $all_opt);
+
+        $option_specifications = json_decode($option['specifications']);
+        add_option_html_code($compteur, $option, $option_specifications, $promo_options);
+    }
+}
+function get_event_radio_values($promos_specifications)
+{
+    $guests = 0;
+    $permanents = 0;
+    $graduated = 0;
+
+    global $list_graduated_promos;
+
+    foreach($promos_specifications as $promo_specifications)
+    {
+        if(get_promo_name($promo_specifications['promo_id']) == 'Invités')
+        {
+            $guests = 1;
+        }
+        elseif(get_promo_name($promo_specifications['promo_id']) == 'permanents')
+        {
+            $permanents = 1;
+        }
+        elseif(in_array(get_promo_name($promo_specifications['promo_id']), $list_graduated_promos))
+        {
+            $graduated = 1;
+        }
+    }
+    return array("guests" => $guests, "permanents" => $permanents, "graduated" => $graduated);
+}
 function get_student_promos()
 {
     global $db;
@@ -66,6 +181,20 @@ function get_site_id($name)
     $id = $db->prepare('SELECT site_id FROM sites WHERE site_name=:site_name');
     $id->execute(array("site_name" => $name));
     return $id->fetch()['site_id'];
+}
+function get_promo_name($id)
+{
+    global $db;
+    $name = $db->prepare('SELECT promo_name FROM promos WHERE promo_id=:promo_id');
+    $name->execute(array("promo_id" => $id));
+    return $name->fetch()['promo_name'];
+}
+function get_site_name($id)
+{
+    global $db;
+    $name = $db->prepare('SELECT site_name FROM sites WHERE site_id=:site_id');
+    $name->execute(array("site_id" => $id));
+    return $name->fetch()['site_name'];
 }
 function get_sites_id()
 {
