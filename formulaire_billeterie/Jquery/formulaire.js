@@ -1,1 +1,4 @@
-initialisation_formulaire();
+$(document).ready(function()
+{
+    initialisation_formulaire();
+});

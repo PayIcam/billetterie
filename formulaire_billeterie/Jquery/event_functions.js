@@ -354,7 +354,7 @@ function add_row(site, promo, price=0, quota='', guest_number=0)
 
     price = (price== '' | price<0 | isNaN(price)) ? 0 : arrondi_centieme(price);//On corrige les inputs avec du ternaire pour ne pas avoir de conneries.
     quota = (quota==0 | quota<0 | isNaN(quota)) ? '' : Math.round(quota);
-    guest_number = (guest_number== '' | guest_number<0 | isNaN(guest_number)) ? 0 : Math.round(guest_number);
+    guest_number = (guest_number== '' | guest_number<0 | isNaN(guest_number) | promo=='Invités') ? 0 : Math.round(guest_number);
 
     var table_body = $("#table_availabilities #specification_table tbody");
     var previous_row =$("#table_availabilities #specification_table tbody tr:last");//On récupère la ligne précédente dans la table AFFICHEE, celle dans laquelle on ajoute
