@@ -19,6 +19,11 @@ function initialisation_formulaire()
     $("#specific_message").hide();//On cache le div contenant de futurs messages d'erreurs.
     $("#table_row_example").hide();//On cache l'example servant uniquement à être cloné et afficher les infos sur les promos venant dans le tableau
     $("#graduated").hide();//On cache le select contenant toutes les promos des diplomés ayant encore PI. (il sera cloné)
+    $("#site_only_guest_number").fadeOut();
+    $("#promo_only_guest_number").fadeOut();
+    $("#site_and_promo_only_guest_number").fadeOut();
+    $("#graduated_only_guest_number").fadeOut();
+
 
     $("#options").hide();//On cache la partie traitant des options
     $("#submit_form_div").hide();//On cache le bouton de submit
