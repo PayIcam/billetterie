@@ -48,8 +48,14 @@ function get_event_details($event_id)
     global $db;
     $event_query = $db->prepare('SELECT * FROM events WHERE event_id=:event_id');
     $event_query->execute(array('event_id'=>$event_id));
-    $event = $event_query->fetch();
-    return $event;
+    return $event_query->fetch();
+}
+function get_all_events_id()
+{
+    global $db;
+    $event_query = $db->prepare('SELECT event_id FROM events');
+    $event_query->execute();
+    return $event_query->fetchAll();
 }
 function get_options($event_id)
 {
@@ -59,3 +65,4 @@ function get_options($event_id)
     $options = $option_query->fetchAll();
     return $options;
 }
+

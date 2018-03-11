@@ -43,10 +43,6 @@ if(isset($_GET['event_id']))
             echo "Vous n'avez pas accès à cet évènement. C'est une erreur qu'il vous soit apparu.";
         }
     }
-    else
-    {
-        echo "Aucun évènement ne correspond au Get spécifié.";
-    }
 }
 else
 {

@@ -44,10 +44,18 @@ function event_id_is_correct($event_id)
         global $db;
         $correct_id = $db->prepare('SELECT COUNT(*) matches FROM events WHERE event_id= :event_id');
         $correct_id->execute(array("event_id" => $event_id));
-        return $correct_id->fetch()['matches']==1 ? true : false;
+        $correct_id = $correct_id->fetch()['matches']==1 ? true : false;
+        $correct_id == 1 ? "" : "Cet event_id n'existe même pas";
+        return $correct_id;
+    }
+    elseif($event_id == "no_GET")
+    {
+        echo "L'event_id n'est pas spécifié en GET";
+        return false;
     }
     else
     {
+        echo "L'event_id spécifiée n'est même pas un entier.";
         return false;
     }
 }

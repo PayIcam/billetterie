@@ -12,10 +12,46 @@ if(isset($_POST))
 {
     var_dump($_POST);
 
-    $event_id = $_GET['event_id'];
+    $event_id = $_GET['event_id'] ?? "no_GET";
+    if(!event_id_is_correct($event_id))
+    {
+        die;
+    }
 
-    $icam_data = json_decode($_POST['icam_informations']);
-    $guests_data = json_decode($_POST['guests_informations']);
+    if(isset($_POST['icam_informations']))
+    {
+        $icam_data = json_decode_particular($_POST['icam_informations']);
+        if($icam_data!=false)
+        {
+            if(!is_correct_participant_data($icam_data, 'icam'))
+            {
+                die();
+            }
+        }
+    }
+    else
+    {
+        echo "Quelqu'un s'est débrouillé pour supprimer l'input de nom 'icam_informations'";
+    }
+
+    if(isset($_POST['guests_informations']))
+    {
+        $guests_data = json_decode_particular($_POST['guests_informations']);
+        if($guests_data!=false)
+        {
+            foreach($guests_data as $guest_data)
+            {
+                if(!is_correct_participant_data($guest_data, 'guest'))
+                {
+                    die();
+                }
+            }
+        }
+    }
+    else
+    {
+        echo "Quelqu'un s'est débrouillé pour supprimer l'input de nom 'guests_informations'";
+    }
 
     $icam_data->birthdate = $icam_data->birthdate == '' ? null : $icam_data->birthdate;
     $icam_data->telephone = $icam_data->telephone == '' ? null : $icam_data->telephone;
