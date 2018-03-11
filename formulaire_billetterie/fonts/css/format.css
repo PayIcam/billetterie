@@ -24,3 +24,21 @@ button[class="btn btn-danger"]
 {
     margin: 25px;
 }
+button[class='btn option_tooltip']
+{
+    padding: 0px;
+    margin: 0px;
+    height: 30px;
+    width: 30px;
+}
+.option_tooltip_glyph
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
+    font-size: 1.3em;
+}
+#registration_guests
+{
+    width: 95%;
+}
