@@ -1,14 +1,15 @@
 <?php
 
-require '../config.php';
-require 'php_functions.php';
+require '../../config.php';
+require '../../general_requires/db_functions.php';
+require '../../general_requires/display_functions.php';
+require 'requires/db_functions.php';
+require 'requires/controller_functions.php';
 
 $db = connect_to_db($_CONFIG['ticketing']);
 
 if(isset($_POST))
 {
-    var_dump($_POST);
-
     //Table events
     $table_event_data = array(
         "name" => $_POST['event_name'],
@@ -67,7 +68,6 @@ if(isset($_POST))
 
             foreach($option->accessibility as $promo_data)
             {
-                var_dump($promo_data);
                 if($promo_data->site=='Tous')
                 {
                     $sites_id = get_sites_id();
@@ -95,5 +95,9 @@ if(isset($_POST))
             }
         }
     }
+}
+else
+{
+    echo "Vous n'êtes pas censé ouvrir cette page directement.";
 }
 
