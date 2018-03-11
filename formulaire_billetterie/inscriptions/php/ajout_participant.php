@@ -35,6 +35,8 @@ if(isset($_POST))
     insert_icam_participant($icam_insertion_data);
     $icam_id = $db->lastInsertId();
 
+    participant_options_handling($event_id, $icam_id, $icam_data->options);
+
     if(count($guests_data)>0)
     {
         foreach($guests_data as $guest_data)
@@ -53,6 +55,9 @@ if(isset($_POST))
                 );
             insert_guest_participant($guest_insertion_data);
             $guest_id = $db->lastInsertId();
+            insert_icams_guest(array("event_id" => $event_id, "icam_id" => $icam_id, "guest_id" => $guest_id));
+
+            participant_options_handling($event_id, $guest_id, $guest_data->options);
         }
     }
 }

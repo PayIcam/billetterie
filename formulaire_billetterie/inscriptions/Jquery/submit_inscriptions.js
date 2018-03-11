@@ -14,6 +14,7 @@ function submit_inscriptions(submit)
             {
                 var id = $(this).find('input[name=option_id]').val();
                 var name = $(this).find('.option_name').text();
+
                 var option_price = parseFloat($(this).find('input[name=option_price]').val().slice(0));
 
                 if($(this).parent()[0] == $("#icam_options")[0])
@@ -24,7 +25,7 @@ function submit_inscriptions(submit)
                 {
                     total_guest_price+=option_price;
                 }
-                option = {id: id, type: 'checkbox', name: name, price: option_price};
+                option = {id: id, type: 'Checkbox', name: name, price: option_price};
                 options.push(option);
             }
         }
@@ -39,6 +40,9 @@ function submit_inscriptions(submit)
                 var regExp = /\(([0-9]+)€\)$/;
                 var option_price = parseFloat(regExp.exec(option_text)[1]);
 
+                var regExp_name = /(\([0-9]+€\))$/;
+                var name = selection_name.replace(regExp_name, '');
+
                 if($(this).parent()[0] == $("#icam_options")[0])
                 {
                     total_icam_price+=option_price;
@@ -48,7 +52,7 @@ function submit_inscriptions(submit)
                     total_guest_price+=option_price;
                 }
 
-                option = {id: id, type: 'select', name: selection_name, price: option_price};
+                option = {id: id, type: 'Select', name: name, price: option_price};
                 options.push(option);
             }
         }

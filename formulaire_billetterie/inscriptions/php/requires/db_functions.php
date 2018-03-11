@@ -63,3 +63,22 @@ function insert_guest_participant($icam_data)
     $icam_insertion = $db->prepare('INSERT INTO participants(prenom, nom, is_icam, price, birthdate, event_id, site_id, promo_id) VALUES (:prenom, :nom, :is_icam, :price, :birthdate, :event_id, :site_id, :promo_id)');
     return $icam_insertion->execute($icam_data);
 }
+function get_option($ids)
+{
+    global $db;
+    $option_query = $db->prepare('SELECT * FROM options WHERE event_id=:event_id and option_id=:option_id');
+    $option_query->execute($ids);
+    return $option_query->fetch();
+}
+function insert_icams_guest($ids)
+{
+    global $db;
+    $icams_guest = $db->prepare('INSERT INTO icam_has_guests VALUES (:event_id, :icam_id, :guest_id)');
+    return $icams_guest->execute($ids);
+}
+function insert_participant_option($option_data)
+{
+    global $db;
+    $option_query = $db->prepare('INSERT INTO participant_has_options VALUES (:event_id, :participant_id, :option_id, :option_details)');
+    return $option_query->execute($option_data);
+}
