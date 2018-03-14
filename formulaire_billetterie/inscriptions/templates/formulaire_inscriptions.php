@@ -6,7 +6,7 @@
 
     <title>Inscriptions : <?= $event['name'] ?></title>
 
-    <link rel="stylesheet" href="../fonts/css/format.css">
+    <link rel="stylesheet" href="../css/format.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
 
@@ -73,6 +73,17 @@
             <div id="hidden_inputs">
                 <input type="hidden" name="icam_informations">
                 <input type="hidden" name="guests_informations">
+                <input type="hidden" name="total_transaction_price">
+            </div>
+        </div>
+        <br><br>
+        <div id="recapitulatif" class="container">
+            <h3> Récapitulatif du coût de vos nouvelles réservations : <span id="total_price" class="badge" style="background-color:#428bca; font-size:0.8em;"> <?= isset($icam_event_data) ? 0 : $promo_specifications['price']?>€ </span> </h3>
+            <div id="recap_icam">
+                <h4>Pour vous même : <span id="icam_total_price" class="badge" style="background-color:#428bca; font-size:0.8em;"><?= isset($icam_event_data) ? 0 : $promo_specifications['price']?>€</span></h4>
+            </div>
+            <div id="recap_guests">
+                <h4>Pour vos invités : <span id="guests_total_prices" class="badge" style="background-color:#428bca; font-size:0.8em;">0€</span></h4>
             </div>
         </div>
         <div id="errors"></div>

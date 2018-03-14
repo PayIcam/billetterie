@@ -13,7 +13,7 @@ function get_promo_specification_details($promo_details)
     global $db;
     $promos_query = $db->prepare('SELECT * FROM promos_site_specifications WHERE event_id=:event_id and promo_id=:promo_id and site_id=:site_id');
     $promos_query->execute($promo_details);
-    return $promos_query->fetchAll()[0];
+    return current($promos_query->fetchAll());
 }
 
 function get_current_participants_number($event_id)
@@ -21,7 +21,7 @@ function get_current_participants_number($event_id)
     global $db;
     $count_promo = $db->prepare('SELECT COUNT(*) current_total_quota FROM participants WHERE event_id= :event_id');
     $count_promo->execute(array("event_id" => $event_id));
-    return count($count_promo->fetch()['current_total_quota']);
+    return $count_promo->fetch()['current_total_quota'];
 }
 function get_current_promo_quota($ids)
 {
@@ -35,6 +35,13 @@ function get_current_option_quota($ids)
     global $db;
     $count_promo = $db->prepare('SELECT COUNT(*) current_option_quota FROM participant_has_options WHERE event_id= :event_id and option_id= :option_id');
     $count_promo->execute($ids);
+    return $count_promo->fetch()['current_option_quota'];
+}
+function get_current_select_option_quota($data)
+{
+    global $db;
+    $count_promo = $db->prepare('SELECT COUNT(*) current_option_quota FROM participant_has_options WHERE event_id= :event_id and option_id= :option_id and option_details REGEXP :subname');
+    $count_promo->execute($data);
     return $count_promo->fetch()['current_option_quota'];
 }
 function event_id_is_correct($event_id)

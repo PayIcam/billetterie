@@ -31,6 +31,11 @@ if(isset($_GET['event_id']))
             if($current_participants_number < $total_quota)
             {
                 $options = get_options($event_id);
+
+                $guests_specifications = get_promo_specification_details(array('event_id' => $event_id, 'promo_id' => get_promo_id('Invités'), 'site_id' => $site_id));
+
+                $actual_guest_number = $promo_specifications['guest_number']>0 ? number_of_guests_to_be_displayed($promo_specifications, $guests_specifications, $current_participants_number, $total_quota) : 0;
+
                 require 'templates/formulaire_inscriptions.php';
             }
             else

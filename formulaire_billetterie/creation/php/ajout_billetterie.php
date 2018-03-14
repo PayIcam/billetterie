@@ -17,7 +17,7 @@ if(isset($_POST))
         "total_quota" => $_POST['event_quota'],
         "ticketing_start_date" => date('Y-m-d H:i:s', date_create_from_format('d/m/Y h:i a', $_POST['ticketing_start_date'])->getTimestamp()),//Jquery sends a weird format for dates, I have to specificate this format, then have to convert to Sql's one
         "ticketing_end_date" => date('Y-m-d H:i:s', date_create_from_format('d/m/Y h:i a', $_POST['ticketing_end_date'])->getTimestamp()),
-        "is_active" => isset($_POST['event_is_active']) ? 1:0,//Checkbox sends nothing on not ticked
+        "is_active" => $_POST['event_is_active'],
         "has_guests" => $_POST['guests']
         );
     insert_event_details($table_event_data);
