@@ -157,7 +157,9 @@ function check_then_submit_form(event)
             var quota = $(this).find("input[name=option_quota]").val();
             var type = $(this).find("input[class=option_type_input]:checked").val();
             var is_active = $(this).find(".option_active_input").val();
-            var is_mandatory = $(this).find(".select_option_mandatory_input").val();
+            var is_mandatory = $(this).find(".select_option_mandatory_input:checked").val();
+
+            event.preventDefault();
 
             if(type=='Checkbox')
             {
