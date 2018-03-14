@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="description" content="Cette page Web a pour but de permettre aux utilisateurs de PayIcam de s'inscrire à un évènement.">
 
-    <title>Inscriptions : <?= $event['name'] ?></title>
+    <title><?= isset($icam_event_data) ? 'Edition de votre réservation' : 'Inscriptions' ?> : <?= $event['name'] ?></title>
 
     <link rel="stylesheet" href="../css/format.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -29,7 +29,8 @@
                 $promo_quota = $promo_specifications['quota']=='' ? INF : $promo_specifications['quota'];
                 if(get_current_promo_quota(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id)) < $promo_quota)
                 {
-                    form_icam($event, $promo_specifications, $options);
+                    if(!isset($icam_event_data)){$icam_event_data = null;}
+                    form_icam($event, $promo_specifications, $options, $icam_event_data);
                 }
                 else
                 {
@@ -37,36 +38,21 @@
                 }
                 ?>
             </div>
+            <hr>
             <div id="registration_guests" class="container row">
                 <?php
-                if($promo_specifications['guest_number']>0)
+                for($i=1; $i<=$actual_guest_number; $i++)
                 {
-                    $guests_specifications = get_promo_specification_details(array('event_id' => $event_id, 'promo_id' => get_promo_id('Invités'), 'site_id' => $site_id));
-
-                    $temporary_guest_number = ($total_quota-$current_participants_number > $promo_specifications['guest_number'] ) ? $promo_specifications['guest_number'] : $total_quota-$current_participants_number;
-                    $temporary_guest_number = $temporary_guest_number>=0 ? $temporary_guest_number : 0;
-
-                    if($temporary_guest_number<$promo_specifications['guest_number'])
+                    if(!isset($guests_event_data)){$guests_event_data = null;}
+                    if($i<=count($guests_event_data))
                     {
-                        echo "Il n'y a pas assez de places encore disponibles pour tout l'évènement pour que vous ayez tous les invités que vous êtes censés avoir avec la promotion ". get_promo_name($promo_id). ".<br>";
+                        $guest_event_data = $guests_event_data[$i-1];
                     }
-
-                    $guest_quota = $guests_specifications['quota'];
-                    $current_guests_number = get_current_promo_quota(array('event_id' => $event_id, 'promo_id' => get_promo_id('Invités'), 'site_id' => $site_id));
-
-                    $actual_guest_number = ($guest_quota-$current_guests_number > $temporary_guest_number) ? $temporary_guest_number : $guest_quota-$current_guests_number;
-
-                    $actual_guest_number = $actual_guest_number>=0 ? $actual_guest_number : 0;
-
-                    if($actual_guest_number<$temporary_guest_number)
+                    else
                     {
-                        echo "Il n'y a pas assez de places encore disponibles pour les invités pour que vous ayez tous les invités que vous êtes censés avoir avec la promotion ". get_promo_name($promo_id). ".<br>";
+                        $guest_event_data = null;
                     }
-
-                    for($i=1; $i<=$actual_guest_number; $i++)
-                    {
-                        form_guest($event, $guests_specifications, $options, $i);
-                    }
+                    form_guest($event, $guests_specifications, $options, $i, $guest_event_data);
                 }
                 ?>
             </div>
@@ -86,6 +72,7 @@
                 <h4>Pour vos invités : <span id="guests_total_prices" class="badge" style="background-color:#428bca; font-size:0.8em;">0€</span></h4>
             </div>
         </div>
+        <br><br>
         <div id="errors"></div>
         <div class="text-center">
             <button type="submit" class="btn btn-primary">Passer au payement</button>
@@ -94,5 +81,10 @@
     <script src="jquery/submit_inscriptions.js"></script>
     <script src="jquery/general_behaviour.js"></script>
     <script src="jquery/inscriptions.js"></script>
+    <?php if(isset($icam_event_data))
+    {
+        ?> <script src="jquery/edit_reservation.js"></script> <?php
+    }
+    ?>
 </body>
 </html>

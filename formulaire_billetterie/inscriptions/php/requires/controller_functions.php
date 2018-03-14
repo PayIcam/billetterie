@@ -1,8 +1,21 @@
 <?php
 
-function option_form($option, $ids)
+function option_form($option, $promo_id, $site_id, $participant_id=-1)
 {
-    if(promo_has_option($ids))
+    $already_defined_option = get_participant_option(array("event_id" => $option['event_id'], "option_id" => $option['option_id'], "participant_id" => $participant_id));
+    if(!empty($already_defined_option))
+    {
+        if($option['type']=='Checkbox')
+        {
+            checkbox_form($option, true);
+        }
+        elseif($option['type']=='Select')
+        {
+            $select_choice = json_decode($already_defined_option['option_details'])->select_option;
+            select_form($option, $select_choice);
+        }
+    }
+    elseif(promo_has_option(array("event_id" => $option['event_id'], "option_id" => $option['option_id'], "promo_id" => $promo_id, "site_id" => $site_id)))
     {
         if($option['type']=='Checkbox')
         {
@@ -69,15 +82,38 @@ function json_decode_particular($data)
     }
     return $data;
 }
-
-function is_correct_participant_data($participant_data, $participant_type)
+function number_of_guests_to_be_displayed($promo_specifications, $guests_specifications, $current_participants_number, $total_quota)
 {
-    $event_id = 1;
-    $promo_id = 13;
-    $site_id = 1;
-    $prenom = "Grégoire";
-    $nom = "Giraud";
-    $email = "gregoire.giraud@2020.icam.fr";
+    $temporary_guest_number = min($promo_specifications['guest_number'], $total_quota-$current_participants_number-1);
+    $temporary_guest_number = $temporary_guest_number>=0 ? $temporary_guest_number : 0;
+
+    if($temporary_guest_number<$promo_specifications['guest_number'])
+    {
+        echo "Il n'y a pas assez de places encore disponibles pour tout l'évènement pour que vous ayez tous les invités que vous êtes censés avoir avec la promotion ". get_promo_name($promo_specifications['promo_id']). ".<br>";
+    }
+
+    $guest_quota = $guests_specifications['quota'];
+    $current_guests_number = get_current_promo_quota(array('event_id' => $promo_specifications['event_id'], 'promo_id' => get_promo_id('Invités'), 'site_id' => $promo_specifications['site_id']));
+
+    $actual_guest_number = min($guest_quota-$current_guests_number, $temporary_guest_number);
+    $actual_guest_number = $actual_guest_number>=0 ? $actual_guest_number : 0;
+
+    if($actual_guest_number<$temporary_guest_number)
+    {
+        echo "Il n'y a pas assez de places encore disponibles pour les invités pour que vous ayez tous les invités que vous êtes censés avoir avec la promotion ". get_promo_name($promo_specifications['promo_id']) . ".<br>";
+    }
+
+    return $actual_guest_number;
+}
+
+function is_correct_participant_data($participant_data, $participant_type, $promo_specifications)
+{
+    $event_id = $promo_specifications['event_id'];
+    $promo_id = 13;//Récupérer ce qui vient de la variable de session
+    $site_id = 3;//Récupérer ce qui vient de la variable de session
+    $prenom = "Grégoire";//same
+    $nom = "Giraud";//same
+    $email = "gregoire.giraud@2020.icam.fr";//same
 
     $error = false;
     if($participant_data == null)
@@ -97,6 +133,7 @@ function is_correct_participant_data($participant_data, $participant_type)
         {
             $participant_data_is_icam = $participant_type=='icam' ? 1:0;
             $participant_data_promo_id = $participant_type=='icam' ? $promo_id : get_promo_id('Invités');
+            $left_to_pay = $participant_data->price-$promo_specifications['price'];
 
             if($participant_data->is_icam != $participant_data_is_icam)
             {
@@ -113,9 +150,16 @@ function is_correct_participant_data($participant_data, $participant_type)
                 echo $participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de promo_id <br>";
                 $error = true;
             }
-            if(!is_int($participant_data->price))
+            if(!is_numeric($participant_data->price))
             {
-                echo $participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix <br>";
+                echo $participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix (pas numérique)<br>";
+                $left_to_pay=false;
+                $error = true;
+            }
+            elseif($participant_data->price < $promo_specifications['price'])
+            {
+                echo $participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix (inférieur au prix de base de données)<br>";
+                $left_to_pay=false;
                 $error = true;
             }
             if($participant_type=='icam')
@@ -191,28 +235,37 @@ function is_correct_participant_data($participant_data, $participant_type)
 
                         if($option->type != $option_db_data['type'])
                         {
-                            echo $participant_type . " Quelqu'un s'est débrouillé pour altérer la valeur du type d'une option".$option_id;
+                            echo $participant_type . " : Option ". $option_db_data['name'] . " Quelqu'un s'est débrouillé pour altérer la valeur du type d'une option".$option_id;
                             $error = true;
                         }
                         else
                         {
+                            if(get_current_option_quota(array("event_id" => $event_id, "option_id" => $option_id)) +1 > $option_db_data['quota'])
+                            {
+                                echo $participant_type . " : Option ". $option_db_data['name'] . " : Il n'y a plus de places disponibles pour cette option. <br>";
+                                $error = true;
+                            }
                             if($option_db_data['type']=='Checkbox')
                             {
                                 if($option_db_data['name'] == $option->name)
                                 {
                                     if($option->price == json_decode($option_db_data['specifications'])->price)
                                     {
-                                        echo $participant_type . " : Checkbox option correcte <br>";
+                                        // echo $participant_type . " : Checkbox option correcte <br>";
+                                        if($left_to_pay!=false)
+                                        {
+                                            $left_to_pay-=$option->price;
+                                        }
                                     }
                                     else
                                     {
-                                        echo $participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix d'une option checkbox <br>";
+                                        echo $participant_type . " : ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix d'une option checkbox <br>";
                                         $error = true;
                                     }
                                 }
                                 else
                                 {
-                                    echo $participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom d'une option checkbox <br>";
+                                    echo $participant_type . " : Option ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom d'une option checkbox <br>";
                                     $error = true;
                                 }
                             }
@@ -225,14 +278,24 @@ function is_correct_participant_data($participant_data, $participant_type)
                                 {
                                     if($db_specification->name == $option_subname)
                                     {
+                                        if(get_current_select_option_quota(array("event_id" => $event_id, "option_id" => $option_id, "subname" => $db_specification->name))+1 > $db_specification->quota)
+                                        {
+                                            echo $participant_type . " : Option ". $option_db_data['name'] . " : Le quota d'une sous-option est déjà plein. <br>";
+                                            $error = true;
+                                        }
+
                                         $name_found = true;
                                         if($option->price == $db_specification->price)
                                         {
-                                            echo $participant_type . " : Select option correcte <br>";
+                                            // echo $participant_type . " : Select option correcte <br>";
+                                            if($left_to_pay!=false)
+                                            {
+                                                $left_to_pay-=$option->price;
+                                            }
                                         }
                                         else
                                         {
-                                            echo $participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix d'une sous-option select <br>";
+                                            echo $participant_type . " : Option ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix d'une sous-option select <br>";
                                             $error = true;
                                         }
                                         break;
@@ -240,20 +303,41 @@ function is_correct_participant_data($participant_data, $participant_type)
                                 }
                                 if($name_found == false)
                                 {
-                                    echo $participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom d'une sous-option select <br>";
+                                    echo $participant_type . " : Option ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom d'une sous-option select <br>";
                                     $error = true;
                                 }
                             }
                             else
                             {
-                                echo $participant_type . " : Quelqu'un s'est débrouillé pour mettre un type qui n'est ni 'Select' ni 'Checkbox' dans le champ type de la table option de la base de données <br>";
+                                echo $participant_type . " : Option ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour mettre un type qui n'est ni 'Select' ni 'Checkbox' dans le champ type de la table option de la base de données <br>";
                                 $error = true;
                             }
                         }
                     }
                 }
             }
+            if($left_to_pay!=0)
+            {
+                $error = true;
+                echo "Le prix total n'est pas bon.";
+            }
+            else
+            {
+                global $total_price;
+                $total_price+=$participant_data->price;
+            }
         }
     }
-    return $error;
+    return !$error;
+}
+function get_icams_guests_data($ids)
+{
+    $guests_ids = get_icams_guests_ids($ids);
+    $guests_data = [];
+    foreach($guests_ids as $guests_id)
+    {
+        $guest_data = get_participant_event_data(array("event_id" => $ids['event_id'], "participant_id" => $guests_id['guest_id']));
+        array_push($guests_data, $guest_data);
+    }
+    return $guests_data;
 }

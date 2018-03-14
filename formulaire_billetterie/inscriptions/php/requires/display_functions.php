@@ -1,57 +1,59 @@
 <?php
 
-function form_icam($event, $promo_specifications, $options)
+function form_icam($event, $promo_specifications, $options, $icam_reservation = null)
 {
     $firstname = 'Grégoire';
     $lastname = 'Giraud';
     $email = 'gregoire.giraud@2020.icam.fr';
     $promo = 120;
     $site = 'Lille';
+
+    $icam_id = $icam_reservation == null ? -1 : $icam_reservation['participant_id'];
     ?>
    <div id="icam_informations">
-        <h4>Entrez vos informations personnelles :</h4>
+        <h4>
+            Votre propre place
+            <span class="badge event_price" style="background-color: #468847"><?= $promo_specifications['price']. "€" ?></span>
+        </h4>
+
         <div class="row">
             <div class="col-sm-4 form-group">
                 <label for="icam_firstname">Prénom : </label>
-                <input value="<?= $firstname ?>" type="text" class="form-control" name="icam_firstname" id="icam_firstname" placeholder="Prénom" disabled>
+                <input value="<?= $icam_reservation['prenom'] ?? $firstname ?>" type="text" class="form-control" name="icam_firstname" id="icam_firstname" placeholder="Prénom" disabled>
             </div>
 
             <div class="col-sm-4 form-group">
                 <label for="icam_lastname">Nom : </label>
-                <input value="<?= $lastname ?>" type="text" class="form-control" name="icam_lastname" id="icam_lastname" placeholder="Nom" disabled>
+                <input value="<?= $icam_reservation['nom'] ?? $lastname ?>" type="text" class="form-control" name="icam_lastname" id="icam_lastname" placeholder="Nom" disabled>
             </div>
 
             <div class="col-sm-4 form-group">
                 <label for="icam_email">Email Icam : </label>
-                <input value="<?= $email ?>" type="text" class="form-control" name="icam_email" id="icam_email" placeholder="email" disabled>
+                <input value="<?= $icam_reservation['email'] ?? $email ?>" type="text" class="form-control" name="icam_email" id="icam_email" placeholder="email" disabled>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-6 form-group">
                 <label for="icam_phone_number">Numéro de téléphone : </label>
-                <input type="text" class="form-control" name="icam_phone_number" id="icam_phone_number" placeholder="Numéro de téléphone">
+                <input value="<?= $icam_reservation['telephone'] ?? '' ?>" type="text" class="form-control" name="icam_phone_number" id="icam_phone_number" placeholder="Numéro de téléphone">
             </div>
 
             <div class="col-sm-6 form-group">
                 <label for="icam_birth_date">Date de naissance :</label>
-                <input type="date" class="form-control" name="icam_birth_date" id="icam_birth_date" placeholder="Date de naissance">
+                <input value="<?= $icam_reservation['birthdate'] ?? '' ?>" type="date" class="form-control" name="icam_birth_date" id="icam_birth_date" placeholder="Date de naissance">
             </div>
         </div>
         <input type="hidden" name="price" value="<?= $promo_specifications['price'] ?>">
         <input type="hidden" name="is_icam" value=1>
-        <input type="hidden" name="icam_promo_id" value=<?=$promo_specifications['promo_id']?> >
-        <input type="hidden" name="icam_site_id" value=<?=$promo_specifications['site_id']?> >
+        <input type="hidden" name="icam_promo_id" value="<?=$promo_specifications['promo_id']?>" >
+        <input type="hidden" name="icam_site_id" value="<?=$promo_specifications['site_id']?>" >
+        <?php if($icam_reservation != null)
+        {
+            ?> <input type="hidden" name="icam_id" value="<?=$icam_id?>" > <?php
+        }?>
 
     </div>
-    <div id="icams_own_place">
-        <label>
-            Prenez vous votre propre place ? <span class="badge event_price"><?= $promo_specifications['price']. "€" ?></span>
-        </label>
-        <div class="form-check">
-            <label class="radio-inline"><input type="radio" name="icam_takes_its_place" value=1 required>Oui</label>
-            <label class="radio-inline"><input type="radio" name="icam_takes_its_place" value=0>Non</label>
-        </div>
-    </div>
+
     <div id="icam_options">
         <h4>Choisissez les options que vous voulez :</h4>
         <?php
@@ -61,11 +63,11 @@ function form_icam($event, $promo_specifications, $options)
             {
                 $option['specifications'] = json_decode($option['specifications']);
 
-                option_form($option, array("event_id" => $event['event_id'], "option_id" => $option['option_id'], "promo_id" => $promo_specifications['promo_id'], "site_id" => $promo_specifications['site_id']));
+                option_form($option, $promo_specifications['promo_id'], $promo_specifications['site_id'], $icam_id);
             }
             else
             {
-                echo "Il n'y a plus de places pour l'option". $option['name']. "!";
+                echo "Il n'y a plus de places pour l'option ". $option['name']. "!";
             }
         }
         ?>
@@ -73,8 +75,9 @@ function form_icam($event, $promo_specifications, $options)
     <?php
 }
 
-function form_guest($event, $guest_specifications, $options, $i)
+function form_guest($event, $guest_specifications, $options, $i, $guest_reservation=null)
 {
+    $guest_id = $guest_reservation == null ? -1 : $guest_reservation['participant_id'];
     ?>
     <div class="guest_form col-sm-6">
         <h3 class="guest_title">
@@ -87,21 +90,25 @@ function form_guest($event, $guest_specifications, $options, $i)
             <div class="row guest_inputs">
                 <div class="col-sm-4 form-group">
                     <label for="guest_<?=$i?>_firstname">Prénom : </label>
-                    <input type="text" class="form-control guest_firstname" name="guest_<?=$i?>_firstname" id="guest_<?=$i?>_firstname" placeholder="Prénom">
+                    <input value="<?= $guest_reservation['prenom'] ?? '' ?>" type="text" class="form-control guest_firstname" name="guest_<?=$i?>_firstname" id="guest_<?=$i?>_firstname" placeholder="Prénom">
                 </div>
 
                 <div class="col-sm-5 form-group">
                     <label for="guest_<?=$i?>_lastname">Nom : </label>
-                    <input type="text" class="form-control guest_lastname" name="guest_<?=$i?>_lastname" id="guest_<?=$i?>_lastname" placeholder="Nom">
+                    <input value="<?= $guest_reservation['nom'] ?? '' ?>" type="text" class="form-control guest_lastname" name="guest_<?=$i?>_lastname" id="guest_<?=$i?>_lastname" placeholder="Nom">
                 </div>
 
                 <div class="col-sm-3 form-group">
                     <label for="guest_<?=$i?>_birthdate">Date de naissance :</label>
-                    <input type="date" class="form-control guest_birthdate" name="birth_date" id="guest_<?=$i?>_birthdate" placeholder="Date de naissance">
+                    <input value="<?= $guest_reservation['birthdate'] ?? '' ?>" type="date" class="form-control guest_birthdate" name="birth_date" id="guest_<?=$i?>_birthdate" placeholder="Date de naissance">
                 </div>
             </div>
             <input type="hidden" class="guest_promo_id" name="guest_promo_id" value=<?=$guest_specifications['promo_id']?> >
             <input type="hidden" class="guest_site_id" name="guest_site_id" value=<?=$guest_specifications['site_id']?> >
+            <?php if($guest_reservation != null)
+            {
+                ?> <input type="hidden" name="guest_id" value="<?=$guest_id?>" > <?php
+            }?>
         </div>
         <div class="guest_options">
             <h4>Choisissez les options de votre invité :</h4>
@@ -112,7 +119,7 @@ function form_guest($event, $guest_specifications, $options, $i)
                 {
                     $option['specifications'] = json_decode($option['specifications']);
 
-                    option_form($option, array("event_id" => $event['event_id'], "option_id" => $option['option_id'], "promo_id" => $guest_specifications['promo_id'], "site_id" => $guest_specifications['site_id']));
+                    option_form($option, $guest_specifications['promo_id'], $guest_specifications['site_id'], $guest_id);
                 }
                 else
                 {
@@ -121,15 +128,16 @@ function form_guest($event, $guest_specifications, $options, $i)
             }
             ?>
         </div>
+        <hr>
     </div>
     <?php
 }
 
-function checkbox_form($option)
+function checkbox_form($option, $checked=false)
 {
     ?>
-    <div class="checkbox_option form-check">
-        <input class="form-check-input has_option" name="has_option" type="checkbox" value=1>
+    <div class="checkbox_option form-check" <?= $checked ? "data-payed=1" : "" ?>>
+        <input class="form-check-input has_option" name="has_option" type="checkbox" value=1 <?= $checked ? "checked disabled data-payed=1" : "" ?> >
         <label class="form-check-label">
             <span class="option_name"><?= $option['name'] ?></span>
             <span class="checkbox_price badge" style="background-color: #3a87ad"><?= $option['specifications']->price . ' €' ?></span>
@@ -142,10 +150,10 @@ function checkbox_form($option)
     </div>
     <?php
 }
-function select_form($option)
+function select_form($option, $option_subname=null)
 {
     ?>
-    <div class="select_option form-group">
+    <div class="select_option form-group" <?= $checked ? "data-payed=1" : "" ?>>
         <label>
             <span><?= $option['name'] ?></span>
             <span class="select_price badge" style="background-color: #468847"></span>
@@ -155,9 +163,36 @@ function select_form($option)
         </label>
         <select class="form-control">
             <option disabled <?= ($option['is_mandatory']=='0') ? "selected" : "" ?> style="display:none">Sélectionnez votre option !</option>
-            <?php insert_select_options($option['specifications'], $option['is_mandatory']); ?>
+            <?php insert_according_select_options($option, $option_subname); ?>
         </select>
         <input type="hidden" name="option_id" value="<?=$option['option_id']?>">
     </div>
     <?php
+}
+
+function insert_according_select_options($option, $option_subname=null)
+{
+    $compteur=0;
+    foreach($option['specifications'] as $option_specification)
+    {
+        var_dump($option_specification->name);
+        if($option_subname==null)
+        {
+            if(get_current_select_option_quota(array("event_id" => $option['event_id'], "option_id" => $option['option_id'], "subname" => $option_specification->name)) < $option_specification->quota)
+            {
+                ?>
+                <option value="<?= $option_specification->name ?>" <?=($option['is_mandatory']==1 and $compteur==0) ? 'selected' : ''?> >
+                    <?= $option_specification->name . '(' . $option_specification->price . ')' ?>
+                </option>
+                <?php
+                $compteur++;
+            }
+        }
+        elseif($option_subname == $option_specification->name)
+        {
+            ?>
+            <option value="<?= $option_specification->name ?>" selected data-payed=1><?= $option_specification->name . '(' . $option_specification->price . ')' ?></option>
+            <?php
+        }
+    }
 }

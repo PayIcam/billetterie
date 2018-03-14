@@ -66,6 +66,22 @@ function event_id_is_correct($event_id)
         return false;
     }
 }
+function get_icam_event_data($identification_data)
+{
+    global $db;
+    $icam_data = $db->prepare('SELECT participant_id, prenom, nom, is_icam, email, telephone, birthdate, event_id, site_id, promo_id FROM participants WHERE email = :email and event_id = :event_id and promo_id = :promo_id and site_id = :site_id');
+    $icam_data->execute($identification_data);
+    $icam_data = $icam_data->fetchAll();
+    $icam_data = count($icam_data)>1 ? 'several_emails' : current($icam_data);
+    return $icam_data;
+}
+function get_participant_event_data($ids)
+{
+    global $db;
+    $participant_data = $db->prepare('SELECT participant_id, prenom, nom, is_icam, email, telephone, birthdate, event_id, site_id, promo_id FROM participants WHERE event_id = :event_id and participant_id = :participant_id');
+    $participant_data->execute($ids);
+    return $participant_data->fetch();
+}
 function insert_icam_participant($icam_data)
 {
     global $db;
@@ -96,4 +112,25 @@ function insert_participant_option($option_data)
     global $db;
     $option_query = $db->prepare('INSERT INTO participant_has_options VALUES (:event_id, :participant_id, :option_id, :option_details)');
     return $option_query->execute($option_data);
+}
+function get_icam_options_data($ids)
+{
+    global $db;
+    $option_query = $db->prepare('SELECT option_id, option_details FROM participant_has_options WHERE event_id=:event_id and participant_id=:participant_id');
+    $option_query->execute($ids);
+    return $option_query->fetchAll();
+}
+function get_participant_option($ids)
+{
+    global $db;
+    $option_query = $db->prepare('SELECT option_id, option_details FROM participant_has_options WHERE event_id=:event_id and option_id=:option_id and participant_id=:participant_id');
+    $option_query->execute($ids);
+    return $option_query->fetch();
+}
+function get_icams_guests_ids($ids)
+{
+    global $db;
+    $guests_ids = $db->prepare('SELECT guest_id FROM icam_has_guests WHERE event_id=:event_id and icam_id=:icam_id');
+    $guests_ids->execute($ids);
+    return $guests_ids->fetchAll();
 }
