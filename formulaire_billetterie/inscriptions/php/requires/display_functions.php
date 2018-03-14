@@ -59,16 +59,8 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
         <?php
         foreach($options as $option)
         {
-            if(get_current_option_quota(array('event_id' => $event['event_id'], 'option_id' => $option['option_id'])) < $option['quota'])
-            {
-                $option['specifications'] = json_decode($option['specifications']);
-
-                option_form($option, $promo_specifications['promo_id'], $promo_specifications['site_id'], $icam_id);
-            }
-            else
-            {
-                echo "Il n'y a plus de places pour l'option ". $option['name']. "!";
-            }
+            $option['specifications'] = json_decode($option['specifications']);
+            option_form($option, $promo_specifications['promo_id'], $promo_specifications['site_id'], $icam_id);
         }
         ?>
     </div>
@@ -79,7 +71,7 @@ function form_guest($event, $guest_specifications, $options, $i, $guest_reservat
 {
     $guest_id = $guest_reservation == null ? -1 : $guest_reservation['participant_id'];
     ?>
-    <div class="guest_form col-sm-6">
+    <div class="guest_form col-sm-6 <?= $guest_reservation!=null ? "previous_guest" : "" ?>">
         <h3 class="guest_title">
             <span class="actual_guest_title">Invité n°<?=$i?></span>
             <span class="badge event_price" style="background-color: #b94a48"><?= $guest_specifications['price']. "€" ?></span>
@@ -115,16 +107,8 @@ function form_guest($event, $guest_specifications, $options, $i, $guest_reservat
             <?php
             foreach($options as $option)
             {
-                if(get_current_option_quota(array('event_id' => $event['event_id'], 'option_id' => $option['option_id'])) < $option['quota'])
-                {
-                    $option['specifications'] = json_decode($option['specifications']);
-
-                    option_form($option, $guest_specifications['promo_id'], $guest_specifications['site_id'], $guest_id);
-                }
-                else
-                {
-                    echo "Il n'y a plus de places pour l'option". $option['name']. "!";
-                }
+                $option['specifications'] = json_decode($option['specifications']);
+                option_form($option, $guest_specifications['promo_id'], $guest_specifications['site_id'], $guest_id);
             }
             ?>
         </div>
@@ -153,7 +137,7 @@ function checkbox_form($option, $checked=false)
 function select_form($option, $option_subname=null)
 {
     ?>
-    <div class="select_option form-group" <?= $checked ? "data-payed=1" : "" ?>>
+    <div class="select_option form-group" <?= $option_subname!=null ? "data-payed=1" : "" ?>>
         <label>
             <span><?= $option['name'] ?></span>
             <span class="select_price badge" style="background-color: #468847"></span>
@@ -175,7 +159,6 @@ function insert_according_select_options($option, $option_subname=null)
     $compteur=0;
     foreach($option['specifications'] as $option_specification)
     {
-        var_dump($option_specification->name);
         if($option_subname==null)
         {
             if(get_current_select_option_quota(array("event_id" => $option['event_id'], "option_id" => $option['option_id'], "subname" => $option_specification->name)) < $option_specification->quota)

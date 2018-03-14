@@ -22,7 +22,7 @@
             <h3>Inscrivez vous en remplissant le formulaire ci dessous, et en validant ! Pensez à recharger afin d'avoir de quoi payer au préalable ! </h3>
         </div>
     </div>
-    <form method="post" action="php/ajout_participant.php?event_id=<?=$event_id?>">
+    <form method="post" action="php/<?= isset($icam_event_data) ? "edition_participant" : "ajout_participant" ?>.php?event_id=<?=$event_id?>">
         <div id="registration">
             <div id="registration_icam" class="container">
                 <?php
@@ -80,10 +80,25 @@
     </form>
     <script src="jquery/submit_inscriptions.js"></script>
     <script src="jquery/general_behaviour.js"></script>
-    <script src="jquery/inscriptions.js"></script>
-    <?php if(isset($icam_event_data))
+    <?php if($icam_event_data!=null)
     {
-        ?> <script src="jquery/edit_reservation.js"></script> <?php
+        ?>
+        <script src="jquery/edit_reservation.js"></script>
+        <script src="jquery/submit_edit.js"></script>
+        <?php
+    }
+    ?>
+    <script src="jquery/inscriptions.js"></script>
+    <?php if($icam_event_data!=null)
+    {
+        ?>
+        <script>
+            $(document).ready(function() {
+                edit_initialisation();
+                prepare_edit_submit();
+            });
+        </script>
+        <?php
     }
     ?>
 </body>

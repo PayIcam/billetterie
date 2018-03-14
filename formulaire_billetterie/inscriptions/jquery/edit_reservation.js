@@ -15,6 +15,5 @@ function edit_initialisation()
     });
     $("input:checkbox:checked").change().off('change').prop('disabled', true);
 
-    $()
     $("#total_price, #icam_total_price, #guests_total_prices").text("0€");
 }

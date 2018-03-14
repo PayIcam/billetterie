@@ -18,8 +18,6 @@ function initialisation_inscriptions()
     }
 
     $("form").submit(submit_inscriptions);
-
-    edit_initialisation();
 }
 
 function change_recap_prices(price, target)

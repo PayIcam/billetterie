@@ -103,8 +103,6 @@ function submit_inscriptions(submit)
             else
             {
                 var is_icam = 0;
-                var prenom = $(this).find('.guest_firstname').val();
-                var nom = $(this).find('.guest_lastname').val();
                 var birthdate = $(this).find('.guest_birthdate').val();
                 var event_price = parseFloat($(this).find('.event_price').text());
                 total_guest_price = event_price;
