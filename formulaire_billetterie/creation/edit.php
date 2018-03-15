@@ -1,11 +1,12 @@
 <?php
+require '../general_requires/display_functions.php';
+
 if(isset($_GET['event_id']))
 {
     $event_id = $_GET['event_id'];
 
     require '../config.php';
     require '../general_requires/db_functions.php';
-    require '../general_requires/display_functions.php';
     require 'php/requires/display_functions.php';
     require 'php/requires/db_functions.php';
     require 'php/requires/controller_functions.php';
@@ -47,5 +48,6 @@ if(isset($_GET['event_id']))
 }
 else
 {
-    echo 'Définis event_id en get fdp';
+    set_alert_style();
+    add_error("event_id n'est pas défini en GET");
 }

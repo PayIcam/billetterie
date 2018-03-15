@@ -42,3 +42,11 @@ button[class='btn option_tooltip']
 {
     width: 95%;
 }
+#alerts
+{
+    font-size:1.5em;
+    position: fixed;
+    top: 5%;
+    left: 5%;
+    width: 90%;
+}

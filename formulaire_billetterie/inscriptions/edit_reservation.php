@@ -13,6 +13,7 @@ if(isset($_GET['event_id']))
     require 'php/requires/controller_functions.php';
     require 'php/requires/db_functions.php';
     require 'php/requires/display_functions.php';
+    require 'php/requires/display_functions.php';
 
     $db = connect_to_db($_CONFIG['ticketing']);
 
@@ -29,12 +30,14 @@ if(isset($_GET['event_id']))
         $icam_event_data = get_icam_event_data(array("email" => $email, "event_id" => $event_id, "promo_id" => $promo_id, "site_id" => $site_id));
         if($icam_event_data=='several_emails')
         {
-            echo "Plus d'un email est enregistré pour votre réservation. Contactez PayIcam pour résoudre ce problème.";
+            set_alert_style();
+            add_error("Plus d'un email est enregistré pour votre réservation. Contactez PayIcam pour résoudre ce problème.");
             die();
         }
         elseif(empty($icam_event_data))
         {
-            echo "Vous essayez d'éditer des informations alors que vous n'avez pas de réservation.";
+            set_alert_style();
+            add_error("Vous essayez d'éditer des informations alors que vous n'avez pas de réservation.");
             header('Location: inscriptions.php?event_id='.$event_id);
             die();
         }
@@ -53,19 +56,31 @@ if(isset($_GET['event_id']))
 
             $guests_specifications = get_promo_specification_details(array('event_id' => $event_id, 'promo_id' => get_promo_id('Invités'), 'site_id' => $site_id));
 
-            $actual_guest_number = $promo_specifications['guest_number']>0 ? number_of_guests_to_be_displayed($promo_specifications, $guests_specifications, $current_participants_number, $total_quota) : 0;
-            $actual_guest_number = max(count($guests_event_data), $actual_guest_number);
+            $number_previous_guests = count($guests_event_data);
+
+            $new_guests_number = $promo_specifications['guest_number']>0 ? number_of_guests_to_be_displayed($promo_specifications, $guests_specifications, $current_participants_number, $total_quota, $number_previous_guests) : 0;
+            $actual_guest_number = $number_previous_guests + $new_guests_number;
 
             require 'templates/formulaire_inscriptions.php';
         }
         else
         {
-            echo "Vous n'avez pas accès à cet évènement. C'est une erreur qu'il vous soit apparu.";
+            set_alert_style();
+            add_error("Vous n'avez pas accès à cet évènement. C'est une erreur qu'il vous soit apparu.");
+            die();
         }
+    }
+    else
+    {
+        set_alert_style();
+        add_error("Il n'y a pas d'évènement avec l'id que vous avez renseigné.");
+        die();
     }
 }
 else
 {
-    echo "Le GET n'est pas défini, vous n'avez pas eu la bonne url.";
+    set_alert_style();
+    add_error("Le GET n'est pas défini, vous n'avez pas eu la bonne url.");
+    die();
 }
 

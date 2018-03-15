@@ -3,7 +3,7 @@ function submit_inscriptions(submit)
     function add_error(message)
     {
         var message_displayed = '<div class="alert alert-danger alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Attention ! </strong>' + message + '</div>'
-        $("#errors").append(message_displayed);
+        $("#alerts").append(message_displayed);
     }
 
     function prepare_option_data()
@@ -58,7 +58,7 @@ function submit_inscriptions(submit)
         }
     }
 
-    $("#errors").empty();
+    $("#alerts").empty();
 
     $("input[name=icam_informations]").val('');
     $("input[name=guests_informations]").val('');

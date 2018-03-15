@@ -8,7 +8,7 @@ require 'requires/controller_functions.php';
 
 $db = connect_to_db($_CONFIG['ticketing']);
 
-if(isset($_POST))
+if(!empty($_POST))
 {
     //Table events
     $table_event_data = array(
@@ -98,6 +98,7 @@ if(isset($_POST))
 }
 else
 {
-    echo "Vous n'êtes pas censé ouvrir cette page directement.";
+    set_alert_style();
+    add_error("Vous n'êtes pas censé ouvrir cette page directement.");
 }
 

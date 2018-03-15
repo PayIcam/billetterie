@@ -34,7 +34,7 @@
                 }
                 else
                 {
-                    echo 'Toutes les places proposées à votre promo ont été vendues...';
+                    add_error('Toutes les places proposées à votre promo ont été vendues...');
                 }
                 ?>
             </div>
@@ -73,11 +73,13 @@
             </div>
         </div>
         <br><br>
-        <div id="errors"></div>
         <div class="text-center">
             <button type="submit" class="btn btn-primary">Passer au payement</button>
         </div>
     </form>
+    <div id="alerts">
+
+    </div>
     <script src="jquery/submit_inscriptions.js"></script>
     <script src="jquery/general_behaviour.js"></script>
     <?php if($icam_event_data!=null)

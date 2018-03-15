@@ -1,10 +1,11 @@
 <?php
 
-if(isset($_POST))
+require '../../general_requires/display_functions.php';
+
+if(!empty($_POST))
 {
     require '../../config.php';
     require '../../general_requires/db_functions.php';
-    require '../../general_requires/display_functions.php';
     require 'requires/db_functions.php';
     require 'requires/controller_functions.php';
 
@@ -135,5 +136,6 @@ if(isset($_POST))
 
 else
 {
-    echo 'Il y a eu un problème, la variable POST n\'est même pas définie...';
+    set_alert_style();
+    add_error('Il y a eu un problème, la variable POST n\'est même pas définie...');
 }

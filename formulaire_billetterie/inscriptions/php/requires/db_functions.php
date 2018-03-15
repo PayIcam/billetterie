@@ -57,12 +57,12 @@ function event_id_is_correct($event_id)
     }
     elseif($event_id == "no_GET")
     {
-        echo "L'event_id n'est pas spécifié en GET";
+        add_error("L'event_id n'est pas spécifié en GET");
         return false;
     }
     else
     {
-        echo "L'event_id spécifiée n'est même pas un entier.";
+        add_error("L'event_id spécifiée n'est même pas un entier.");
         return false;
     }
 }

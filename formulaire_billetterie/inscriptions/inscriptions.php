@@ -1,10 +1,11 @@
 <?php
 
+require '../general_requires/display_functions.php';
+
 if(isset($_GET['event_id']))
 {
     require '../config.php';
     require '../general_requires/db_functions.php';
-    require '../general_requires/display_functions.php';
     require 'php/requires/controller_functions.php';
     require 'php/requires/db_functions.php';
     require 'php/requires/display_functions.php';
@@ -34,22 +35,30 @@ if(isset($_GET['event_id']))
 
                 $guests_specifications = get_promo_specification_details(array('event_id' => $event_id, 'promo_id' => get_promo_id('Invités'), 'site_id' => $site_id));
 
-                $actual_guest_number = $promo_specifications['guest_number']>0 ? number_of_guests_to_be_displayed($promo_specifications, $guests_specifications, $current_participants_number, $total_quota) : 0;
+                $actual_guest_number = $promo_specifications['guest_number']>0 ? number_of_guests_to_be_displayed($promo_specifications, $guests_specifications, $current_participants_number+1, $total_quota) : 0;
 
                 require 'templates/formulaire_inscriptions.php';
             }
             else
             {
-                echo "Toutes les places ont été vendues...";
+                set_alert_style();
+                add_error("Toutes les places ont été vendues...");
             }
         }
         else
         {
-            echo "Vous n'avez pas accès à cet évènement. C'est une erreur qu'il vous soit apparu.";
+            set_alert_style();
+            add_error("Vous n'avez pas accès à cet évènement. C'est une erreur qu'il vous soit apparu.");
         }
+    }
+    else
+    {
+        set_alert_style();
+        add_error("Il n'y a pas d'évènement avec l'id que vous avez renseigné.");
     }
 }
 else
 {
-    echo "Le GET n'est pas défini, vous n'avez pas eu la bonne url.";
+    set_alert_style();
+    add_error("Le GET n'est pas défini, vous n'avez pas eu la bonne url.");
 }
