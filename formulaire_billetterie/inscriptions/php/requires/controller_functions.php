@@ -301,6 +301,11 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
                     add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de l'email <br>");
                     $error = true;
                 }
+                if(participant_has_its_place(array("event_id" => $event_id, "email" => $email, "promo_id" => $promo_id, "site_id" => $site_id, "email" => $email)))
+                {
+                    add_error("Vous avez déjà une réservation enregistrée à votre email.");
+                    $error = true;
+                }
                 if(!is_string($participant_data->telephone))
                 {
                     add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du numéro de téléphone <br>");
