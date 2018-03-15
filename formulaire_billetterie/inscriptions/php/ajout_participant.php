@@ -1,12 +1,10 @@
-
 <?php
 
 require '../../general_requires/display_functions.php';
-set_alert_style();
 
 if(!empty($_POST))
 {
-    var_dump($_POST);
+    // var_dump($_POST);
     // require '../../DB.php';
     require '../../config.php';
     require '../../general_requires/db_functions.php';
@@ -151,8 +149,10 @@ if(!empty($_POST))
             }
         }
     }
+    echo "Votre réservation a bien été prise en compte !";
 }
 else
 {
+    set_alert_style();
     add_error("Vous n'êtes pas censés appeler la page directement.");
 }

@@ -13,7 +13,6 @@ if(isset($_GET['event_id']))
     require 'php/requires/controller_functions.php';
     require 'php/requires/db_functions.php';
     require 'php/requires/display_functions.php';
-    require 'php/requires/display_functions.php';
 
     $db = connect_to_db($_CONFIG['ticketing']);
 

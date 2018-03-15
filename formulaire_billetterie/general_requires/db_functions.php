@@ -66,3 +66,35 @@ function get_options($event_id)
     return $options;
 }
 
+function get_promos_events($ids)
+{
+    global $db;
+    $promos = $db->prepare('SELECT event_id FROM promos_site_specifications WHERE promo_id=:promo_id and site_id=:site_id');
+    $promos->execute($ids);
+    return $promos->fetchAll();
+}
+
+function get_icam_event_data($identification_data)
+{
+    global $db;
+    $icam_data = $db->prepare('SELECT participant_id, prenom, nom, is_icam, email, telephone, birthdate, event_id, site_id, promo_id FROM participants WHERE email = :email and event_id = :event_id and promo_id = :promo_id and site_id = :site_id');
+    $icam_data->execute($identification_data);
+    $icam_data = $icam_data->fetchAll();
+    $icam_data = count($icam_data)>1 ? 'several_emails' : current($icam_data);
+    return $icam_data;
+}
+function participant_has_its_place($identification_data)
+{
+    global $db;
+    $icam_data = $db->prepare('SELECT participant_id, prenom, nom, is_icam, email, telephone, birthdate, event_id, site_id, promo_id FROM participants WHERE email = :email and event_id = :event_id and promo_id = :promo_id and site_id = :site_id');
+    $icam_data->execute($identification_data);
+    $icam_data = $icam_data->fetchAll();
+    return !empty($icam_data);
+}
+function get_participant_event_data($ids)
+{
+    global $db;
+    $participant_data = $db->prepare('SELECT participant_id, prenom, nom, is_icam, email, telephone, birthdate, event_id, site_id, promo_id FROM participants WHERE event_id = :event_id and participant_id = :participant_id');
+    $participant_data->execute($ids);
+    return $participant_data->fetch();
+}

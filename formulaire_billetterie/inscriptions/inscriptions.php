@@ -15,11 +15,18 @@ if(isset($_GET['event_id']))
     $event_id = $_GET['event_id'];
     if(event_id_is_correct($event_id))
     {
+        $email = 'gregoire.giraud@2020.icam.fr';
         $promo = 120;
         $site = 'Lille';
 
         $promo_id = get_promo_id($promo);
         $site_id = get_site_id($site);
+
+        if(participant_has_its_place(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id, "email" => $email)))
+        {
+            header('Location: edit_reservation.php?event_id='.$event_id);
+            die();
+        }
 
         $promo_specifications = get_promo_specification_details(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id));
 

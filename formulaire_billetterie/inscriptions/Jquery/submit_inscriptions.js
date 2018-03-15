@@ -4,6 +4,8 @@ function submit_inscriptions(submit)
     {
         var message_displayed = '<div class="alert alert-danger alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Attention ! </strong>' + message + '</div>'
         $("#alerts").append(message_displayed);
+        console.log($("#alerts"));
+        console.log(message_displayed);
     }
 
     function prepare_option_data()
@@ -122,4 +124,47 @@ function submit_inscriptions(submit)
         var json_guests_data = JSON.stringify(guests_data);
         $("#hidden_inputs input[name=guests_informations]").attr('value', json_guests_data);
     }
+    else
+    {
+        var json_guests_data = '';
+    }
+
+    var post_url = $('form').prop('action');
+
+    function ajax_success(data)
+    {
+        if(data=='Votre réservation a bien été prise en compte !')
+        {
+            var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data + '</div>';
+            $("#alerts").append(message_displayed);
+
+            $('form').off('submit').submit(function(submit)
+            {
+                submit.preventDefault();
+            });
+            setTimeout(function()
+            {
+                document.location.href = '../';
+            }, 1000);
+        }
+        else
+        {
+            $("#alerts").append(data);
+        }
+    }
+    function error_ajax()
+    {
+        add_error('La requête Ajax permettant de submit les informations et ajouter le participant a échoué');
+    }
+
+    $.post(
+    {
+        url: post_url,
+        data: {icam_informations: json_icam_data, guests_informations: json_guests_data, total_transaction_price: parseFloat($("#total_price").text())},
+        dataType: 'html',
+        success: ajax_success,
+        error: error_ajax
+    });
+
+    submit.preventDefault();
 }

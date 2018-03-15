@@ -1,7 +1,6 @@
 <?php
 
 require '../../general_requires/display_functions.php';
-set_alert_style();
 
 if(!empty($_POST))
 {
@@ -166,8 +165,10 @@ if(!empty($_POST))
             }
         }
     }
+    echo "Votre édition a bien été prise en compte !";
 }
 else
 {
+    set_alert_style();
     add_error("Vous n'êtes pas censés appeler la page directement.");
 }
