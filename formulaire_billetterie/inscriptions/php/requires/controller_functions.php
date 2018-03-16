@@ -17,23 +17,26 @@ function option_form($option, $promo_id, $site_id, $participant_id=-1)
     }
     else
     {
-        if(get_current_option_quota(array('event_id' => $option['event_id'], 'option_id' => $option['option_id'])) < $option['quota'])
+        if($option['is_active']==1)
         {
-            if(promo_has_option(array("event_id" => $option['event_id'], "option_id" => $option['option_id'], "promo_id" => $promo_id, "site_id" => $site_id)))
+            if(get_current_option_quota(array('event_id' => $option['event_id'], 'option_id' => $option['option_id'])) < $option['quota'])
             {
-                if($option['type']=='Checkbox')
+                if(promo_has_option(array("event_id" => $option['event_id'], "option_id" => $option['option_id'], "promo_id" => $promo_id, "site_id" => $site_id)))
                 {
-                    checkbox_form($option);
-                }
-                elseif($option['type']=='Select')
-                {
-                    select_form($option);
+                    if($option['type']=='Checkbox')
+                    {
+                        checkbox_form($option);
+                    }
+                    elseif($option['type']=='Select')
+                    {
+                        select_form($option);
+                    }
                 }
             }
-        }
-        else
-        {
-            add_error("Il n'y a plus de places pour l'option ". $option['name']. " !<br>");
+            else
+            {
+                add_error("Il n'y a plus de places pour l'option ". $option['name']. " !<br>");
+            }
         }
     }
 }
@@ -141,6 +144,12 @@ function check_participant_options($participant_data, $participant_type, $event_
             }
 
             $option_db_data = get_option(array("event_id" => $event_id, "option_id" => $option_id));
+
+            if($option_db_data['is_active']==0)
+            {
+                add_error($participant_type . " : Option ". $option_db_data['name'] . " L'option n'est pas active...<br>".$option_id);
+                $error = true;
+            }
 
             if($option->type != $option_db_data['type'])
             {

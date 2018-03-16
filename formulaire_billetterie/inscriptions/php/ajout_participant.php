@@ -8,6 +8,7 @@ if(!empty($_POST))
     // require '../../DB.php';
     require '../../config.php';
     require '../../general_requires/db_functions.php';
+    require '../../general_requires/controller_functions.php';
     require 'requires/db_functions.php';
     require 'requires/controller_functions.php';
 

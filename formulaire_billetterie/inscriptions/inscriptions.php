@@ -6,6 +6,7 @@ if(isset($_GET['event_id']))
 {
     require '../config.php';
     require '../general_requires/db_functions.php';
+    require '../general_requires/controller_functions.php';
     require 'php/requires/controller_functions.php';
     require 'php/requires/db_functions.php';
     require 'php/requires/display_functions.php';
@@ -36,7 +37,6 @@ if(isset($_GET['event_id']))
 
         if(count($promo_specifications) > 0)
         {
-
             $current_participants_number = get_current_participants_number($event_id);
             $total_quota = $event['total_quota'];
             if($current_participants_number < $total_quota)
