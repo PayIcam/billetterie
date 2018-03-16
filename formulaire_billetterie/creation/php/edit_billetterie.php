@@ -12,14 +12,18 @@ if(!empty($_POST))
     $db = connect_to_db($_CONFIG['ticketing']);
     $event_id=$_GET['event_id'];
 
+    //Jquery sends a weird format for dates, I have to specificate this format, then have to convert to Sql's one
+    $ticketing_start_date = date('Y-m-d H:i:s', date_create_from_format('m/d/Y h:i a', $_POST['ticketing_start_date'])->getTimestamp());
+    $ticketing_end_date = date('Y-m-d H:i:s', date_create_from_format('m/d/Y h:i a', $_POST['ticketing_end_date'])->getTimestamp());
+
     //Table events
     $table_event_data = array(
         "event_id" => $event_id,
         "name" => $_POST['event_name'],
         "description" => $_POST['event_description'],
         "total_quota" => $_POST['event_quota'],
-        "ticketing_start_date" => date('Y-m-d H:i:s', date_create_from_format('d/m/Y h:i a', $_POST['ticketing_start_date'])->getTimestamp()),
-        "ticketing_end_date" => date('Y-m-d H:i:s', date_create_from_format('d/m/Y h:i a', $_POST['ticketing_end_date'])->getTimestamp()),
+        "ticketing_start_date" => date('Y-m-d H:i:s', $ticketing_start_date),
+        "ticketing_end_date" => date('Y-m-d H:i:s', $ticketing_end_date),
         "is_active" => isset($_POST['event_is_active']) ? 1:0,
         "has_guests" => $_POST['guests']
         );

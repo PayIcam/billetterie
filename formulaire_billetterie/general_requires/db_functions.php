@@ -69,7 +69,7 @@ function get_options($event_id)
 function get_promos_events($ids)
 {
     global $db;
-    $promos = $db->prepare('SELECT event_id FROM promos_site_specifications WHERE promo_id=:promo_id and site_id=:site_id');
+    $promos = $db->prepare('SELECT promos_site_specifications.event_id FROM promos_site_specifications JOIN events on events.event_id = promos_site_specifications.event_id WHERE promo_id=:promo_id and site_id=:site_id and events    .is_active=1');
     $promos->execute($ids);
     return $promos->fetchAll();
 }

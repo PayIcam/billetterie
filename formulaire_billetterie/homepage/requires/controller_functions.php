@@ -2,8 +2,6 @@
 
 function handle_ticketings_displayed($events_id_accessible)
 {
-    var_dump($_SESSION);
-
     $email = $_SESSION['icam_informations']->mail;
     $promo_id = $_SESSION['icam_informations']->promo_id;
     $site_id = $_SESSION['icam_informations']->site_id;
@@ -13,34 +11,12 @@ function handle_ticketings_displayed($events_id_accessible)
         $event_id = $event_id['event_id'];
         $event = get_event_details($event_id);
 
-        date_default_timezone_set('Europe/Paris');
-        $current_datetime = new DateTime();
-        $ticketing_start_date = new DateTime($event['ticketing_start_date']);
-        $ticketing_end_date = new DateTime($event['ticketing_end_date']);
+        $icam_has_reservation = participant_has_its_place(array("event_id" => $event_id, "promo_id" => $promo_id, "site_id" => $site_id, "email" => $email));
+        $ticketing_state = get_ticketing_state($event, $promo_id, $site_id, $email, $icam_has_reservation);
 
-        $ticketing_state = 'open';
-        if($current_datetime < $ticketing_start_date)
+        if(in_array($ticketing_state, array('open', 'coming soon', 'ended not long ago and reservation')))
         {
-            $interval = $current_datetime->diff($ticketing_start_date);
-            if($interval->y > 0 || $interval->m > 0 || $interval->w > 1)
-            {
-                break;
-            }
-            elseif(empty(get_icam_event_data(array("event_id" => $event_id, "promo_id" => $promo_id, "site_id" => $site_id, "email" => $_SESSION['icam_informations']->email))))
-            {
-                break;
-            }
-            $ticketing_state = 'waiting';
+            display_event($ticketing_state, $event, $icam_has_reservation);
         }
-        elseif($current_datetime > $ticketing_end_date)
-        {
-            $interval = $current_datetime->diff($ticketing_end_date);
-            if($interval->y > 0 || $interval->m > 0 || $interval->w > 2)
-            {
-                break;
-            }
-            $ticketing_state = 'passed';
-        }
-        display_event($ticketing_state, $event);
     }
 }

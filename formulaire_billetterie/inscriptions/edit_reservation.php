@@ -4,12 +4,12 @@
     // $res = json_decode(file_get_contents($_CONFIG['ginger']['url'].$email."/?key=".$_CONFIG['ginger']['key']));
     // var_dump($res);
     // die();
+require '../general_requires/display_functions.php';
 
 if(isset($_GET['event_id']))
 {
     require '../config.php';
     require '../general_requires/db_functions.php';
-    require '../general_requires/display_functions.php';
     require 'php/requires/controller_functions.php';
     require 'php/requires/db_functions.php';
     require 'php/requires/display_functions.php';

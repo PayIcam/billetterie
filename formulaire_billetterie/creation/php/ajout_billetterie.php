@@ -1,23 +1,30 @@
 <?php
 
-require '../../config.php';
-require '../../general_requires/db_functions.php';
 require '../../general_requires/display_functions.php';
-require 'requires/db_functions.php';
-require 'requires/controller_functions.php';
-
-$db = connect_to_db($_CONFIG['ticketing']);
 
 if(!empty($_POST))
 {
+    require '../../config.php';
+    require 'requires/db_functions.php';
+    require 'requires/controller_functions.php';
+    require '../../general_requires/db_functions.php';
+
+    $db = connect_to_db($_CONFIG['ticketing']);
+
     //Table events
+    $is_active = (int)isset($_POST['event_is_active']);
+
+    //Jquery sends a weird format for dates, I have to specificate this format, then have to convert to Sql's one
+    $ticketing_start_date = date('Y-m-d H:i:s', date_create_from_format('m/d/Y h:i a', $_POST['ticketing_start_date'])->getTimestamp());
+    $ticketing_end_date = date('Y-m-d H:i:s', date_create_from_format('m/d/Y h:i a', $_POST['ticketing_end_date'])->getTimestamp());
+
     $table_event_data = array(
         "name" => $_POST['event_name'],
         "description" => $_POST['event_description'],
         "total_quota" => $_POST['event_quota'],
-        "ticketing_start_date" => date('Y-m-d H:i:s', date_create_from_format('d/m/Y h:i a', $_POST['ticketing_start_date'])->getTimestamp()),//Jquery sends a weird format for dates, I have to specificate this format, then have to convert to Sql's one
-        "ticketing_end_date" => date('Y-m-d H:i:s', date_create_from_format('d/m/Y h:i a', $_POST['ticketing_end_date'])->getTimestamp()),
-        "is_active" => $_POST['event_is_active'],
+        "ticketing_start_date" => $ticketing_start_date,
+        "ticketing_end_date" => $ticketing_end_date,
+        "is_active" => $is_active,
         "has_guests" => $_POST['guests']
         );
     insert_event_details($table_event_data);
