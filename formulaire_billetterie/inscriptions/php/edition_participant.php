@@ -24,6 +24,9 @@ if(!empty($_POST))
     }
 
     $event = get_event_details($event_id);
+
+    check_if_event_should_be_displayed($event,$promo_id, $site_id, $email);
+
     $promo_specifications = get_promo_specification_details(array("event_id" => $event_id, "promo_id" => $promo_id, "site_id" => $site_id));
 
     $total_price = 0;

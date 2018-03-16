@@ -3,6 +3,7 @@
 require 'config.php';
 require 'general_requires/db_functions.php';
 require 'general_requires/display_functions.php';
+require 'general_requires/controller_functions.php';
 require 'homepage/requires/display_functions.php';
 require 'homepage/requires/db_functions.php';
 require 'homepage/requires/controller_functions.php';

@@ -26,6 +26,10 @@ if(isset($_GET['event_id']))
         $promo_id = get_promo_id($promo);
         $site_id = get_site_id($site);
 
+        $event = get_event_details($event_id);
+
+        check_if_event_should_be_displayed($event,$promo_id, $site_id, $email);
+
         $icam_event_data = get_icam_event_data(array("email" => $email, "event_id" => $event_id, "promo_id" => $promo_id, "site_id" => $site_id));
         if($icam_event_data=='several_emails')
         {
@@ -46,8 +50,6 @@ if(isset($_GET['event_id']))
 
         if(count($promo_specifications) > 0)
         {
-            $event = get_event_details($event_id);
-
             $current_participants_number = get_current_participants_number($event_id);
             $total_quota = $event['total_quota'];
 

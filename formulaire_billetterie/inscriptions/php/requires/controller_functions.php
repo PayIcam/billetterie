@@ -462,3 +462,43 @@ function get_icams_guests_data($ids)
     }
     return $guests_data;
 }
+
+function prevent_displaying_on_wrong_ticketing_state($ticketing_state)
+{
+    if(in_array($ticketing_state, array('coming in some time', 'coming soon', 'ended long ago', 'ended and no reservation')))
+    {
+        switch ($ticketing_state)
+        {
+            case 'coming soon':
+            case 'coming in some time':
+            {
+                set_alert_style();
+                add_error("La billetterie n'a pas encore commencé.");
+                die();
+            }
+            case 'ended and no reservation':
+            case 'ended long ago':
+            {
+                set_alert_style();
+                add_error("La billetterie est finie.");
+                die();
+            }
+        }
+    }
+}
+
+function check_if_event_should_be_displayed($event,$promo_id, $site_id, $email)
+{
+    $event_id = $event['event_id'];
+    if($event['is_active']==0)
+    {
+        set_alert_style();
+        add_error("L'évènement n'est pas encore actif");
+        die();
+    }
+
+    $icam_has_reservation = participant_has_its_place(array("event_id" => $event_id, "promo_id" => $promo_id, "site_id" => $site_id, "email" => $email));
+    $ticketing_state = get_ticketing_state($event, $promo_id, $site_id, $email, $icam_has_reservation);
+
+    prevent_displaying_on_wrong_ticketing_state($ticketing_state);
+}

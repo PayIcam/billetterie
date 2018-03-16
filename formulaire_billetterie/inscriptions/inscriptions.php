@@ -28,11 +28,14 @@ if(isset($_GET['event_id']))
             die();
         }
 
+        $event = get_event_details($event_id);
+
+        check_if_event_should_be_displayed($event,$promo_id, $site_id, $email);
+
         $promo_specifications = get_promo_specification_details(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id));
 
         if(count($promo_specifications) > 0)
         {
-            $event = get_event_details($event_id);
 
             $current_participants_number = get_current_participants_number($event_id);
             $total_quota = $event['total_quota'];
