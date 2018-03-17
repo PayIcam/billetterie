@@ -32,13 +32,13 @@ function get_sites_id()
 function insert_event_details($table_event_data)
 {
     global $db;
-    $event_insertion = $db->prepare('INSERT INTO events(name, description, is_active, has_guests, ticketing_start_date, ticketing_end_date, total_quota) VALUES (:name, :description, :is_active, :has_guests, :ticketing_start_date, :ticketing_end_date, :total_quota)');
+    $event_insertion = $db->prepare('INSERT INTO events(name, description, is_active, ticketing_start_date, ticketing_end_date, total_quota) VALUES (:name, :description, :is_active, :ticketing_start_date, :ticketing_end_date, :total_quota)');
     return $event_insertion->execute($table_event_data);
 }
 function update_event_details($table_event_data)
 {
     global $db;
-    $event_update = $db->prepare('UPDATE events SET name = :name, description = :description, is_active = :is_active, has_guests = :has_guests, ticketing_start_date = :ticketing_start_date, ticketing_end_date = :ticketing_end_date, total_quota = :total_quota WHERE event_id = :event_id');
+    $event_update = $db->prepare('UPDATE events SET name = :name, description = :description, is_active = :is_active, ticketing_start_date = :ticketing_start_date, ticketing_end_date = :ticketing_end_date, total_quota = :total_quota WHERE event_id = :event_id');
     return $event_update->execute($table_event_data);
 }
 

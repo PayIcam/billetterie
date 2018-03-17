@@ -5,40 +5,35 @@ require '../../general_requires/display_functions.php';
 if(!empty($_POST))
 {
     require '../../config.php';
+    require '../../general_requires/db_functions.php';
     require 'requires/db_functions.php';
     require 'requires/controller_functions.php';
-    require '../../general_requires/db_functions.php';
 
     $db = connect_to_db($_CONFIG['ticketing']);
 
-    //Table events
-    $is_active = (int)isset($_POST['event_is_active']);
+    check_and_prepare_data();
 
-    //Jquery sends a weird format for dates, I have to specificate this format, then have to convert to Sql's one
-    $ticketing_start_date = date('Y-m-d H:i:s', date_create_from_format('m/d/Y h:i a', $_POST['ticketing_start_date'])->getTimestamp());
-    $ticketing_end_date = date('Y-m-d H:i:s', date_create_from_format('m/d/Y h:i a', $_POST['ticketing_end_date'])->getTimestamp());
+    //Table events
 
     $table_event_data = array(
-        "name" => $_POST['event_name'],
-        "description" => $_POST['event_description'],
-        "total_quota" => $_POST['event_quota'],
-        "ticketing_start_date" => $ticketing_start_date,
-        "ticketing_end_date" => $ticketing_end_date,
-        "is_active" => $is_active,
-        "has_guests" => $_POST['guests']
+        "name" => $event->name,
+        "description" => $event->description,
+        "total_quota" => $event->quota,
+        "ticketing_start_date" => $event->ticketing_start_date,
+        "ticketing_end_date" => $event->ticketing_end_date,
+        "is_active" => $event->is_active
         );
     insert_event_details($table_event_data);
     $event_id = $db->lastInsertId();
 
     //table promos_sites_specifications
-    $event_accessibility_json = $_POST['event_accessibility_json'];
-    $event_promos = json_decode($event_accessibility_json);
+
     foreach($event_promos as $promo_data)
     {
         $table_specifications = array(
             "event_id" => $event_id,
-            "site_id" => get_site_id($promo_data->site),
-            "promo_id" => get_promo_id($promo_data->promo),
+            "site_id" => $promo_data->site_id,
+            "promo_id" => $promo_data->promo_id,
             "price" => $promo_data->price,
             "quota" => $promo_data->quota,
             "guest_number" => $promo_data->guest_number
@@ -46,62 +41,35 @@ if(!empty($_POST))
         insert_specification_details($table_specifications);
     }
 
-    //just for checking
-    $has_options = $_POST['options'];
-    $has_permanents = $_POST['permanents'];
-    $has_graduated = $_POST['graduated_icam'];
+    //options & its accessibilities
 
-    //options &
-    if(isset($_POST['option_details_json']))
+    foreach($options as $option)
     {
-        $options_json = $_POST['option_details_json'];
-        $options = json_decode($options_json);
-        foreach($options as $option)
+        $table_option_data = array(
+            "name" => $option->name,
+            "description" => $option->description,
+            "is_active" => $option->is_active,
+            "is_mandatory" => $option->is_mandatory,
+            "type" => $option->type,
+            "quota" => $option->quota,
+            "specifications" => json_encode($option->type_specification),
+            "event_id" => $event_id
+            );
+        insert_option($table_option_data);
+        $option_id = $db->lastInsertId();
+
+        foreach($option->accessibility as $promo_data)
         {
-            $quota = ($option->quota=='') ? null : $option->quota;
-
-            $table_option_data = array(
-                "name" => $option->name,
-                "description" => $option->description,
-                "is_active" => $option->is_active,
-                "is_mandatory" => $option->is_mandatory,
-                "type" => $option->type,
-                "quota" => $quota,
-                "specifications" => json_encode($option->type_specification),
-                "event_id" => $event_id
+            $option_accessibility = array(
+                "event_id" => $event_id,
+                "site_id" => get_site_id($promo_data->site),
+                "promo_id" => get_promo_id($promo_data->promo),
+                "option_id" => $option_id
                 );
-            insert_option($table_option_data);
-            $option_id = $db->lastInsertId();
-
-            foreach($option->accessibility as $promo_data)
-            {
-                if($promo_data->site=='Tous')
-                {
-                    $sites_id = get_sites_id();
-                    foreach($sites_id as $site_id)
-                    {
-                        $table_specifications = array(
-                            "event_id" => $event_id,
-                            "site_id" => $site_id['site_id'],
-                            "promo_id" => get_promo_id($promo_data->promo),
-                            "option_id" => $option_id
-                            );
-                        insert_option_accessibility($table_specifications);
-                    }
-                }
-                else
-                {
-                    $option_accessibility = array(
-                        "event_id" => $event_id,
-                        "site_id" => get_site_id($promo_data->site),
-                        "promo_id" => get_promo_id($promo_data->promo),
-                        "option_id" => $option_id
-                        );
-                    insert_option_accessibility($option_accessibility);
-                }
-            }
+            insert_option_accessibility($option_accessibility);
         }
     }
+    echo 'Les informations ont bien été pris en compte !';
 }
 else
 {

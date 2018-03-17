@@ -161,11 +161,12 @@ function insert_according_select_options($option, $option_subname=null)
     {
         if($option_subname==null)
         {
-            if(get_current_select_option_quota(array("event_id" => $option['event_id'], "option_id" => $option['option_id'], "subname" => $option_specification->name)) < $option_specification->quota)
+            $suboption_quota = $option_specification->quota==null ? INF : $option_specification->quota;
+            if(get_current_select_option_quota(array("event_id" => $option['event_id'], "option_id" => $option['option_id'], "subname" => $option_specification->name)) < $suboption_quota)
             {
                 ?>
                 <option value="<?= $option_specification->name ?>" <?=($option['is_mandatory']==1 and $compteur==0) ? 'selected' : ''?> >
-                    <?= $option_specification->name . '(' . $option_specification->price . ')' ?>
+                    <?= $option_specification->name . ' (' . $option_specification->price . '€)' ?>
                 </option>
                 <?php
                 $compteur++;

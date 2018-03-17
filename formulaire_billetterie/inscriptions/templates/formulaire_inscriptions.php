@@ -26,7 +26,7 @@
         <div id="registration">
             <div id="registration_icam" class="container">
                 <?php
-                $promo_quota = $promo_specifications['quota']=='' ? INF : $promo_specifications['quota'];
+                $promo_quota = $promo_specifications['quota']==null ? INF : $promo_specifications['quota'];
                 if(get_current_promo_quota(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id)) < $promo_quota)
                 {
                     if(!isset($icam_event_data)){$icam_event_data = null;}

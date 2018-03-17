@@ -7,7 +7,7 @@ function insert_select_options($option_specifications, $is_mandatory = 0)
     {
         ?>
         <option value="<?= $option_specification->name ?>" <?=($is_mandatory==1 and $compteur==0) ? 'selected' : ''?> >
-            <?= $option_specification->name . '(' . $option_specification->price . ')' ?>
+            <?= $option_specification->name . '(' . $option_specification->price . '€)' ?>
         </option>
         <?php
         $compteur++;

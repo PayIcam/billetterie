@@ -13,6 +13,11 @@ function check_then_submit_form(event)
             add_error('Le nom de votre évènement n\'est pas défini...');
             form_is_correct = 0;
         }
+        else if($('input[name=event_name]').val().length>100)
+        {
+            add_error("Le nom de l'évènement est bien trop long");
+            form_is_correct = 0;
+        }
         if($('textarea[name=event_description]').val()=='')
         {
             add_error('La description de votre évènement n\'est pas définie...');
@@ -44,6 +49,11 @@ function check_then_submit_form(event)
             if($(this).find("input[name=option_name]").val()=='')
             {
                 add_error('L\'option ' + option_name + ' est incomplète : Le nom de l\'option n\'est pas défini');
+                form_is_correct = 0;
+            }
+            else if($('input[name=option_name]').val().length>100)
+            {
+                add_error("Le nom de l'option : " + option_name + " est bien trop long");
                 form_is_correct = 0;
             }
             if($(this).find("textarea[name=option_description]").val()=='')
@@ -81,6 +91,11 @@ function check_then_submit_form(event)
                     add_error('L\'option ' + option_name + ' est incomplète : Il n\'y a rien dans votre select');
                     form_is_correct = 0;
                 }
+                if($(this).find('.select_table tbody tr :nth-child(2)').text().length>100)
+                {
+                    add_error("Le sous-nom de l'option : " + option_name + " est bien trop long");
+                    form_is_correct = 0;
+                }
                 if($(this).find('.select_table tbody tr').length ==1)
                 {
                     add_error('L\'option ' + option_name + ' est incomplète : Votre select ne contient qu\'une sous option. Utilisez plutôt un Checkbox...');
@@ -102,6 +117,19 @@ function check_then_submit_form(event)
             }
         });
         return form_is_correct;
+    }
+
+    function get_event_infos()
+    {
+        var name = $('input[name=event_name]').val();
+        var description = $('textarea[name=event_description]').val();
+        var quota = $('input[name=event_quota]').val();
+        var ticketing_start_date = $('input[name=ticketing_start_date]').val();
+        var ticketing_end_date = $('input[name=ticketing_end_date]').val();
+        var is_active = $('.general_infos .toggle').hasClass('off') ? 0 : 1;
+
+        var event_json = {name: name, description: description, quota: quota, ticketing_start_date: ticketing_start_date, ticketing_end_date: ticketing_end_date, is_active: is_active}
+        return event_json;
     }
     function get_accessibility_infos()
     {
@@ -127,7 +155,7 @@ function check_then_submit_form(event)
             rows.each(function()
             {
                 var name = $(this).children(':nth-child(2)').text();
-                var price = $(this).children(':nth-child(3)').text();//On vire le symbole €
+                var price = $(this).children(':nth-child(3)').text().slice(0,-1);//On vire le symbole €
                 var quota = $(this).children(':nth-child(4)').text();
 
                 var select_option = {name:name, price:price, quota:quota};
@@ -175,6 +203,7 @@ function check_then_submit_form(event)
             var option_id = $(this).find(".option_id_value").val();
 
             var option = {option_id: option_id, name: name, description: description, quota: quota, is_active: is_active, is_mandatory: is_mandatory, type: type, type_specification: specification, accessibility: option_accessibility};
+
             options.push(option);
         });
         return options;
@@ -184,6 +213,9 @@ function check_then_submit_form(event)
 
     if(check_form()==1)
     {
+        var event_data = get_event_infos();
+        var event_data_json = JSON.stringify(event_data);
+
         var event_accessibility = get_accessibility_infos();
         var event_accessibility_json = JSON.stringify(event_accessibility);
         var event_accessibility_input = $("<input type='hidden' name='event_accessibility_json'>");
@@ -198,6 +230,52 @@ function check_then_submit_form(event)
             option_details_input.val(option_details_json);
             $("#input_additions").append(option_details_input);
         }
+        else
+        {
+            var option_details_json = '';
+        }
+
+        var post_url = $('form').prop('action');
+
+        function ajax_success(data)
+        {
+            console.log(data);
+            console.log($.inArray(data, ['Les informations ont bien été pris en compte !', 'Les modifications ont bien été pris en compte !']));
+
+            if(data=='Les informations ont bien été pris en compte !' | data == 'Les modifications ont bien été pris en compte !')
+            {
+                console.log(data);
+                var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data + '</div>';
+                $("#erreurs_submit").append(message_displayed);
+                console.log(message_displayed);
+                $('form').off('submit').submit(function(submit)
+                {
+                    submit.preventDefault();
+                });
+                setTimeout(function()
+                {
+                    document.location.href = '../';
+                }, 1000);
+            }
+            else
+            {
+                $("#erreurs_submit").append(data);
+            }
+        }
+        function error_ajax()
+        {
+            add_error('La requête Ajax permettant de submit les informations et ajouter la billetterie a échoué');
+        }
+
+        $.post(
+        {
+            url: post_url,
+            data: {event_data_json: event_data_json, event_accessibility_json: event_accessibility_json, option_details_json: option_details_json},
+            dataType: 'html',
+            success: ajax_success,
+            error: error_ajax
+        });
+        event.preventDefault();
     }
     else
     {

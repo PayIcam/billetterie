@@ -363,11 +363,12 @@
                 </div><!--On va avoir TOUTES nos options ici, on les ajoute avec un peu d'AJAX-->
             </div>
 
+            <div id="erreurs_submit"></div><!--On va mettre ici des erreurs qui s'affichent si on a mal submit -->
+
             <div id="submit_form_div" class="text-center"><!--Basique, c'est notre bouton de submit, il ne s'affiche pas dès le début d'ailleurs cf JS -->
                 <button id="submit_form" class="btn btn-success" type="submit"><?= isset($event) ? 'Editez ' : 'Créez ' ?>votre évènement !</button>
             </div>
 
-            <div id="erreurs_submit"></div><!--On va mettre ici des erreurs qui s'affichent si on a mal submit -->
 
             <div id="input_additions">
             </div><!--On va mettre ici des inputs hidden juste avant d'envoyer les données. Ils contiennent des données grâce au JSON.stringify(). -->

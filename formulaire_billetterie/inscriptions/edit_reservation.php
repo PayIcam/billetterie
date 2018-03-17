@@ -32,6 +32,7 @@ if(isset($_GET['event_id']))
         check_if_event_should_be_displayed($event,$promo_id, $site_id, $email);
 
         $icam_event_data = get_icam_event_data(array("email" => $email, "event_id" => $event_id, "promo_id" => $promo_id, "site_id" => $site_id));
+
         if($icam_event_data=='several_emails')
         {
             set_alert_style();

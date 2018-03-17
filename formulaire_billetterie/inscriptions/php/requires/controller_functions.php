@@ -19,7 +19,8 @@ function option_form($option, $promo_id, $site_id, $participant_id=-1)
     {
         if($option['is_active']==1)
         {
-            if(get_current_option_quota(array('event_id' => $option['event_id'], 'option_id' => $option['option_id'])) < $option['quota'])
+            $option_quota = $option['quota']==null ? INF : $option['quota'];
+            if(get_current_option_quota(array('event_id' => $option['event_id'], 'option_id' => $option['option_id'])) < $option_quota)
             {
                 if(promo_has_option(array("event_id" => $option['event_id'], "option_id" => $option['option_id'], "promo_id" => $promo_id, "site_id" => $site_id)))
                 {
@@ -320,6 +321,11 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
                     add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du numéro de téléphone <br>");
                     $error = true;
                 }
+                elseif(count($participant_data->telephone>25))
+                {
+                    add_error($participant_type . " : Pourquoi avez vous besoin d'autant de caractères pour un simple numéro de téléphone ?<br>");
+                    $error = true;
+                }
             }
             elseif($participant_type=='icam')
             {
@@ -328,10 +334,18 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
                     add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prénom <br>");
                     $error = true;
                 }
+                elseif(count($participant_data->prenom)>100)
+                {
+                    add_error($participant_type . " : Le prenom a-t-il besoin d'être si long ?<br>");
+                }
                 if(!is_string($participant_data->nom))//Faire avec les variables de session
                 {
                     add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom <br>");
                     $error = true;
+                }
+                elseif(count($participant_data->nom)>100)
+                {
+                    add_error($participant_type . " : Le nom a-t-il besoin d'être si long ?<br>");
                 }
             }
             if(!preg_match("#^[0-9]{4}-[0-9]{2}-[0-9]{2}$#", $participant_data->birthdate) and $participant_data->birthdate!='')
@@ -415,6 +429,11 @@ function is_correct_participant_supplement_data($participant_data, $participant_
                     add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du numéro de téléphone <br>");
                     $error = true;
                 }
+                elseif(count($participant_data->telephone>25))
+                {
+                    add_error($participant_type . " : Pourquoi avez vous besoin d'autant de caractères pour un simple numéro de téléphone ?<br>");
+                    $error = true;
+                }
             }
             elseif($participant_type=='guests')
             {
@@ -423,10 +442,19 @@ function is_correct_participant_supplement_data($participant_data, $participant_
                     add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prénom <br>");
                     $error = true;
                 }
+                elseif(count($participant_data->prenom)>100)
+                {
+                    add_error($participant_type . " : Le prenom a-t-il besoin d'être si long ?<br>");
+                }
+
                 if(!is_string($participant_data->nom))//Faire avec les variables de session
                 {
                     add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom <br>");
                     $error = true;
+                }
+                elseif(count($participant_data->nom)>100)
+                {
+                    add_error($participant_type . " : Le nom a-t-il besoin d'être si long ?<br>");
                 }
             }
             if(!preg_match("#^[0-9]{4}-[0-9]{2}-[0-9]{2}$#", $participant_data->birthdate) and $participant_data->birthdate!='')

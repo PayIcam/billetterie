@@ -18,7 +18,7 @@ function insert_event_accessibility_rows($promos_specifications)
             <th><?= $numero ?></th>
             <td><?= get_site_name($promo_specifications['site_id']) ?></td>
             <td><?= get_promo_name($promo_specifications['promo_id']) ?></td>
-            <td><?= $promo_specifications['price']?></td>
+            <td><?= $promo_specifications['price'] . '€'?></td>
             <td><?= $promo_specifications['quota']?></td>
             <td><?= $promo_specifications['guest_number']?></td>
             <td><button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></td>
@@ -54,7 +54,7 @@ function insert_option_select_rows($option_specifications)
         <tr>
             <th><?= $numero ?></th>
             <td><?= $option_specification->name ?></td>
-            <td><?= $option_specification->price ?></td>
+            <td><?= $option_specification->price.'€' ?></td>
             <td><?= $option_specification->quota ?></td>
             <td><button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></td>
         </tr>
