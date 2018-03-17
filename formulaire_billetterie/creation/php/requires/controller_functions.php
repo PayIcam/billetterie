@@ -286,6 +286,15 @@ function are_correct_options()
             $error = true;
             continue;
         }
+        if(isset($option->option_id))
+        {
+            if(!event_has_option(array("event_id" => $_GET['event_id'], "option_id" => $option->option_id)))
+            {
+                add_error("L'id de l'option a été changée.");
+                $error = true;
+                continue;
+            }
+        }
         if(!is_string($option->name))
         {
             add_error("Le nom de l'option n'est même pas une chaine de caractères");

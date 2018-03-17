@@ -98,3 +98,12 @@ function get_participant_event_data($ids)
     $participant_data->execute($ids);
     return $participant_data->fetch();
 }
+
+function event_has_option($ids)
+{
+    global $db;
+    $option = $db->prepare('SELECT * FROM options WHERE event_id = :event_id and option_id = :option_id');
+    $option->execute($ids);
+    $option = $option->fetch();
+    return empty($option) ? false : true;
+}
