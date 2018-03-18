@@ -33,7 +33,8 @@ function insert_event_details($table_event_data)
 {
     global $db;
     $event_insertion = $db->prepare('INSERT INTO events(name, description, is_active, ticketing_start_date, ticketing_end_date, total_quota) VALUES (:name, :description, :is_active, :ticketing_start_date, :ticketing_end_date, :total_quota)');
-    return $event_insertion->execute($table_event_data);
+    $event_insertion->execute($table_event_data);
+    return $db->lastInsertId();
 }
 function update_event_details($table_event_data)
 {
@@ -74,7 +75,8 @@ function insert_option($table_option_data)
 {
     global $db;
     $option_insertion = $db->prepare('INSERT INTO options(name, description, is_active, is_mandatory, type, quota, specifications, event_id) VALUES (:name, :description, :is_active, :is_mandatory, :type, :quota, :specifications, :event_id)');
-    return $option_insertion->execute($table_option_data);
+    $option_insertion->execute($table_option_data);
+    return $db->lastInsertId();
 }
 function update_option($table_option_data)
 {

@@ -117,8 +117,7 @@ if(!empty($_POST))
             "site_id" => $icam_data->site_id,
             "promo_id" => $icam_data->promo_id
             );
-        insert_icam_participant($icam_insertion_data);
-        $icam_id = $db->lastInsertId();
+        $icam_id = insert_icam_participant($icam_insertion_data);
 
         participant_options_handling($event_id, $icam_id, $icam_data->options);
 
@@ -138,8 +137,7 @@ if(!empty($_POST))
                     "site_id" => $guest_data->site_id,
                     "promo_id" => $guest_data->promo_id
                     );
-                insert_guest_participant($guest_insertion_data);
-                $guest_id = $db->lastInsertId();
+                $guest_id = insert_guest_participant($guest_insertion_data);
                 insert_icams_guest(array("event_id" => $event_id, "icam_id" => $icam_id, "guest_id" => $guest_id));
 
                 participant_options_handling($event_id, $guest_id, $guest_data->options);

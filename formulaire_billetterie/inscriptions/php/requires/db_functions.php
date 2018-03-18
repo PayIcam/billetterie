@@ -70,7 +70,8 @@ function insert_icam_participant($icam_data)
 {
     global $db;
     $icam_insertion = $db->prepare('INSERT INTO participants(prenom, nom, is_icam, email, price, telephone, birthdate, event_id, site_id, promo_id) VALUES (:prenom, :nom, :is_icam, :email, :price, :telephone, :birthdate, :event_id, :site_id, :promo_id)');
-    return $icam_insertion->execute($icam_data);
+    $icam_insertion->execute($icam_data);
+    return $db->lastInsertId();
 }
 function update_icam_participant($icam_data)
 {
@@ -82,7 +83,8 @@ function insert_guest_participant($guest_data)
 {
     global $db;
     $icam_insertion = $db->prepare('INSERT INTO participants(prenom, nom, is_icam, price, birthdate, event_id, site_id, promo_id) VALUES (:prenom, :nom, :is_icam, :price, :birthdate, :event_id, :site_id, :promo_id)');
-    return $icam_insertion->execute($guest_data);
+    $icam_insertion->execute($guest_data);
+    return $db->lastInsertId();
 }
 function update_guest_participant($guest_data)
 {

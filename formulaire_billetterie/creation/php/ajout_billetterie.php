@@ -21,8 +21,7 @@ if(!empty($_POST))
         "ticketing_end_date" => $event->ticketing_end_date,
         "is_active" => $event->is_active
         );
-    insert_event_details($table_event_data);
-    $event_id = $db->lastInsertId();
+    $event_id = insert_event_details($table_event_data);
 
     //table promos_sites_specifications
 
@@ -53,8 +52,7 @@ if(!empty($_POST))
             "specifications" => json_encode($option->type_specification),
             "event_id" => $event_id
             );
-        insert_option($table_option_data);
-        $option_id = $db->lastInsertId();
+        $option_id = insert_option($table_option_data);
 
         foreach($option->accessibility as $promo_data)
         {

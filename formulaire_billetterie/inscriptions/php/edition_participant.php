@@ -156,8 +156,7 @@ if(!empty($_POST))
                     "site_id" => $new_guest_data->site_id,
                     "promo_id" => $new_guest_data->promo_id
                     );
-                insert_guest_participant($guest_insertion_data);
-                $guest_id = $db->lastInsertId();
+                $guest_id = insert_guest_participant($guest_insertion_data);
                 insert_icams_guest(array("event_id" => $event_id, "icam_id" => $icam_id, "guest_id" => $guest_id));
 
                 participant_options_handling($event_id, $guest_id, $new_guest_data->options);

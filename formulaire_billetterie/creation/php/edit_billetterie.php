@@ -85,8 +85,7 @@ if(!empty($_POST))
                 "quota" => $option->quota,
                 "specifications" => json_encode($option->type_specification),
                 );
-            insert_option($table_option_data);
-            $option_id = $db->lastInsertId();
+            $option_id = insert_option($table_option_data);
         }
 
         foreach($option->accessibility as $promo_data)
