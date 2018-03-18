@@ -1,0 +1,12 @@
+{
+    "name": "payicam/billetterie",
+    "description": "billetterie payicam",
+    "require": {
+        "php": ">=7.0.0",
+        "ginger/client": "*"
+    },
+    "autoload": {
+        "classmap": ["vendor/payutc-json-client/jsonclient/"],
+        "psr-0": { "CoreHelpers": "src" }
+    }
+}

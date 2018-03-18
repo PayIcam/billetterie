@@ -1,31 +1,19 @@
 <?php
 
-    // $email = 'antoine.giraud@2015.icam.fr';
-    // $res = json_decode(file_get_contents($_CONFIG['ginger']['url'].$email."/?key=".$_CONFIG['ginger']['key']));
-    // var_dump($res);
-    // die();
-require '../general_requires/display_functions.php';
+require __DIR__ . '/../general_requires/_header.php';
 
 if(isset($_GET['event_id']))
 {
-    require '../config.php';
-    require '../general_requires/db_functions.php';
-    require '../general_requires/controller_functions.php';
     require 'php/requires/controller_functions.php';
     require 'php/requires/db_functions.php';
     require 'php/requires/display_functions.php';
 
-    $db = connect_to_db($_CONFIG['ticketing']);
-
     $event_id = $_GET['event_id'];
     if(event_id_is_correct($event_id))
     {
-        $promo = 120;
-        $site = 'Lille';
-        $email = 'gregoire.giraud@2020.icam.fr';
-
-        $promo_id = get_promo_id($promo);
-        $site_id = get_site_id($site);
+        $email = $_SESSION['icam_informations']->mail;
+        $promo_id = $_SESSION['icam_informations']->promo_id;
+        $site_id = $_SESSION['icam_informations']->site_id;
 
         $event = get_event_details($event_id);
 

@@ -1,18 +1,14 @@
 <?php
-require '../general_requires/display_functions.php';
+require __DIR__ . '/../general_requires/_header.php';
 
 if(isset($_GET['event_id']))
 {
     $event_id = $_GET['event_id'];
 
-    require '../config.php';
-    require '../general_requires/db_functions.php';
     require 'php/requires/display_functions.php';
     require 'php/requires/db_functions.php';
     require 'php/requires/controller_functions.php';
     require 'templates/add_option.php';
-
-    $db = connect_to_db($_CONFIG['ticketing']);
 
     $student_promos = get_student_promos();
     $graduated_promos = get_graduated_promos();

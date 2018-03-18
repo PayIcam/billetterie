@@ -1,27 +1,19 @@
 <?php
 
-require '../general_requires/display_functions.php';
+require __DIR__ . '/../general_requires/_header.php';
 
 if(isset($_GET['event_id']))
 {
-    require '../config.php';
-    require '../general_requires/db_functions.php';
-    require '../general_requires/controller_functions.php';
     require 'php/requires/controller_functions.php';
     require 'php/requires/db_functions.php';
     require 'php/requires/display_functions.php';
 
-    $db = connect_to_db($_CONFIG['ticketing']);
-
     $event_id = $_GET['event_id'];
     if(event_id_is_correct($event_id))
     {
-        $email = 'gregoire.giraud@2020.icam.fr';
-        $promo = 120;
-        $site = 'Lille';
-
-        $promo_id = get_promo_id($promo);
-        $site_id = get_site_id($site);
+        $email = $_SESSION['icam_informations']->mail;
+        $promo_id = $_SESSION['icam_informations']->promo_id;
+        $site_id = $_SESSION['icam_informations']->site_id;
 
         if(participant_has_its_place(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id, "email" => $email)))
         {

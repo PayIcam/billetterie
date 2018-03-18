@@ -1,11 +1,9 @@
 <?php
 
-require '../../general_requires/display_functions.php';
+require __DIR__ . '/../../general_requires/_header.php';
 
 if(!empty($_POST))
 {
-    require '../../config.php';
-    require '../../general_requires/db_functions.php';
     require 'requires/db_functions.php';
     require 'requires/controller_functions.php';
 

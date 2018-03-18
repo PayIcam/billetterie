@@ -1,2 +1,4 @@
 admin_gala_2018/config.php
 formulaire_billetterie/config.php
+formulaire_billetterie/vendor/
+formulaire_billetterie/composer.lock

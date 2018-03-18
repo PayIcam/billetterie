@@ -2,11 +2,9 @@
 
 function form_icam($event, $promo_specifications, $options, $icam_reservation = null)
 {
-    $firstname = 'Grégoire';
-    $lastname = 'Giraud';
-    $email = 'gregoire.giraud@2020.icam.fr';
-    $promo = 120;
-    $site = 'Lille';
+    $email = $_SESSION['icam_informations']->mail;
+    $prenom = $_SESSION['icam_informations']->prenom;
+    $nom = $_SESSION['icam_informations']->nom;
 
     $icam_id = $icam_reservation == null ? -1 : $icam_reservation['participant_id'];
     ?>
@@ -19,12 +17,12 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
         <div class="row">
             <div class="col-sm-4 form-group">
                 <label for="icam_firstname">Prénom : </label>
-                <input value="<?= $icam_reservation['prenom'] ?? $firstname ?>" type="text" class="form-control" name="icam_firstname" id="icam_firstname" placeholder="Prénom" disabled>
+                <input value="<?= $icam_reservation['prenom'] ?? $prenom ?>" type="text" class="form-control" name="icam_firstname" id="icam_firstname" placeholder="Prénom" disabled>
             </div>
 
             <div class="col-sm-4 form-group">
                 <label for="icam_lastname">Nom : </label>
-                <input value="<?= $icam_reservation['nom'] ?? $lastname ?>" type="text" class="form-control" name="icam_lastname" id="icam_lastname" placeholder="Nom" disabled>
+                <input value="<?= $icam_reservation['nom'] ?? $nom ?>" type="text" class="form-control" name="icam_lastname" id="icam_lastname" placeholder="Nom" disabled>
             </div>
 
             <div class="col-sm-4 form-group">

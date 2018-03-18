@@ -241,11 +241,11 @@ function check_participant_options($participant_data, $participant_type, $event_
 function is_correct_participant_data($participant_data, $participant_type, $promo_specifications)
 {
     $event_id = $promo_specifications['event_id'];
-    $promo_id = 13;//Récupérer ce qui vient de la variable de session
-    $site_id = 3;//Récupérer ce qui vient de la variable de session
-    $prenom = "Grégoire";//same
-    $nom = "Giraud";//same
-    $email = "gregoire.giraud@2020.icam.fr";//same
+    $email = $_SESSION['icam_informations']->mail;
+    $promo_id = $_SESSION['icam_informations']->promo_id;
+    $site_id = $_SESSION['icam_informations']->site_id;
+    $prenom = $_SESSION['icam_informations']->prenom;
+    $nom = $_SESSION['icam_informations']->nom;
 
     $error = false;
     if($participant_data == null)
@@ -321,7 +321,7 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
                     add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du numéro de téléphone <br>");
                     $error = true;
                 }
-                elseif(count($participant_data->telephone>25))
+                elseif(count($participant_data->telephone)>25)
                 {
                     add_error($participant_type . " : Pourquoi avez vous besoin d'autant de caractères pour un simple numéro de téléphone ?<br>");
                     $error = true;
@@ -381,11 +381,11 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
 function is_correct_participant_supplement_data($participant_data, $participant_type, $promo_specifications)
 {
     $event_id = $promo_specifications['event_id'];
-    $promo_id = 13;//Récupérer ce qui vient de la variable de session
-    $site_id = 3;//Récupérer ce qui vient de la variable de session
-    $prenom = "Grégoire";//same
-    $nom = "Giraud";//same
-    $email = "gregoire.giraud@2020.icam.fr";//same
+    $email = $_SESSION['icam_informations']->mail;
+    $promo_id = $_SESSION['icam_informations']->promo_id;
+    $site_id = $_SESSION['icam_informations']->site_id;
+    $prenom = $_SESSION['icam_informations']->prenom;
+    $nom = $_SESSION['icam_informations']->nom;
 
     $error = false;
     if($participant_data == null)
@@ -429,7 +429,7 @@ function is_correct_participant_supplement_data($participant_data, $participant_
                     add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du numéro de téléphone <br>");
                     $error = true;
                 }
-                elseif(count($participant_data->telephone>25))
+                elseif(count($participant_data->telephone)>25)
                 {
                     add_error($participant_type . " : Pourquoi avez vous besoin d'autant de caractères pour un simple numéro de téléphone ?<br>");
                     $error = true;
