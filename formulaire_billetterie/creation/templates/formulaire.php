@@ -365,12 +365,20 @@
 
             <div id="erreurs_submit"></div><!--On va mettre ici des erreurs qui s'affichent si on a mal submit -->
 
+            <div id="message_submit">
+                <div class="alert alert-info alert-dismissible waiting">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong>Parfait ! </strong>Modification en cours
+                </div>
+            </div>
+
             <div id="submit_form_div" class="text-center"><!--Basique, c'est notre bouton de submit, il ne s'affiche pas dès le début d'ailleurs cf JS -->
                 <button id="submit_form" class="btn btn-success" type="submit"><?= isset($event) ? 'Editez ' : 'Créez ' ?>votre évènement !</button>
             </div>
 
 
             <div id="input_additions">
+                <?= isset($fundation_id) ? "<input type='hidden' value='". $fundation_id . "' name='fundation_id'>" : "" ?>
             </div><!--On va mettre ici des inputs hidden juste avant d'envoyer les données. Ils contiennent des données grâce au JSON.stringify(). -->
         </form>
     </div>

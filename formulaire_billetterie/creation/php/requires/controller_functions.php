@@ -1,5 +1,11 @@
 <?php
 
+//Possible qu'il y ait une erreur à cause de Php, qui a des problèmes avec la précision des float............
+function is_an_integer($number)
+{
+    return (floor($number) == $number);
+}
+
 function add_options_previously_defined($options)
 {
     global $db;
@@ -100,7 +106,7 @@ function check_and_prepare_data()
     if(isset($_POST['option_details_json']))
     {
         global $options;
-        $options = json_decode($_POST['option_details_json']);
+        $options = json_decode($_POST['option_details_json'])==null ? array() : json_decode($_POST['option_details_json']);
         if(!are_correct_options())
         {
             die();
@@ -124,7 +130,7 @@ function is_correct_event_data()
         add_error("Les informations sur l'évènement sont mal passées. Ce n'est même pas un objet.");
         return false;
     }
-    if(count(get_object_vars($event))!=6)
+    if(count(get_object_vars($event))!=7)
     {
         add_error("Il n'y a pas le bon nombre de paramètres transmis pour les infos de l'évènement.");
         $error = true;
@@ -136,7 +142,7 @@ function is_correct_event_data()
             add_error("Le nom de l'évènement n'est même pas une chaine de caractères.");
             $error = true;
         }
-        elseif(count($event->name)>100)
+        elseif(strlen($event->name)>40)
         {
             add_error("Est ce vraiment nécessaire d'avoir un nom d'évènement si grand ?");
             $error = true;
@@ -151,7 +157,7 @@ function is_correct_event_data()
             add_error("Le quota de l'évènement n'est même pas numérique.");
             $error = true;
         }
-        elseif(!is_int(1*$event->quota))
+        elseif(!is_an_integer($event->quota))
         {
             add_error("Le quota de l'évènement n'est même pas entier.");
             $error = true;
@@ -236,7 +242,7 @@ function is_correct_event_accessibility()
                 add_error("Le prix d'une des promos n'est même pas numérique");
                 $error = true;
             }
-            elseif(!is_int(100*$event_promo->price))
+            elseif(!is_an_integer(100*$event_promo->price))
             {
                 add_error("Le prix d'une des promos est défini avec une précision plus grande que le centime, ou n'est même pas positif");
                 $error = true;
@@ -253,7 +259,7 @@ function is_correct_event_accessibility()
                     $error = true;
                 }
             }
-            elseif(!is_int(1*$event_promo->quota))
+            elseif(!is_an_integer(1*$event_promo->quota))
             {
                 add_error("Le quota d'une des promos n'est même pas entier");
                 $error = true;
@@ -263,7 +269,7 @@ function is_correct_event_accessibility()
                 add_error("Le nombre d'invités d'une des promos n'est même pas numérique");
                 $error = true;
             }
-            elseif(!is_int(1*$event_promo->guest_number))
+            elseif(!is_an_integer(1*$event_promo->guest_number))
             {
                 add_error("Le nombre d'invités d'une des promos n'est même pas entier");
                 $error = true;
@@ -300,7 +306,7 @@ function are_correct_options()
             add_error("Le nom de l'option n'est même pas une chaine de caractères");
             $error = true;
         }
-        elseif(count($option->name)>100)
+        elseif(strlen($option->name)>40)
         {
             add_error("Est-il nécessaire d'avoir un nom si long pour votre option ?");
             $error = true;
@@ -319,7 +325,7 @@ function are_correct_options()
             add_error("Le quota d'une des options n'est même pas numérique");
             $error = true;
         }
-        elseif(!is_int(1*$option->quota))
+        elseif(!is_an_integer(1*$option->quota))
         {
             add_error("Le quota d'une des options n'est même pas entier");
             $error = true;
@@ -337,7 +343,7 @@ function are_correct_options()
                 add_error("Le prix d'une option checkbox n'est même pas numérique");
                 $error = true;
             }
-            elseif(!is_int(100*$option->type_specification->price))
+            elseif(!is_an_integer(100*$option->type_specification->price))
             {
                 add_error("Le prix d'une option checkbox est défini avec une précision plus grande que le centime, ou n'est même pas positif");
                 $error = true;
@@ -369,7 +375,7 @@ function are_correct_options()
                     add_error("Le nom d'une sous-option select n'est même pas une chaine de caractères");
                     $error = true;
                 }
-                elseif(!count($suboption->name)>100)
+                elseif(!strlen($suboption->name)>40)
                 {
                     add_error("Est-il nécessaire d'avoir une sous-option si longue ?");
                     $error = true;
@@ -379,7 +385,7 @@ function are_correct_options()
                     add_error("Le prix d'une sous-option select n'est même pas numérique");
                     $error = true;
                 }
-                elseif(!is_int(100*$suboption->price))
+                elseif(!is_an_integer(100*$suboption->price))
                 {
                     add_error("Le prix d'une sous-option select est défini avec une précision plus grande que le centime, ou n'est même pas positif");
                     $error = true;
@@ -396,7 +402,7 @@ function are_correct_options()
                         $error = true;
                     }
                 }
-                elseif(!is_int(1*$suboption->quota))
+                elseif(!is_an_integer(1*$suboption->quota))
                 {
                     add_error("Le quota d'une sous-option select n'est pas un entier");
                     $error = true;

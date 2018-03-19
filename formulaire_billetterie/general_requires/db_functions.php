@@ -14,6 +14,35 @@ function connect_to_db($conf)
     }
 }
 
+function event_id_is_correct($event_id)
+{
+    if(is_numeric($event_id))
+    {
+        global $db;
+        $correct_id = $db->prepare('SELECT COUNT(*) matches FROM events WHERE event_id= :event_id');
+        $correct_id->execute(array("event_id" => $event_id));
+        $correct_id = $correct_id->fetch()['matches']==1 ? true : false;
+        if($correct_id == false)
+        {
+            set_alert_style();
+            add_error("Cet event_id n'existe pas");
+        }
+        return $correct_id;
+    }
+    elseif($event_id == "no_GET")
+    {
+        set_alert_style();
+        add_error("L'event_id n'est pas spécifié en GET");
+        return false;
+    }
+    else
+    {
+        set_alert_style();
+        add_error("L'event_id spécifiée n'est même pas un entier.");
+        return false;
+    }
+}
+
 function get_promo_id($name)
 {
     global $db;

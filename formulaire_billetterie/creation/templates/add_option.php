@@ -38,8 +38,8 @@ function add_option_html_code($option_number, $option=null, $option_specificatio
 
                                 <label>Quel est le type de l'option que vous proposez ?</label>
                                 <div class="form-check" aria-describedby=<?= '"option_'.$option_number.'_type_help"'; ?> >
-                                    <label class="radio-inline"><input <?= isset($option['type']) ? ($option['type']=='Checkbox' ? 'checked' : '') : '' ?> type="radio" class="option_type_input" name=<?= '"option_'.$option_number.'_type"'; ?> value="Checkbox" required>Checkbox</label>
-                                    <label class="radio-inline"><input <?= isset($option['type']) ? ($option['type']=='Select' ? 'checked' : '') : '' ?> type="radio" class="option_type_input" name=<?= '"option_'.$option_number.'_type"'; ?> value="Select">Select</label>
+                                    <label class="radio-inline"><input <?= isset($option['type']) ? ($option['type']=='Checkbox' ? 'checked disabled' : 'disabled') : '' ?> type="radio" class="option_type_input" name=<?= '"option_'.$option_number.'_type"'; ?> value="Checkbox" required>Checkbox</label>
+                                    <label class="radio-inline"><input <?= isset($option['type']) ? ($option['type']=='Select' ? 'checked disabled' : 'disabled') : '' ?> type="radio" class="option_type_input" name=<?= '"option_'.$option_number.'_type"'; ?> value="Select">Select</label>
                                 </div>
                                 <small style="font-size: 0.8em;" id=<?= '"option_'.$option_number.'_type_help"'; ?> >
                                     Une checkbox ne permet qu'un seul choix, simple, alors qu'un select, plus précis, permet un choix parmi une liste de propositions. <br>

@@ -117,6 +117,7 @@ function attach_option_events()
             $(this).parents(".panel-default").remove();
         }
     });
+
     $("#options .panel-default:not(.already_added) .option_generalities input[class=option_type_input]").change(function()//Si on change le type de l'option, il y a du traitement à faire.
     {
         $(this).parents(".option_generalities").siblings(".option_type_complement").fadeIn();//De base, rien n'est coché, on va donc afficher la partie générale (les 2 autres sont encore cachées)

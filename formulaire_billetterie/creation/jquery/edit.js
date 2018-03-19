@@ -32,6 +32,8 @@ function edit_no_options_action()
 
 function edit_options_action()
 {
+    $("#options input[class=option_type_input]").off('change');
+
     $("#options .panel-default").each(function()
     {
         if($(this).find("input:radio[class=option_type_input]:checked").val()=='Checkbox')

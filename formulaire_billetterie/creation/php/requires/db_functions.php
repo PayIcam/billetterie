@@ -32,7 +32,7 @@ function get_sites_id()
 function insert_event_details($table_event_data)
 {
     global $db;
-    $event_insertion = $db->prepare('INSERT INTO events(name, description, is_active, ticketing_start_date, ticketing_end_date, total_quota) VALUES (:name, :description, :is_active, :ticketing_start_date, :ticketing_end_date, :total_quota)');
+    $event_insertion = $db->prepare('INSERT INTO events(name, description, is_active, ticketing_start_date, ticketing_end_date, total_quota, fundation_id, scoobydoo_category_ids) VALUES (:name, :description, :is_active, :ticketing_start_date, :ticketing_end_date, :total_quota, :fundation_id, :scoobydoo_category_ids)');
     $event_insertion->execute($table_event_data);
     return $db->lastInsertId();
 }
@@ -41,6 +41,13 @@ function update_event_details($table_event_data)
     global $db;
     $event_update = $db->prepare('UPDATE events SET name = :name, description = :description, is_active = :is_active, ticketing_start_date = :ticketing_start_date, ticketing_end_date = :ticketing_end_date, total_quota = :total_quota WHERE event_id = :event_id');
     return $event_update->execute($table_event_data);
+}
+function get_scoobydoo_event_infos($event_id)
+{
+    global $db;
+    $scoobydoo_ids = $db->prepare('SELECT scoobydoo_category_ids, fundation_id FROM events WHERE event_id = :event_id');
+    $scoobydoo_ids->execute($event_id);
+    return $scoobydoo_ids->fetch();
 }
 
 function get_specification_details($event_id)
@@ -54,7 +61,13 @@ function get_specification_details($event_id)
 function insert_specification_details($table_specification_data)
 {
     global $db;
-    $specification_insertion = $db->prepare('INSERT INTO promos_site_specifications(event_id, site_id, promo_id, price, quota, guest_number) VALUES (:event_id, :site_id, :promo_id, :price, :quota, :guest_number)');
+    $specification_insertion = $db->prepare('INSERT INTO promos_site_specifications(event_id, site_id, promo_id, price, quota, guest_number, scoobydoo_article_id) VALUES (:event_id, :site_id, :promo_id, :price, :quota, :guest_number, :scoobydoo_article_id)');
+    return $specification_insertion->execute($table_specification_data);
+}
+function update_specification_details($table_specification_data)
+{
+    global $db;
+    $specification_insertion = $db->prepare('UPDATE promos_site_specifications SET price=:price, quota=:quota, guest_number=:guest_number WHERE event_id = :event_id and promo_id = :promo_id and site_id = :site_id');
     return $specification_insertion->execute($table_specification_data);
 }
 function delete_specification_details($event_id)
@@ -104,9 +117,9 @@ function insert_option_accessibility($option_accessibility)
     $option_accessibility_insertion = $db->prepare('INSERT INTO promo_site_has_options VALUES (:event_id, :site_id, :promo_id, :option_id)');
     return $option_accessibility_insertion->execute($option_accessibility);
 }
-function delete_previous_option_accessibility($id)
+function delete_previous_option_accessibility($event_id)
 {
     global $db;
     $option_accessibility_deletion = $db->prepare('DELETE FROM promo_site_has_options WHERE event_id = :event_id');
-    return $option_accessibility_deletion->execute($id);
+    return $option_accessibility_deletion->execute(array("event_id" => $event_id));
 }

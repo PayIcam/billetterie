@@ -44,28 +44,6 @@ function get_current_select_option_quota($data)
     $count_promo->execute($data);
     return $count_promo->fetch()['current_option_quota'];
 }
-function event_id_is_correct($event_id)
-{
-    if(is_numeric($event_id))
-    {
-        global $db;
-        $correct_id = $db->prepare('SELECT COUNT(*) matches FROM events WHERE event_id= :event_id');
-        $correct_id->execute(array("event_id" => $event_id));
-        $correct_id = $correct_id->fetch()['matches']==1 ? true : false;
-        $correct_id == 1 ? "" : "Cet event_id n'existe même pas";
-        return $correct_id;
-    }
-    elseif($event_id == "no_GET")
-    {
-        add_error("L'event_id n'est pas spécifié en GET");
-        return false;
-    }
-    else
-    {
-        add_error("L'event_id spécifiée n'est même pas un entier.");
-        return false;
-    }
-}
 function insert_icam_participant($icam_data)
 {
     global $db;
