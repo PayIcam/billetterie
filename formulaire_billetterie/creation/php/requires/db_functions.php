@@ -70,11 +70,11 @@ function update_specification_details($table_specification_data)
     $specification_insertion = $db->prepare('UPDATE promos_site_specifications SET price=:price, quota=:quota, guest_number=:guest_number WHERE event_id = :event_id and promo_id = :promo_id and site_id = :site_id');
     return $specification_insertion->execute($table_specification_data);
 }
-function delete_specification_details($event_id)
+function delete_specification_details($ids)
 {
     global $db;
-    $specification_deletion = $db->prepare('DELETE FROM promos_site_specifications WHERE event_id = :event_id');
-    return $specification_deletion->execute(array("event_id" => $event_id));
+    $specification_deletion = $db->prepare('DELETE FROM promos_site_specifications WHERE event_id = :event_id and promo_id=:promo_id and site_id=:site_id');
+    return $specification_deletion->execute($ids);
 }
 
 function get_option_ids_from_event($event_id)

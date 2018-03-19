@@ -95,16 +95,18 @@ if(!empty($_POST))
         }
     }
 
+    delete_previous_option_accessibility($event_id);
 
     foreach($previous_event_accessibilty as $promo)
     {
-        // Delete the article ??
-        delete_previous_option_accessibility($event_id);
+        var_dump($promo);
+        $payutcClient->deleteProduct(array("obj_id" => $promo['scoobydoo_article_id'], "fun_id" => $fundation_id));
+        delete_specification_details(array("event_id" => $event_id, "promo_id" => $promo['promo_id'], "site_id" => $promo['site_id']));
+        echo '1 deletion';
     }
 
     //options & its accessibilities
 
-    delete_previous_option_accessibility($event_id);
 
     $previous_options = get_options($event_id);
 
@@ -145,7 +147,6 @@ if(!empty($_POST))
                                 if($previous_select_option->name == $select_option->name)
                                 {
                                     $found_select_option = true;
-                                    // var_dump($previous_select_option);
                                     $article_id = $previous_select_option->scoobydoo_article_id;
 
                                     $payutcClient->setProduct(array(
@@ -178,6 +179,11 @@ if(!empty($_POST))
                                     ))->success;
                                 $select_option->scoobydoo_article_id = $article_id;
                             }
+                        }
+                        foreach($previous_specifications as $previous_specification)
+                        {
+                            var_dump($previous_specifications);
+                            $payutcClient->deleteProduct(array("obj_id" => $previous_specification->scoobydoo_article_id, "fun_id" => $fundation_id));
                         }
                     }
                     $option_id = $option->option_id;
@@ -256,7 +262,11 @@ if(!empty($_POST))
     }
     foreach($previous_options as $previous_option)
     {
-        //delete article ????
+        $specifications= json_decode($previous_option['specifications']);
+        foreach($specifications as $specification)
+        {
+            deleteProduct(array("obj_id" => $specification->scoobydoo_article_id, "fun_id" => $fundation_id));
+        }
         delete_option(array("event_id" => $event_id, "option_id" => $previous_option['option_id']));
     }
     echo 'Les modifications ont bien été pris en compte !';
