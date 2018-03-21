@@ -44,6 +44,7 @@ function option_form($option, $promo_id, $site_id, $participant_id=-1)
 
 function participant_options_handling($event_id, $participant_id, $options)
 {
+    global $options_articles, $transaction_linked_purchases;
     foreach($options as $option)
     {
         $option_id = $option->id;
@@ -69,7 +70,7 @@ function participant_options_handling($event_id, $participant_id, $options)
             $name_found = false;
             foreach($db_specifications as $db_specification)
             {
-                if($db_specification->name == $option_subname)
+                if(trim($db_specification->name) == trim($option_subname))
                 {
                     $name_found = true;
                     if($option_price == $db_specification->price)
@@ -80,6 +81,23 @@ function participant_options_handling($event_id, $participant_id, $options)
                     break;
                 }
             }
+        }
+
+        array_push($transaction_linked_purchases["option_ids"], array("participant_id" => $participant_id, "option_id" => $option_id));
+
+        $found=false;
+        foreach($options_articles as &$article)
+        {
+            if(in_array($option->option_article_id, $article))
+            {
+                $article[1]+=1;
+                $found=true;
+                break;
+            }
+        }
+        if(!$found)
+        {
+            array_push($options_articles, array($option->option_article_id, 1));
         }
     }
 }
@@ -195,7 +213,7 @@ function check_participant_options($participant_data, $participant_type, $event_
                     $name_found = false;
                     foreach($db_specifications as $db_specification)
                     {
-                        if($db_specification->name == $option_subname)
+                        if(trim($db_specification->name) == trim($option_subname))
                         {
                             if(get_current_select_option_quota(array("event_id" => $event_id, "option_id" => $option_id, "subname" => $db_specification->name))+1 > $db_specification->quota)
                             {
@@ -250,15 +268,15 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
     $error = false;
     if($participant_data == null)
     {
-        add_error($participant_type . " : POST['".$participant_type."_informations'] est mal défini. Il est impossible de le décoder. <br>");
+        add_error_to_ajax_response($participant_type . " : POST['".$participant_type."_informations'] est mal défini. Il est impossible de le décoder. <br>");
         $error = true;
     }
     else
     {
-        $participant_data_length = $participant_type=='icam' ? 10:8;
+        $participant_data_length = $participant_type=='icam' ? 11:9;
         if(count(get_object_vars($participant_data)) != $participant_data_length)
         {
-            add_error($participant_type . " : Il n'y a pas le bon nombre d'éléments dans l'objet. <br>");
+            add_error_to_ajax_response($participant_type . " : Il n'y a pas le bon nombre d'éléments dans l'objet. <br>");
             $error = true;
         }
         else
@@ -269,28 +287,28 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
 
             if($participant_data->is_icam != $participant_data_is_icam)
             {
-                add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de is_icam <br>");
+                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de is_icam <br>");
                 $error = true;
             }
             if($participant_data->site_id != $site_id)//Faire avec les variables de session
             {
-                add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de site_id <br>");
+                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de site_id <br>");
                 $error = true;
             }
             if($participant_data->promo_id != $participant_data_promo_id)//Faire avec les variables de session
             {
-                add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de promo_id <br>");
+                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de promo_id <br>");
                 $error = true;
             }
             if(!is_numeric($participant_data->price))
             {
-                add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix (pas numérique)<br>");
+                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix (pas numérique)<br>");
                 $left_to_pay=false;
                 $error = true;
             }
             elseif($participant_data->price < $promo_specifications['price'])
             {
-                add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix (inférieur au prix de base de données)<br>");
+                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix (inférieur au prix de base de données)<br>");
                 $left_to_pay=false;
                 $error = true;
             }
@@ -298,32 +316,32 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
             {
                 if($participant_data->prenom != $prenom)//Faire avec les variables de session
                 {
-                    add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prénom <br>");
+                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prénom <br>");
                     $error = true;
                 }
                 if($participant_data->nom != $nom)//Faire avec les variables de session
                 {
-                    add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom <br>");
+                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom <br>");
                     $error = true;
                 }
                 if($participant_data->email != $email)//Faire avec les variables de session
                 {
-                    add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de l'email <br>");
+                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de l'email <br>");
                     $error = true;
                 }
                 if(participant_has_its_place(array("event_id" => $event_id, "email" => $email, "promo_id" => $promo_id, "site_id" => $site_id, "email" => $email)))
                 {
-                    add_error("Vous avez déjà une réservation enregistrée à votre email.");
+                    add_error_to_ajax_response("Vous avez déjà une réservation enregistrée à votre email.");
                     $error = true;
                 }
                 if(!is_string($participant_data->telephone))
                 {
-                    add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du numéro de téléphone <br>");
+                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du numéro de téléphone <br>");
                     $error = true;
                 }
                 elseif(count($participant_data->telephone)>25)
                 {
-                    add_error($participant_type . " : Pourquoi avez vous besoin d'autant de caractères pour un simple numéro de téléphone ?<br>");
+                    add_error_to_ajax_response($participant_type . " : Pourquoi avez vous besoin d'autant de caractères pour un simple numéro de téléphone ?<br>");
                     $error = true;
                 }
             }
@@ -331,31 +349,31 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
             {
                 if(!is_string($participant_data->prenom))//Faire avec les variables de session
                 {
-                    add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prénom <br>");
+                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prénom <br>");
                     $error = true;
                 }
                 elseif(count($participant_data->prenom)>100)
                 {
-                    add_error($participant_type . " : Le prenom a-t-il besoin d'être si long ?<br>");
+                    add_error_to_ajax_response($participant_type . " : Le prenom a-t-il besoin d'être si long ?<br>");
                 }
                 if(!is_string($participant_data->nom))//Faire avec les variables de session
                 {
-                    add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom <br>");
+                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom <br>");
                     $error = true;
                 }
                 elseif(count($participant_data->nom)>100)
                 {
-                    add_error($participant_type . " : Le nom a-t-il besoin d'être si long ?<br>");
+                    add_error_to_ajax_response($participant_type . " : Le nom a-t-il besoin d'être si long ?<br>");
                 }
             }
             if(!preg_match("#^[0-9]{4}-[0-9]{2}-[0-9]{2}$#", $participant_data->birthdate) and $participant_data->birthdate!='')
             {
-                add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de la date de naissance <br>");
+                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de la date de naissance <br>");
                 $error = true;
             }
             if(!is_array($participant_data->options))
             {
-                add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur des options <br>");
+                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur des options <br>");
                 $error = true;
             }
             elseif(count($participant_data->options)>0)
@@ -367,7 +385,7 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
             if($left_to_pay!=0)
             {
                 $error = true;
-                add_error("Le prix total n'est pas bon.");
+                add_error_to_ajax_response("Le prix total n'est pas bon.");
             }
             else
             {
@@ -390,15 +408,15 @@ function is_correct_participant_supplement_data($participant_data, $participant_
     $error = false;
     if($participant_data == null)
     {
-        add_error($participant_type . " : POST['".$participant_type."_informations'] est mal défini. Il est impossible de le décoder. <br>");
+        add_error_to_ajax_response($participant_type . " : POST['".$participant_type."_informations'] est mal défini. Il est impossible de le décoder. <br>");
         $error = true;
     }
     else
     {
-        $participant_data_length = $participant_type=='icam' ? 7:8;
+        $participant_data_length = $participant_type=='icam' ? 8:9;
         if(count(get_object_vars($participant_data)) != $participant_data_length)
         {
-            add_error($participant_type . " : Il n'y a pas le bon nombre d'éléments dans l'objet. <br>");
+            add_error_to_ajax_response($participant_type . " : Il n'y a pas le bon nombre d'éléments dans l'objet. <br>");
             $error = true;
         }
         else
@@ -408,17 +426,17 @@ function is_correct_participant_supplement_data($participant_data, $participant_
 
             if($participant_data->site_id != $site_id)//Faire avec les variables de session
             {
-                add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de site_id <br>");
+                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de site_id <br>");
                 $error = true;
             }
             if($participant_data->promo_id != $participant_data_promo_id)//Faire avec les variables de session
             {
-                add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de promo_id <br>");
+                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de promo_id <br>");
                 $error = true;
             }
             if(!is_numeric($participant_data->price))
             {
-                add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix (pas numérique)<br>");
+                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix (pas numérique)<br>");
                 $left_to_pay=false;
                 $error = true;
             }
@@ -426,12 +444,12 @@ function is_correct_participant_supplement_data($participant_data, $participant_
             {
                 if(!is_string($participant_data->telephone))
                 {
-                    add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du numéro de téléphone <br>");
+                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du numéro de téléphone <br>");
                     $error = true;
                 }
                 elseif(count($participant_data->telephone)>25)
                 {
-                    add_error($participant_type . " : Pourquoi avez vous besoin d'autant de caractères pour un simple numéro de téléphone ?<br>");
+                    add_error_to_ajax_response($participant_type . " : Pourquoi avez vous besoin d'autant de caractères pour un simple numéro de téléphone ?<br>");
                     $error = true;
                 }
             }
@@ -439,32 +457,32 @@ function is_correct_participant_supplement_data($participant_data, $participant_
             {
                 if(!is_string($participant_data->prenom))//Faire avec les variables de session
                 {
-                    add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prénom <br>");
+                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prénom <br>");
                     $error = true;
                 }
                 elseif(count($participant_data->prenom)>100)
                 {
-                    add_error($participant_type . " : Le prenom a-t-il besoin d'être si long ?<br>");
+                    add_error_to_ajax_response($participant_type . " : Le prenom a-t-il besoin d'être si long ?<br>");
                 }
 
                 if(!is_string($participant_data->nom))//Faire avec les variables de session
                 {
-                    add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom <br>");
+                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom <br>");
                     $error = true;
                 }
                 elseif(count($participant_data->nom)>100)
                 {
-                    add_error($participant_type . " : Le nom a-t-il besoin d'être si long ?<br>");
+                    add_error_to_ajax_response($participant_type . " : Le nom a-t-il besoin d'être si long ?<br>");
                 }
             }
             if(!preg_match("#^[0-9]{4}-[0-9]{2}-[0-9]{2}$#", $participant_data->birthdate) and $participant_data->birthdate!='')
             {
-                add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de la date de naissance <br>");
+                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de la date de naissance <br>");
                 $error = true;
             }
             if(!is_array($participant_data->options))
             {
-                add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur des options <br>");
+                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur des options <br>");
                 $error = true;
             }
             elseif(count($participant_data->options)>0)
@@ -476,7 +494,7 @@ function is_correct_participant_supplement_data($participant_data, $participant_
             if($left_to_pay!=0)
             {
                 $error = true;
-                add_error("Le prix total n'est pas bon.");
+                add_error_to_ajax_response("Le prix total n'est pas bon.");
             }
             else
             {
@@ -502,6 +520,7 @@ function get_icams_guests_data($ids)
 
 function prevent_displaying_on_wrong_ticketing_state($ticketing_state)
 {
+    global $ajax_json_response;
     if(in_array($ticketing_state, array('coming in some time', 'coming soon', 'ended long ago', 'ended and no reservation')))
     {
         switch ($ticketing_state)
@@ -509,15 +528,33 @@ function prevent_displaying_on_wrong_ticketing_state($ticketing_state)
             case 'coming soon':
             case 'coming in some time':
             {
-                set_alert_style();
-                add_error("La billetterie n'a pas encore commencé.");
+                $message = "La billetterie n'a pas encore commencé.";
+                if(isset($ajax_json_response))
+                {
+                    add_error_to_ajax_response($message);
+                    echo json_encode($ajax_json_response);
+                }
+                else
+                {
+                    set_alert_style();
+                    add_error($message);
+                }
                 die();
             }
             case 'ended and no reservation':
             case 'ended long ago':
             {
-                set_alert_style();
-                add_error("La billetterie est finie.");
+                $message = "La billetterie est finie.";
+                if(isset($ajax_json_response))
+                {
+                    add_error_to_ajax_response($message);
+                    echo json_encode($ajax_json_response);
+                }
+                else
+                {
+                    set_alert_style();
+                    add_error($message);
+                }
                 die();
             }
         }
@@ -526,11 +563,20 @@ function prevent_displaying_on_wrong_ticketing_state($ticketing_state)
 
 function check_if_event_should_be_displayed($event,$promo_id, $site_id, $email)
 {
+    global $ajax_json_response;
     $event_id = $event['event_id'];
     if($event['is_active']==0)
     {
-        set_alert_style();
-        add_error("L'évènement n'est pas encore actif");
+        if(isset($ajax_json_response))
+        {
+            add_error_to_ajax_response("L'évènement n'est pas encore actif");
+            echo json_encode($ajax_json_response);
+        }
+        else
+        {
+            set_alert_style();
+            add_error("L'évènement n'est pas encore actif");
+        }
         die();
     }
 
@@ -538,4 +584,60 @@ function check_if_event_should_be_displayed($event,$promo_id, $site_id, $email)
     $ticketing_state = get_ticketing_state($event, $promo_id, $site_id, $email, $icam_has_reservation);
 
     prevent_displaying_on_wrong_ticketing_state($ticketing_state);
+}
+
+function update_reservation_status($status, $pending_reservation)
+{
+    $list_purchases = json_decode($pending_reservation['liste_places_options']);
+    foreach($list_purchases->participant_ids as $participant_id)
+    {
+        $participant_data = get_participant_event_data(array("event_id" => $pending_reservation['event_id'], "participant_id" => $participant_id));
+        if($participant_data['status'] != $status)
+        {
+            update_participant_status(array("participant_id" => $participant_id, "status" => $status));
+        }
+    }
+    foreach($list_purchases->option_ids as $ids)
+    {
+        $option_data = get_participant_option(array("event_id" => $pending_reservation['event_id'], "participant_id" => $ids->participant_id, "option_id" => $ids->option_id));
+        if($option_data['status'] != $status)
+        {
+            update_option_status(array("participant_id" => $ids->participant_id, "status" => $status, "option_id" => $ids->option_id));
+        }
+    }
+    update_transaction_status(array("transaction_id" => $pending_reservation['transaction_id'], "status" => $status));
+}
+
+function handle_pending_reservations($login, $event_id)
+{
+    global $ajax_json_response;
+    $pending_reservations = icam_has_pending_reservations(array("login" => $login, "event_id" => $event_id));
+    if($pending_reservations !=false)
+    {
+        if(count($pending_reservations)==1)
+        {
+            $transaction = get_icam_pending_transaction($login);
+            $message = "Vous avez une réservation en attente non payée..." . "<a href='".$transaction['payicam_transaction_url']."' class='btn btn-primary'>Aller la payer</a>";
+            if(isset($ajax_json_response))
+            {
+                add_error_to_ajax_response($message);
+                echo json_encode($ajax_json_response);
+            }
+            else
+            {
+                set_alert_style();
+                add_error($message);
+                cancel_or_finish_transaction($transaction['payicam_transaction_url'], $event_id);
+            }
+            die();
+        }
+        else
+        {
+            //Si il y a plus d'une réservation en attente, c'est pas normal, on abandonne les deux.
+            foreach($pending_reservations as $pending_reservation)
+            {
+                update_reservation_status('A', $pending_reservation);
+            }
+        }
+    }
 }

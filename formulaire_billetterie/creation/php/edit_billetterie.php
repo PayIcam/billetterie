@@ -99,7 +99,6 @@ if(!empty($_POST))
 
     foreach($previous_event_accessibilty as $promo)
     {
-        var_dump($promo);
         $payutcClient->deleteProduct(array("obj_id" => $promo['scoobydoo_article_id'], "fun_id" => $fundation_id));
         delete_specification_details(array("event_id" => $event_id, "promo_id" => $promo['promo_id'], "site_id" => $promo['site_id']));
         echo '1 deletion';
@@ -140,7 +139,6 @@ if(!empty($_POST))
                     {
                         foreach($option->type_specification as &$select_option)
                         {
-                            // var_dump($select_option);
                             $found_select_option = false;
                             foreach($previous_specifications as $key_s_option => $previous_select_option)
                             {
@@ -182,7 +180,6 @@ if(!empty($_POST))
                         }
                         foreach($previous_specifications as $previous_specification)
                         {
-                            var_dump($previous_specifications);
                             $payutcClient->deleteProduct(array("obj_id" => $previous_specification->scoobydoo_article_id, "fun_id" => $fundation_id));
                         }
                     }

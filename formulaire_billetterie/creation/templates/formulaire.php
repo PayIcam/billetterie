@@ -376,7 +376,6 @@
                 <button id="submit_form" class="btn btn-success" type="submit"><?= isset($event) ? 'Editez ' : 'Créez ' ?>votre évènement !</button>
             </div>
 
-
             <div id="input_additions">
                 <?= isset($fundation_id) ? "<input type='hidden' value='". $fundation_id . "' name='fundation_id'>" : "" ?>
             </div><!--On va mettre ici des inputs hidden juste avant d'envoyer les données. Ils contiennent des données grâce au JSON.stringify(). -->

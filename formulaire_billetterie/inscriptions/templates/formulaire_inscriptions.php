@@ -55,6 +55,7 @@
                     form_guest($event, $guests_specifications, $options, $i, $guest_event_data);
                 }
                 ?>
+                <input type="hidden" name="guests_event_article_id" value="<?=$guests_specifications['scoobydoo_article_id']?>">
             </div>
             <div id="hidden_inputs">
                 <input type="hidden" name="icam_informations">

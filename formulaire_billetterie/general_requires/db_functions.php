@@ -16,6 +16,7 @@ function connect_to_db($conf)
 
 function event_id_is_correct($event_id)
 {
+    global $ajax_json_response;
     if(is_numeric($event_id))
     {
         global $db;
@@ -24,21 +25,45 @@ function event_id_is_correct($event_id)
         $correct_id = $correct_id->fetch()['matches']==1 ? true : false;
         if($correct_id == false)
         {
-            set_alert_style();
-            add_error("Cet event_id n'existe pas");
+            $message = "Cet event_id n'existe pas";
+            if(isset($ajax_json_response))
+            {
+                add_error_to_ajax_response($message);
+            }
+            else
+            {
+                set_alert_style();
+                add_error($message);
+            }
         }
         return $correct_id;
     }
     elseif($event_id == "no_GET")
     {
-        set_alert_style();
-        add_error("L'event_id n'est pas spécifié en GET");
+        $message = "L'event_id n'est pas spécifié en GET";
+        if(isset($ajax_json_response))
+        {
+            add_error_to_ajax_response($message);
+        }
+        else
+        {
+            set_alert_style();
+            add_error($message);
+        }
         return false;
     }
     else
     {
-        set_alert_style();
-        add_error("L'event_id spécifiée n'est même pas un entier.");
+        $message = "L'event_id spécifiée n'est même pas un entier.";
+        if(isset($ajax_json_response))
+        {
+            add_error_to_ajax_response($message);
+        }
+        else
+        {
+            set_alert_style();
+            add_error($message);
+        }
         return false;
     }
 }
@@ -106,7 +131,7 @@ function get_promos_events($ids)
 function get_icam_event_data($identification_data)
 {
     global $db;
-    $icam_data = $db->prepare('SELECT participant_id, prenom, nom, is_icam, email, telephone, birthdate, event_id, site_id, promo_id FROM participants WHERE email = :email and event_id = :event_id and promo_id = :promo_id and site_id = :site_id');
+    $icam_data = $db->prepare('SELECT participant_id, prenom, nom, is_icam, email, telephone, birthdate, event_id, site_id, promo_id FROM participants WHERE email = :email and event_id = :event_id and promo_id = :promo_id and site_id = :site_id and status ="V" ');
     $icam_data->execute($identification_data);
     $icam_data = $icam_data->fetchAll();
     $icam_data = count($icam_data)>1 ? 'several_emails' : current($icam_data);
@@ -115,7 +140,7 @@ function get_icam_event_data($identification_data)
 function participant_has_its_place($identification_data)
 {
     global $db;
-    $icam_data = $db->prepare('SELECT participant_id, prenom, nom, is_icam, email, telephone, birthdate, event_id, site_id, promo_id FROM participants WHERE email = :email and event_id = :event_id and promo_id = :promo_id and site_id = :site_id');
+    $icam_data = $db->prepare('SELECT participant_id, prenom, nom, is_icam, email, telephone, birthdate, event_id, site_id, promo_id FROM participants WHERE email = :email and event_id = :event_id and promo_id = :promo_id and site_id = :site_id and status = "V" ');
     $icam_data->execute($identification_data);
     $icam_data = $icam_data->fetchAll();
     return !empty($icam_data);
@@ -123,7 +148,7 @@ function participant_has_its_place($identification_data)
 function get_participant_event_data($ids)
 {
     global $db;
-    $participant_data = $db->prepare('SELECT participant_id, prenom, nom, is_icam, email, telephone, birthdate, event_id, site_id, promo_id FROM participants WHERE event_id = :event_id and participant_id = :participant_id');
+    $participant_data = $db->prepare('SELECT * FROM participants WHERE event_id = :event_id and participant_id = :participant_id');
     $participant_data->execute($ids);
     return $participant_data->fetch();
 }

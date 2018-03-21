@@ -15,13 +15,16 @@ if(isset($_GET['event_id']))
         $promo_id = $_SESSION['icam_informations']->promo_id;
         $site_id = $_SESSION['icam_informations']->site_id;
 
+        $event = get_event_details($event_id);
+
+        handle_pending_reservations($email, $event_id);
+
         if(participant_has_its_place(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id, "email" => $email)))
         {
             header('Location: edit_reservation.php?event_id='.$event_id);
             die();
         }
 
-        $event = get_event_details($event_id);
 
         check_if_event_should_be_displayed($event,$promo_id, $site_id, $email);
 

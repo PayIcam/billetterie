@@ -45,6 +45,7 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
         <input type="hidden" name="is_icam" value=1>
         <input type="hidden" name="icam_promo_id" value="<?=$promo_specifications['promo_id']?>" >
         <input type="hidden" name="icam_site_id" value="<?=$promo_specifications['site_id']?>" >
+        <input type="hidden" name="icams_event_article_id" value="<?=$promo_specifications['scoobydoo_article_id']?>">
         <?php if($icam_reservation != null)
         {
             ?> <input type="hidden" name="icam_id" value="<?=$icam_id?>" > <?php
@@ -118,8 +119,8 @@ function form_guest($event, $guest_specifications, $options, $i, $guest_reservat
 function checkbox_form($option, $checked=false)
 {
     ?>
-    <div class="checkbox_option form-check" <?= $checked ? "data-payed=1" : "" ?>>
-        <input class="form-check-input has_option" name="has_option" type="checkbox" value=1 <?= $checked ? "checked disabled data-payed=1" : "" ?> >
+    <div class="checkbox_option form-check" <?= $checked ? "data-payed=1" : "" ?> >
+        <input class="form-check-input has_option" name="has_option" type="checkbox" value="<?=$option['specifications']->scoobydoo_article_id?>" <?= $checked ? "checked disabled data-payed=1" : "" ?> >
         <label class="form-check-label">
             <span class="option_name"><?= $option['name'] ?></span>
             <span class="checkbox_price badge" style="background-color: #3a87ad"><?= $option['specifications']->price . ' €' ?></span>
@@ -129,6 +130,7 @@ function checkbox_form($option, $checked=false)
         </label>
         <input type="hidden" name="option_price" value="<?=$option['specifications']->price?>">
         <input type="hidden" name="option_id" value="<?=$option['option_id']?>">
+        <input type="hidden" class="option_article_id" name="option_article_id" value="<?=$option['specifications']->scoobydoo_article_id?>">
     </div>
     <?php
 }
@@ -163,18 +165,32 @@ function insert_according_select_options($option, $option_subname=null)
             if(get_current_select_option_quota(array("event_id" => $option['event_id'], "option_id" => $option['option_id'], "subname" => $option_specification->name)) < $suboption_quota)
             {
                 ?>
-                <option value="<?= $option_specification->name ?>" <?=($option['is_mandatory']==1 and $compteur==0) ? 'selected' : ''?> >
+                <option value="<?= $option_specification->scoobydoo_article_id?>" <?=($option['is_mandatory']==1 and $compteur==0) ? 'selected' : ''?> >
                     <?= $option_specification->name . ' (' . $option_specification->price . '€)' ?>
                 </option>
                 <?php
                 $compteur++;
             }
         }
-        elseif($option_subname == $option_specification->name)
+        elseif(trim($option_subname) == trim($option_specification->name))
         {
             ?>
-            <option value="<?= $option_specification->name ?>" selected data-payed=1><?= $option_specification->name . '(' . $option_specification->price . ')' ?></option>
+            <option value="<?= $option_specification->scoobydoo_article_id?>" selected data-payed=1><?= $option_specification->name . '(' . $option_specification->price . '€)' ?></option>
             <?php
         }
     }
+}
+function cancel_or_finish_transaction($payicam_transaction_url, $event_id)
+{
+    global $_CONFIG;
+    ?>
+    <p class="alert alert-warning">
+        Vous avez déjà soumis une réservation, mais vous ne l'avez pas encore réglée.<br>
+        Vous pouvez la régler ou bien l'annuler.<br>
+        Dépéchez vous, avant qu'elle ne soit plus valide.<br>
+        <br>
+        <a href="<?= $payicam_transaction_url ?>" class="btn btn-primary">Régler la réservation</a> - <a href="<?= $_CONFIG['public_url'].'inscriptions/php/cancel_transaction.php?event_id='.$event_id ?>" class="btn btn-danger">Annuler la réservation</a>
+    </p>
+
+    <?php
 }

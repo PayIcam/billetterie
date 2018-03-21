@@ -24,6 +24,19 @@ function add_error($message)
     <?php
 }
 
+function add_error_to_ajax_response($message)
+{
+    ob_start(); ?>
+    <div class="alert alert-danger alert-dismissible">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>Attention ! </strong> <?=$message?>
+    </div>
+    <?php $html_code_error = ob_get_clean();
+
+    global $ajax_json_response;
+    $ajax_json_response['message'] .= $html_code_error;
+}
+
 function set_alert_style()
 {
     ?>

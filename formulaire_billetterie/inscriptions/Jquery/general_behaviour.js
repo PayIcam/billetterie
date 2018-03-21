@@ -117,7 +117,15 @@ function filling_form_behaviour()
             previous_price = isNaN(previous_price) ? 0 : previous_price;
             var option_text = $.trim($(this).find('option:selected').text());
             var regExp = /\(([0-9]+€)\)$/;
-            var new_price = parseFloat(regExp.exec(option_text)[1]);
+            try
+            {
+                var new_price = parseFloat(regExp.exec(option_text)[1]);
+            }
+            catch(err)
+            {
+                new_price = 0;
+            }
+
             $(this).parents(".select_option").find(".select_price").text(new_price+'€');
 
             if($(this).closest(".container").attr("id")=='registration_icam')

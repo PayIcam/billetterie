@@ -1,5 +1,12 @@
 function prepare_edit_submit()
 {
+    function add_error(message)
+    {
+        console.log('submit edit add_error');
+        var message_displayed = '<div class="alert alert-danger alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Attention ! </strong>' + message + '</div>'
+        $("#alerts").append(message_displayed);
+    }
+
     function edit_submit(submit)
     {
         function prepare_option_data()
@@ -21,7 +28,10 @@ function prepare_edit_submit()
                     {
                         guest_price_addition+=option_price;
                     }
-                    option = {id: id, type: 'Checkbox', name: name, price: option_price};
+
+                    var option_article_id= $(this).find('.has_option').val();
+
+                    option = {id: id, type: 'Checkbox', name: name, price: option_price, option_article_id: option_article_id};
                     options.push(option);
                 }
             }
@@ -48,7 +58,9 @@ function prepare_edit_submit()
                         guest_price_addition+=option_price;
                     }
 
-                    option = {id: id, type: 'Select', name: name, price: option_price};
+                    var option_article_id= $(this).find('select option:not(:first):selected').val();
+
+                    option = {id: id, type: 'Select', name: name, price: option_price, option_article_id: option_article_id};
                     options.push(option);
                 }
             }
@@ -68,10 +80,12 @@ function prepare_edit_submit()
         var promo_id = $('input[name=icam_promo_id]').val();
         var site_id = $('input[name=icam_site_id]').val();
 
+        var icam_event_article_id = $('input[name=icams_event_article_id]').val();
+
         var options = [];
         $("#icam_options").children('div:not(div[data-payed=1])').each(prepare_option_data);
 
-        var icam_data = {icam_id: icam_id, price: icam_price_addition, telephone: telephone, birthdate: birthdate, options: options, site_id: site_id, promo_id: promo_id};
+        var icam_data = {icam_id: icam_id, price: icam_price_addition, telephone: telephone, birthdate: birthdate, options: options, site_id: site_id, promo_id: promo_id, icam_event_article_id: icam_event_article_id};
         var json_icam_data = JSON.stringify(icam_data);
         $("#hidden_inputs input[name=icam_informations]").attr('value', json_icam_data);
 
@@ -103,10 +117,12 @@ function prepare_edit_submit()
                         var promo_id = $(this).find('.guest_promo_id').val();
                         var site_id = $(this).find('.guest_site_id').val();
 
+                        var guest_event_article_id = $('input[name=guests_event_article_id]').val();
+
                         options = [];
                         $(this).find(".guest_options").children("div:not(div[data-payed=1])").each(prepare_option_data);
 
-                        var guest_data = {guest_id: guest_id, prenom: prenom, nom: nom, price: guest_price_addition, birthdate: birthdate, options: options, site_id: site_id, promo_id: promo_id};
+                        var guest_data = {guest_id: guest_id, prenom: prenom, nom: nom, price: guest_price_addition, birthdate: birthdate, options: options, site_id: site_id, promo_id: promo_id, guest_event_article_id: guest_event_article_id};
                         previous_guests_data.push(guest_data);
                     }
                     else
@@ -118,10 +134,12 @@ function prepare_edit_submit()
                         var promo_id = $(this).find('.guest_promo_id').val();
                         var site_id = $(this).find('.guest_site_id').val();
 
+                        var guest_event_article_id = $('input[name=guests_event_article_id]').val();
+
                         options = [];
                         $(this).find(".guest_options div").each(prepare_option_data);
 
-                        var guest_data = {prenom: prenom, nom: nom, is_icam: is_icam, price: guest_price_addition, birthdate: birthdate, options: options, site_id: site_id, promo_id: promo_id};
+                        var guest_data = {prenom: prenom, nom: nom, is_icam: is_icam, price: guest_price_addition, birthdate: birthdate, options: options, site_id: site_id, promo_id: promo_id, guest_event_article_id: guest_event_article_id};
                         new_guests_data.push(guest_data);
                     }
                 }
@@ -142,9 +160,47 @@ function prepare_edit_submit()
 
         var post_url = $('form').prop('action');
 
+        // function ajax_success(data)
+        // {
+        //     console.log(data);
+        //     if(data.message=='Votre édition a bien été prise en compte !<br>Vous allez être redirigé pour le payement' || data.message== "Votre édition a bien été prise en compte !<br>Vous n'avez pas pris de nouvelles options payantes.<br>Vous allez être redirigé vers la page d'accueil.")
+        //     {
+        //         var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data.message + '</div>';
+        //         console.log(message_displayed);
+        //         $("#alerts").append(message_displayed);
+
+        //         $('form').off('submit').submit(function(submit)
+        //         {
+        //             submit.preventDefault();
+        //         });
+        //         setTimeout(function()
+        //         {
+        //             document.location.href = data.transaction_url;
+        //         }, 1000);
+        //     }
+        //     else
+        //     {
+        //         $("#alerts").append(data.message);
+        //     }
+        // }
+        // function error_ajax()
+        // {
+        //     add_error('La requête Ajax permettant de submit les informations et ajouter les modifications a échoué');
+        // }
+
+        // $.post(
+        // {
+        //     url: post_url,
+        //     data: {icam_informations: json_icam_data, guests_informations: json_guests_data, total_transaction_price: parseFloat($("#total_price").text())},
+        //     dataType: 'json',
+        //     success: ajax_success,
+        //     error: error_ajax
+        // });
+
         function ajax_success(data)
         {
-            if(data=='Votre édition a bien été prise en compte !')
+            console.log(data);
+            if(data=='Votre édition a bien été prise en compte !<br>Vous allez être redirigé pour le payement' || data == "Votre édition a bien été prise en compte !<br>Vous n'avez pas pris de nouvelles options payantes.<br>Vous allez être redirigé vers la page d'accueil.")
             {
                 var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data + '</div>';
                 $("#alerts").append(message_displayed);
@@ -155,7 +211,7 @@ function prepare_edit_submit()
                 });
                 setTimeout(function()
                 {
-                    document.location.href = '../';
+                    document.location.href = data.transaction_url;
                 }, 1000);
             }
             else
@@ -165,7 +221,7 @@ function prepare_edit_submit()
         }
         function error_ajax()
         {
-            add_error('La requête Ajax permettant de submit les informations et ajouter le participant a échoué');
+            add_error('La requête Ajax permettant de submit les informations et ajouter les modifications a échoué');
         }
 
         $.post(

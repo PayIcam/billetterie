@@ -4,6 +4,8 @@ require __DIR__ . '/../../general_requires/_header.php';
 
 if(!empty($_POST))
 {
+    $ajax_json_response = array("message" => "" , "transaction_url" => "");
+
     require 'requires/db_functions.php';
     require 'requires/controller_functions.php';
 
@@ -16,8 +18,11 @@ if(!empty($_POST))
     $event_id = $_GET['event_id'] ?? "no_GET";
     if(!event_id_is_correct($event_id))
     {
+        echo json_encode($ajax_json_response);
         die();
     }
+
+    handle_pending_reservations($email, $event_id);
 
     $event = get_event_details($event_id);
 
@@ -34,6 +39,7 @@ if(!empty($_POST))
         {
             if(!is_correct_participant_supplement_data($icam_data, 'icam', $promo_specifications))
             {
+                echo json_encode($ajax_json_response);
                 die();
             }
             if(isset($_POST['guests_informations']))
@@ -48,7 +54,8 @@ if(!empty($_POST))
 
                     if(get_current_participants_number($event_id) + $participant_additions > $event['total_quota'])
                     {
-                        add_error('Trop de participants sont rajoutés pour le quota général.');
+                        add_error_to_ajax_response('Trop de participants sont rajoutés pour le quota général.');
+                        echo json_encode($ajax_json_response);
                         die();
                     }
 
@@ -56,7 +63,8 @@ if(!empty($_POST))
 
                     if(get_current_promo_quota(array("event_id" => $event_id, "promo_id" => get_promo_id('Invités'), "site_id" => $site_id)) + $participant_additions > $guests_specifications['quota'])
                     {
-                        add_error("Le quota pour les invités de " . $site . " est déjà plein. ");
+                        add_error_to_ajax_response("Le quota pour les invités de " . $site . " est déjà plein. ");
+                        echo json_encode($ajax_json_response);
                         die();
                     }
 
@@ -64,6 +72,7 @@ if(!empty($_POST))
                     {
                         if(!is_correct_participant_supplement_data($previous_guest_data, 'guest', $guests_specifications))
                         {
+                            echo json_encode($ajax_json_response);
                             die();
                         }
                     }
@@ -71,6 +80,7 @@ if(!empty($_POST))
                     {
                         if(!is_correct_participant_data($new_guest_data, 'guest', $guests_specifications))
                         {
+                            echo json_encode($ajax_json_response);
                             die();
                         }
                     }
@@ -78,21 +88,24 @@ if(!empty($_POST))
             }
             else
             {
-                add_error("Quelqu'un s'est débrouillé pour supprimer l'input de nom 'guests_informations'");
+                add_error_to_ajax_response("Quelqu'un s'est débrouillé pour supprimer l'input de nom 'guests_informations'");
+                echo json_encode($ajax_json_response);
                 die();
             }
         }
     }
     else
     {
-        add_error("Quelqu'un s'est débrouillé pour supprimer l'input hidden de nom 'icam_informations'");
+        add_error_to_ajax_response("Quelqu'un s'est débrouillé pour supprimer l'input hidden de nom 'icam_informations'");
+        echo json_encode($ajax_json_response);
         die();
     }
     if(isset($_POST['total_transaction_price']))
     {
         if($total_price!=$_POST['total_transaction_price'])
         {
-            add_error('Le prix total est incorrect.');
+            add_error_to_ajax_response('Le prix total est incorrect.');
+            echo json_encode($ajax_json_response);
             die();
         }
     }
@@ -114,6 +127,11 @@ if(!empty($_POST))
             "icam_id" => $icam_id
             );
         update_icam_participant($icam_insertion_data);
+
+        $transaction_linked_purchases = array("participant_ids" => array(), "option_ids" => array());
+
+        $guests_article_id = array();
+        $options_articles = array();
 
         participant_options_handling($event_id, $icam_id, $icam_data->options);
 
@@ -160,10 +178,33 @@ if(!empty($_POST))
                 insert_icams_guest(array("event_id" => $event_id, "icam_id" => $icam_id, "guest_id" => $guest_id));
 
                 participant_options_handling($event_id, $guest_id, $new_guest_data->options);
+
+                array_push($transaction_linked_purchases["participant_ids"], $guest_id);
             }
+            $guests_article_id = array(array($new_guest_data->guest_event_article_id, count($new_guests_data)));
         }
+        $transaction_articles = array_merge($guests_article_id, $options_articles);
+        if(!empty($transaction_articles))
+        {
+            $transaction = $payutcClient->createTransaction(array(
+                "items" => json_encode($transaction_articles),
+                "fun_id" => 4,
+                "mail" => 'gregoire.giraud@2020.icam.fr',
+                "return_url" => $_CONFIG['public_url']. "inscriptions/php/validate_reservations.php?event_id=".$event_id,
+                "callback_url" => $_CONFIG['public_url']. "inscriptions/php/validate_reservations.php?event_id=".$event_id
+                ));
+            $ajax_json_response = array("message" => "Votre édition a bien été prise en compte !<br>Vous allez être redirigé pour le payement", "transaction_url" => $transaction->url);
+
+            $transaction_data = array("login" => $email, "liste_places_options" => json_encode($transaction_linked_purchases), "price" => $total_price, "payicam_transaction_id" => $transaction->tra_id, "payicam_transaction_url" => $transaction->url, "event_id" => $event_id);
+
+            insert_transaction($transaction_data);
+        }
+        else
+        {
+            $ajax_json_response = array("message" => "Votre édition a bien été prise en compte !<br>Vous n'avez pas pris de nouvelles options payantes.<br>Vous allez être redirigé vers la page d'accueil.", "transaction_url" => $_CONFIG['public_url']);
+        }
+        echo json_encode($ajax_json_response);
     }
-    echo "Votre édition a bien été prise en compte !";
 }
 else
 {
