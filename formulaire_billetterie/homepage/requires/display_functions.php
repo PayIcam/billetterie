@@ -2,6 +2,7 @@
 
 function display_event($ticketing_state, $event, $icam_has_reservation)
 {
+    global $_CONFIG;
     switch ($ticketing_state)
     {
         case 'open':
@@ -12,11 +13,7 @@ function display_event($ticketing_state, $event, $icam_has_reservation)
                 <br>
                 <div class="row">
                     <p class="col-sm-9" style="font-size: 1.5em;">Description : <?=$event['description']?></p>
-                    <form method="post" style="display: inline" action="inscriptions/<?=$icam_has_reservation ? "edit_reservation.php" : "inscriptions.php" ?>?event_id=<?=$event['event_id']?>">
-                        <button class="btn btn-primary col-sm-3">
-                                <?=$icam_has_reservation ? "Editer votre réservation" : "Inscrivez vous" ?>
-                        </button>
-                    </form>
+                    <a href="<?=$_CONFIG['public_url']?>inscriptions/<?=$icam_has_reservation ? "edit_reservation.php" : "inscriptions.php" ?>?event_id=<?=$event['event_id']?>" class="btn btn-primary col-sm-3">Regarder sa réservation</a>
                 </div>
             </div>
             <hr>
@@ -46,9 +43,7 @@ function display_event($ticketing_state, $event, $icam_has_reservation)
                 <br>
                 <div class="row">
                     <p class="col-sm-9" style="font-size: 1.5em;">Description : <?=$event['description']?></p>
-                    <form method="post" style="display: inline" action="inscriptions/edit_reservation.php?event_id=<?=$event['event_id']?>">
-                        <button class="btn btn-primary col-sm-3">Regarder sa réservation</button>
-                    </form>
+                    <a href="<?=$_CONFIG['public_url']?>inscriptions/edit_reservation.php?event_id=<?=$event['event_id']?>" class="btn btn-primary col-sm-3">Modifier sa réservation</a>
                 </div>
             </div>
             <hr>

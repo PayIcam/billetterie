@@ -1,24 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <meta name="description" content="Cette page Web a pour but de définir les informations propres à la billetterie, à l'aide d'un formulaire. Une fois ce fait, il est possible d'éditer ces informations, et de lancer la billetterie.">
-
-    <title> Définissez votre billetterie ! </title>
-
-    <link rel="stylesheet" type="text/css" href="../css/format.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
-    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"> </script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
-</head>
-<body>
+<?php set_header_navbar("Définissez votre billetterie !")?>
     <div class="container">
         <div class="jumbotron text-center">
             <h1> Créez une billetterie </h1>
@@ -368,7 +348,7 @@
             <div id="message_submit">
                 <div class="alert alert-info alert-dismissible waiting">
                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                    <strong>Parfait ! </strong>Modification en cours
+                    <strong>Parfait !</strong> Modification en cours
                 </div>
             </div>
 
@@ -382,6 +362,11 @@
         </form>
     </div>
 
+    <script>
+        public_url = '<?=$_CONFIG['public_url'];?>';
+        base_path = '<?=$_CONFIG['base_path'];?>';
+        event_id = '<?=$event_id ?? "";?>';
+    </script>
     <script src="jquery/submit.js"></script>
     <script src="jquery/event_functions.js"></script>
     <script src="jquery/option_functions.js"></script>

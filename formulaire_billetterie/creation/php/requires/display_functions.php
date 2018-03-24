@@ -62,3 +62,29 @@ function insert_option_select_rows($option_specifications)
         $numero+=1;
     }
 }
+
+function display_event_admin($event)
+{
+    global $_CONFIG;
+    ?>
+        <a href="<?=$_CONFIG['public_url']?>creation/edit_ticketing.php?event_id=<?=$event['event_id']?>" class="btn btn-primary"><h5><?=$event['name']?></h5></a><br><br>
+    <?php
+}
+
+function display_fundations_events_admin($fundation)
+{
+    ?>
+    <div class="col-sm-4">
+        <a data-toggle="collapse" href="#button_links_<?=$fundation->fun_id?>" role="button" aria-expanded="false" aria-controls="#button_links_<?=$fundation->fun_id?>"><h2><?=$fundation->name?></h2></a>
+        <div class="collapse" id="button_links_<?=$fundation->fun_id?>">
+            <a href="new_ticketing.php?fundation_id=<?=$fundation->fun_id?>" class="btn btn-primary"><h5>Créer une billetterie</h5></a><br><br>
+            <?php
+            foreach(get_fundations_events($fundation->fun_id) as $event)
+            {
+                display_event_admin($event);
+            }
+            ?>
+        </div>
+    </div>
+    <?php
+}

@@ -2,22 +2,25 @@
 
 require dirname(__DIR__) . '/general_requires/_header.php';
 
-if(isset($_GET['fundation_id']))
+require 'php/requires/display_functions.php';
+require 'php/requires/db_functions.php';
+require 'php/requires/controller_functions.php';
+
+try
 {
-    $fundation_id = $_GET['fundation_id'];
-
-    require 'php/requires/display_functions.php';
-    require 'php/requires/db_functions.php';
-    require 'php/requires/controller_functions.php';
-
-    $student_promos = get_student_promos();
-    $graduated_promos = get_graduated_promos();
-    $sites = get_sites();
-
-    require 'templates/formulaire.php';
+    $fundations = $payutcClient->getFundations();
 }
-else
+catch(JsonClient\JsonException $e)
 {
-    set_alert_style();
-    add_error("Vous n'avez pas défini l'id de la fondation en GET");
+    if($e->gettype() == 'Payutc\Exception\CheckRightException')
+    {
+        header('Location: '.$_CONFIG['public_url']);
+    }
+    else
+    {
+        add_error("Vous n'avez vraisemblablement pas les droits, mais quelque chose d'innattendu s'est produit. Contactez Grégoire Giraud pour l'aider à résoudre ce bug svp");
+        die();
+    }
 }
+
+require "templates/link_to_events.php";

@@ -19,7 +19,6 @@ $db = $DB->db;
 // Autre initialisations //
 ///////////////////////////
 
-// get payutcClient
 function getPayutcClient($service)
 {
     global $_CONFIG;
@@ -33,7 +32,7 @@ function getPayutcClient($service)
 
 $payutcClient = strpos($_SERVER['REQUEST_URI'], '/creation/') ? getPayutcClient("GESARTICLE") : getPayutcClient("WEBSALE");
 
-$admin = $payutcClient->isSuperAdmin();
+$is_super_admin = $payutcClient->isSuperAdmin();
 $isAdminFondation = $payutcClient->isAdmin();
 $status = $payutcClient->getStatus();
 

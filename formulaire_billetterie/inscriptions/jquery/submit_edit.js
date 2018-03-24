@@ -68,6 +68,12 @@ function prepare_edit_submit()
 
         $("#errors").empty();
 
+        if(!check_urls(add_error))
+        {
+            submit.preventDefault();
+            throw("problèmes d'urls");
+        }
+
         $("input[name=icam_informations]").val('');
         $("input[name=guests_informations]").val('');
         $("input[name=total_transaction_price]").val('');
@@ -160,49 +166,13 @@ function prepare_edit_submit()
 
         var post_url = $('form').prop('action');
 
-        // function ajax_success(data)
-        // {
-        //     console.log(data);
-        //     if(data.message=='Votre édition a bien été prise en compte !<br>Vous allez être redirigé pour le payement' || data.message== "Votre édition a bien été prise en compte !<br>Vous n'avez pas pris de nouvelles options payantes.<br>Vous allez être redirigé vers la page d'accueil.")
-        //     {
-        //         var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data.message + '</div>';
-        //         console.log(message_displayed);
-        //         $("#alerts").append(message_displayed);
-
-        //         $('form').off('submit').submit(function(submit)
-        //         {
-        //             submit.preventDefault();
-        //         });
-        //         setTimeout(function()
-        //         {
-        //             document.location.href = data.transaction_url;
-        //         }, 1000);
-        //     }
-        //     else
-        //     {
-        //         $("#alerts").append(data.message);
-        //     }
-        // }
-        // function error_ajax()
-        // {
-        //     add_error('La requête Ajax permettant de submit les informations et ajouter les modifications a échoué');
-        // }
-
-        // $.post(
-        // {
-        //     url: post_url,
-        //     data: {icam_informations: json_icam_data, guests_informations: json_guests_data, total_transaction_price: parseFloat($("#total_price").text())},
-        //     dataType: 'json',
-        //     success: ajax_success,
-        //     error: error_ajax
-        // });
-
         function ajax_success(data)
         {
             console.log(data);
-            if(data=='Votre édition a bien été prise en compte !<br>Vous allez être redirigé pour le payement' || data == "Votre édition a bien été prise en compte !<br>Vous n'avez pas pris de nouvelles options payantes.<br>Vous allez être redirigé vers la page d'accueil.")
+            if(data.message=='Votre édition a bien été prise en compte !<br>Vous allez être redirigé pour le payement' || data.message== "Votre édition a bien été prise en compte !<br>Vous n'avez pas pris de nouvelles options payantes.<br>Vous allez être redirigé vers la page d'accueil.")
             {
-                var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data + '</div>';
+                var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data.message + '</div>';
+                console.log(message_displayed);
                 $("#alerts").append(message_displayed);
 
                 $('form').off('submit').submit(function(submit)
@@ -216,7 +186,7 @@ function prepare_edit_submit()
             }
             else
             {
-                $("#alerts").append(data);
+                $("#alerts").append(data.message);
             }
         }
         function error_ajax()
@@ -228,10 +198,46 @@ function prepare_edit_submit()
         {
             url: post_url,
             data: {icam_informations: json_icam_data, guests_informations: json_guests_data, total_transaction_price: parseFloat($("#total_price").text())},
-            dataType: 'html',
+            dataType: 'json',
             success: ajax_success,
             error: error_ajax
         });
+
+        // function ajax_success(data)
+        // {
+        //     console.log(data);
+        //     if(data=='Votre édition a bien été prise en compte !<br>Vous allez être redirigé pour le payement' || data == "Votre édition a bien été prise en compte !<br>Vous n'avez pas pris de nouvelles options payantes.<br>Vous allez être redirigé vers la page d'accueil.")
+        //     {
+        //         var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data + '</div>';
+        //         $("#alerts").append(message_displayed);
+
+        //         $('form').off('submit').submit(function(submit)
+        //         {
+        //             submit.preventDefault();
+        //         });
+        //         setTimeout(function()
+        //         {
+        //             document.location.href = data.transaction_url;
+        //         }, 1000);
+        //     }
+        //     else
+        //     {
+        //         $("#alerts").append(data);
+        //     }
+        // }
+        // function error_ajax()
+        // {
+        //     add_error('La requête Ajax permettant de submit les informations et ajouter les modifications a échoué');
+        // }
+
+        // $.post(
+        // {
+        //     url: post_url,
+        //     data: {icam_informations: json_icam_data, guests_informations: json_guests_data, total_transaction_price: parseFloat($("#total_price").text())},
+        //     dataType: 'html',
+        //     success: ajax_success,
+        //     error: error_ajax
+        // });
 
         submit.preventDefault();
         }

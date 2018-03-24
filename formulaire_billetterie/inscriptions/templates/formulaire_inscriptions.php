@@ -1,20 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <meta name="description" content="Cette page Web a pour but de permettre aux utilisateurs de PayIcam de s'inscrire à un évènement.">
-
-    <title><?= isset($icam_event_data) ? 'Edition de votre réservation' : 'Inscriptions' ?> : <?= $event['name'] ?></title>
-
-    <link rel="stylesheet" href="../css/format.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-</head>
-<body>
+<?php set_header_navbar(isset($icam_event_data) ? 'Edition de votre réservation' : 'Inscriptions' . ' : ' . $event['name'])?>
     <div id="presentation" class="container">
         <div class="jumbotron">
             <h1 class="text-center"><?= $event['name'] ?></h1>
@@ -81,6 +65,11 @@
     <div id="alerts">
 
     </div>
+    <script>
+        public_url = '<?=$_CONFIG['public_url'];?>';
+        base_path = '<?=$_CONFIG['base_path'];?>';
+        event_id = '<?=$event_id ?? "";?>';
+    </script>
     <script src="jquery/submit_inscriptions.js"></script>
     <script src="jquery/general_behaviour.js"></script>
     <?php if($icam_event_data!=null)

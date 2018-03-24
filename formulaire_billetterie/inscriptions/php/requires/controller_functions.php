@@ -146,19 +146,19 @@ function check_participant_options($participant_data, $participant_type, $event_
         $option_id = $option->id;
         if(!is_object($option))
         {
-            add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur d'une option <br>");
+            add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur d'une option <br>");
             $error = true;
         }
         else
         {
             if(!is_integer(intval($option_id)))
             {
-                add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de l'id d'une option (pas entière) <br>");
+                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de l'id d'une option (pas entière) <br>");
                 $error = true;
             }
             elseif(!promo_has_option(array("event_id" => $event_id, "option_id" => $option_id, "site_id" => $site_id, "promo_id" => $promo_id)))
             {
-                add_error($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de l'id d'une option (Cette promo n'a pas le droit à cette option.) <br>");
+                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de l'id d'une option (Cette promo n'a pas le droit à cette option.) <br>");
                 $error = true;
             }
 
@@ -166,20 +166,20 @@ function check_participant_options($participant_data, $participant_type, $event_
 
             if($option_db_data['is_active']==0)
             {
-                add_error($participant_type . " : Option ". $option_db_data['name'] . " L'option n'est pas active...<br>".$option_id);
+                add_error_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " L'option n'est pas active...<br>".$option_id);
                 $error = true;
             }
 
             if($option->type != $option_db_data['type'])
             {
-                add_error($participant_type . " : Option ". $option_db_data['name'] . " Quelqu'un s'est débrouillé pour altérer la valeur du type d'une option".$option_id);
+                add_error_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " Quelqu'un s'est débrouillé pour altérer la valeur du type d'une option".$option_id);
                 $error = true;
             }
             else
             {
                 if(get_current_option_quota(array("event_id" => $event_id, "option_id" => $option_id)) +1 > $option_db_data['quota'])
                 {
-                    add_error($participant_type . " : Option ". $option_db_data['name'] . " : Il n'y a plus de places disponibles pour cette option. <br>");
+                    add_error_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Il n'y a plus de places disponibles pour cette option. <br>");
                     $error = true;
                 }
                 if($option_db_data['type']=='Checkbox')
@@ -188,7 +188,7 @@ function check_participant_options($participant_data, $participant_type, $event_
                     {
                         if($option->price == json_decode($option_db_data['specifications'])->price)
                         {
-                            // add_error($participant_type . " : Checkbox option correcte <br>");
+                            // add_error_to_ajax_response($participant_type . " : Checkbox option correcte <br>");
                             if($left_to_pay!=false)
                             {
                                 $left_to_pay-=$option->price;
@@ -196,13 +196,13 @@ function check_participant_options($participant_data, $participant_type, $event_
                         }
                         else
                         {
-                            add_error($participant_type . " : ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix d'une option checkbox <br>");
+                            add_error_to_ajax_response($participant_type . " : ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix d'une option checkbox <br>");
                             $error = true;
                         }
                     }
                     else
                     {
-                        add_error($participant_type . " : Option ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom d'une option checkbox <br>");
+                        add_error_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom d'une option checkbox <br>");
                         $error = true;
                     }
                 }
@@ -215,16 +215,17 @@ function check_participant_options($participant_data, $participant_type, $event_
                     {
                         if(trim($db_specification->name) == trim($option_subname))
                         {
-                            if(get_current_select_option_quota(array("event_id" => $event_id, "option_id" => $option_id, "subname" => $db_specification->name))+1 > $db_specification->quota)
+                            $select_option_quota = $db_specification->quota==null ? INF : $db_specification->quota;
+                            if(get_current_select_option_quota(array("event_id" => $event_id, "option_id" => $option_id, "subname" => $db_specification->name))+1 > $select_option_quota)
                             {
-                                add_error($participant_type . " : Option ". $option_db_data['name'] . " : Le quota d'une sous-option est déjà plein. <br>");
+                                add_error_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Le quota d'une sous-option est déjà plein. <br>");
                                 $error = true;
                             }
 
                             $name_found = true;
                             if($option->price == $db_specification->price)
                             {
-                                // add_error($participant_type . " : Select option correcte <br>");
+                                // add_error_to_ajax_response($participant_type . " : Select option correcte <br>");
                                 if($left_to_pay!=false)
                                 {
                                     $left_to_pay-=$option->price;
@@ -232,7 +233,7 @@ function check_participant_options($participant_data, $participant_type, $event_
                             }
                             else
                             {
-                                add_error($participant_type . " : Option ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix d'une sous-option select <br>");
+                                add_error_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix d'une sous-option select <br>");
                                 $error = true;
                             }
                             break;
@@ -240,13 +241,13 @@ function check_participant_options($participant_data, $participant_type, $event_
                     }
                     if($name_found == false)
                     {
-                        add_error($participant_type . " : Option ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom d'une sous-option select <br>");
+                        add_error_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom d'une sous-option select <br>");
                         $error = true;
                     }
                 }
                 else
                 {
-                    add_error($participant_type . " : Option ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour mettre un type qui n'est ni 'Select' ni 'Checkbox' dans le champ type de la table option de la base de données <br>");
+                    add_error_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour mettre un type qui n'est ni 'Select' ni 'Checkbox' dans le champ type de la table option de la base de données <br>");
                     $error = true;
                 }
             }
@@ -617,7 +618,7 @@ function handle_pending_reservations($login, $event_id)
         if(count($pending_reservations)==1)
         {
             $transaction = get_icam_pending_transaction($login);
-            $message = "Vous avez une réservation en attente non payée..." . "<a href='".$transaction['payicam_transaction_url']."' class='btn btn-primary'>Aller la payer</a>";
+            $message = "Vous avez une réservation en attente non payée... " . "<a href='".$transaction['payicam_transaction_url']."' class='btn btn-warning'>Aller la payer</a>";
             if(isset($ajax_json_response))
             {
                 add_error_to_ajax_response($message);
@@ -626,7 +627,6 @@ function handle_pending_reservations($login, $event_id)
             else
             {
                 set_alert_style();
-                add_error($message);
                 cancel_or_finish_transaction($transaction['payicam_transaction_url'], $event_id);
             }
             die();

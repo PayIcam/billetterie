@@ -63,11 +63,16 @@ function submit_inscriptions(submit)
         }
     }
 
+    if(!check_urls(add_error))
+    {
+        submit.preventDefault();
+        throw("problèmes d'urls");
+    }
+
     $("#alerts").empty();
 
     $("input[name=icam_informations]").val('');
     $("input[name=guests_informations]").val('');
-    $("input[name=total_transaction_price]").val('');
     $("input[name=total_transaction_price]").val(parseFloat($("#total_price").text()));
 
     var is_icam = 1;

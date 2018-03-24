@@ -3,7 +3,7 @@
 //Possible qu'il y ait une erreur à cause de Php, qui a des problèmes avec la précision des float............
 function is_an_integer($number)
 {
-    return (floor($number) == $number);
+    return (floor($number) == $number) && $number>=0;
 }
 
 function add_options_previously_defined($options)
@@ -65,17 +65,20 @@ function check_and_prepare_data()
 {
     if(isset($_POST['event_data_json']) && $_POST['event_data_json']!='')
     {
-        global $event;
-        $event = json_decode($_POST['event_data_json']);
-        if(!is_correct_event_data())
+        if($_POST['event_data_json']!='')
         {
+            global $event;
+            $event = json_decode($_POST['event_data_json']);
+            if(!is_correct_event_data())
+            {
+                die();
+            }
+        }
+        else
+        {
+            add_error("Les données de l'évènement sont vides");
             die();
         }
-    }
-    elseif($_POST['event_data_json'] == '')
-    {
-        add_error("Les données de l'évènement sont vides");
-        die();
     }
     else
     {

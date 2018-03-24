@@ -17,6 +17,8 @@ if(isset($_GET['event_id']))
 
         $event = get_event_details($event_id);
 
+        handle_pending_reservations($email, $event_id);
+
         check_if_event_should_be_displayed($event,$promo_id, $site_id, $email);
 
         $icam_event_data = get_icam_event_data(array("email" => $email, "event_id" => $event_id, "promo_id" => $promo_id, "site_id" => $site_id));
@@ -60,12 +62,6 @@ if(isset($_GET['event_id']))
             add_error("Vous n'avez pas accès à cet évènement. C'est une erreur qu'il vous soit apparu.");
             die();
         }
-    }
-    else
-    {
-        set_alert_style();
-        add_error("Il n'y a pas d'évènement avec l'id que vous avez renseigné.");
-        die();
     }
 }
 else

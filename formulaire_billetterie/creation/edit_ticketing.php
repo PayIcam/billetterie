@@ -41,7 +41,7 @@ if(isset($_GET['event_id']))
         }
         $event_radios = array_merge($event_radios, $opt);
 
-        require 'templates/formulaire.php';
+        require 'templates/formulaire_billetterie.php';
     }
 }
 else

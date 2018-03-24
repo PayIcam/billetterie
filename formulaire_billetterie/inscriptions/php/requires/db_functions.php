@@ -132,7 +132,7 @@ function insert_transaction($data)
 function update_transaction_status($data)
 {
     global $db;
-    $icam_update = $db->prepare('UPDATE transactions SET status= :status WHERE transaction_id= :transaction_id');
+    $icam_update = $db->prepare('UPDATE transactions SET status= :status, date_payement = CURRENT_TIMESTAMP() WHERE transaction_id= :transaction_id');
     return $icam_update->execute($data);
 }
 

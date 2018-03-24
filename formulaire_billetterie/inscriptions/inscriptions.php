@@ -25,7 +25,6 @@ if(isset($_GET['event_id']))
             die();
         }
 
-
         check_if_event_should_be_displayed($event,$promo_id, $site_id, $email);
 
         $promo_specifications = get_promo_specification_details(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id));
@@ -55,11 +54,6 @@ if(isset($_GET['event_id']))
             set_alert_style();
             add_error("Vous n'avez pas accès à cet évènement. C'est une erreur qu'il vous soit apparu.");
         }
-    }
-    else
-    {
-        set_alert_style();
-        add_error("Il n'y a pas d'évènement avec l'id que vous avez renseigné.");
     }
 }
 else

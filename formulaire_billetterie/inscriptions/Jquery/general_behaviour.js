@@ -41,7 +41,7 @@ function change_recap_prices(price, target)
 
 function filling_form_behaviour()
 {
-    $("#registration_guests .guest_form input[class='form-control guest_firstname'], #registration_guests .guest_form input[class='form-control guest_lastname']").keyup(function()
+    $("#registration_guests .guest_form input[class='form-control guest_firstname'], #registration_guests .guest_form input[class='form-control guest_lastname']").on("keyup change", function()
     {
         var prenom = $(this).parents('.guest_inputs').find('.guest_firstname').val();
         var nom = $(this).parents('.guest_inputs').find('.guest_lastname').val();
@@ -147,4 +147,28 @@ function filling_form_behaviour()
             });
         }
     });
+}
+
+function check_urls(add_error)
+{
+    current_path = window.location.pathname;
+    action_url = $('form').prop('action');
+
+    if(current_path == base_path + "inscriptions/inscriptions.php")
+    {
+        if(action_url != public_url + "inscriptions/php/ajout_participant.php?event_id=" + event_id)
+        {
+            add_error("A quoi joues tu ? Arrète de trafiquer les redirections.");
+            return false;
+        }
+    }
+    else if(current_path == base_path + "inscriptions/edit_reservation.php")
+    {
+        if(action_url != public_url + "inscriptions/php/edition_participant.php?event_id=" + event_id)
+        {
+            add_error("A quoi joues tu ? Arrète de trafiquer les redirections.");
+            return false;
+        }
+    }
+    return true;
 }
