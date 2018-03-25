@@ -30,10 +30,22 @@ function getPayutcClient($service)
         isset($_SESSION['payutc_cookie']) ? $_SESSION['payutc_cookie'] : "");
 }
 
-$payutcClient = strpos($_SERVER['REQUEST_URI'], '/creation/') ? getPayutcClient("GESARTICLE") : getPayutcClient("WEBSALE");
+switch($_SERVER['REQUEST_URI'])
+{
+    case is_int(strpos($_SERVER['REQUEST_URI'], '/creation/')):
+        $payutcClient = getPayutcClient("GESARTICLE");
+        redirect_if_not_admin($payutcClient->isAdmin());
+        break;
+    case is_int(strpos($_SERVER['REQUEST_URI'], '/stats/')):
+        $payutcClient = getPayutcClient("STATS");
+        redirect_if_not_admin($payutcClient->isAdmin());
+        break;
+    default:
+        $payutcClient = getPayutcClient("WEBSALE");
+}
 
 $is_super_admin = $payutcClient->isSuperAdmin();
-$isAdminFondation = $payutcClient->isAdmin();
+$is_admin = $payutcClient->isAdmin();
 $status = $payutcClient->getStatus();
 
 // routes //

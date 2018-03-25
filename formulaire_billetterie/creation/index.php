@@ -15,6 +15,7 @@ catch(JsonClient\JsonException $e)
     if($e->gettype() == 'Payutc\Exception\CheckRightException')
     {
         header('Location: '.$_CONFIG['public_url']);
+        die();
     }
     else
     {

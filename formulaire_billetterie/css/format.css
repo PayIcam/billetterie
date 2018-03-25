@@ -46,6 +46,7 @@ button[class='btn option_tooltip']
 {
     font-size:1.5em;
     position: fixed;
+    margin-top: 25px;
     top: 5%;
     left: 5%;
     width: 90%;

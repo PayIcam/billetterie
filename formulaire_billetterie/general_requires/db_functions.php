@@ -161,3 +161,11 @@ function event_has_option($ids)
     $option = $option->fetch();
     return empty($option) ? false : true;
 }
+
+function get_current_participants_number($event_id)
+{
+    global $db;
+    $count_promo = $db->prepare('SELECT COUNT(*) current_total_quota FROM participants WHERE event_id= :event_id and status= "V"');
+    $count_promo->execute(array("event_id" => $event_id));
+    return $count_promo->fetch()['current_total_quota'];
+}

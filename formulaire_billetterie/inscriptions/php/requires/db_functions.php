@@ -16,13 +16,6 @@ function get_promo_specification_details($promo_details)
     return current($promos_query->fetchAll());
 }
 
-function get_current_participants_number($event_id)
-{
-    global $db;
-    $count_promo = $db->prepare('SELECT COUNT(*) current_total_quota FROM participants WHERE event_id= :event_id and status= "V"');
-    $count_promo->execute(array("event_id" => $event_id));
-    return $count_promo->fetch()['current_total_quota'];
-}
 function get_current_promo_quota($ids)
 {
     global $db;
@@ -105,7 +98,7 @@ function get_icam_options_data($ids)
 function get_participant_option($ids)
 {
     global $db;
-    $option_query = $db->prepare('SELECT * FROM participant_has_options WHERE event_id=:event_id and option_id=:option_id and participant_id=:participant_id');
+    $option_query = $db->prepare('SELECT * FROM participant_has_options WHERE event_id=:event_id and option_id=:option_id and participant_id=:participant_id and status="V" ');
     $option_query->execute($ids);
     return $option_query->fetch();
 }
@@ -125,7 +118,7 @@ function get_icams_guests_ids($ids)
 function insert_transaction($data)
 {
     global $db;
-    $transaction = $db->prepare('INSERT INTO transactions(status, login, liste_places_options, price, payicam_transaction_id, payicam_transaction_url, event_id) VALUES ("W", :login, :liste_places_options, :price, :payicam_transaction_id, :payicam_transaction_url, :event_id)');
+    $transaction = $db->prepare('INSERT INTO transactions(status, login, liste_places_options, price, payicam_transaction_id, payicam_transaction_url, event_id, icam_id) VALUES ("W", :login, :liste_places_options, :price, :payicam_transaction_id, :payicam_transaction_url, :event_id, :icam_id)');
     $transaction->execute($data);
     return $db->lastInsertId();
 }
@@ -163,13 +156,6 @@ function get_pending_reservations($event_id=false, $login=false)
         return $pending_reservations->fetchAll();
     }
 }
-function get_icam_pending_transaction($login)
-{
-    global $db;
-    $pending_reservations = $db->prepare('SELECT * FROM transactions INNER JOIN events ON events.event_id = transactions.event_id WHERE status = "W" and login= :login');
-    $pending_reservations->execute(array("login" => $login));
-    return current($pending_reservations->fetchAll());
-}
 function icam_has_pending_reservations($data)
 {
     global $db;
@@ -177,4 +163,11 @@ function icam_has_pending_reservations($data)
     $pending_reservations->execute($data);
     $pending_reservations = $pending_reservations->fetchAll();
     return empty($pending_reservations) ? false : $pending_reservations;
+}
+function get_icam_pending_transaction($login)
+{
+    global $db;
+    $pending_reservations = $db->prepare('SELECT * FROM transactions INNER JOIN events ON events.event_id = transactions.event_id WHERE status = "W" and login= :login');
+    $pending_reservations->execute(array("login" => $login));
+    return current($pending_reservations->fetchAll());
 }

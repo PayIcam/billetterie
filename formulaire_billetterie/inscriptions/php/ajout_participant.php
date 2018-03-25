@@ -171,15 +171,15 @@ if(!empty($_POST))
 
         $transaction = $payutcClient->createTransaction(array(
             "items" => json_encode($transaction_articles),
-            "fun_id" => 4,
-            "mail" => 'gregoire.giraud@2020.icam.fr',
+            "fun_id" => $event['fundation_id'],
+            "mail" => $email,
             "return_url" => $_CONFIG['public_url']. "inscriptions/php/validate_reservations.php?event_id=".$event_id,
             "callback_url" => $_CONFIG['public_url']. "inscriptions/php/validate_reservations.php?event_id=".$event_id
             ));
 
         $ajax_json_response = array("message" => "Votre réservation a bien été prise en compte ! <br>Vous allez être redirigé pour payer !", "transaction_url" => $transaction->url);
 
-        $transaction_data = array("login" => $email, "liste_places_options" => json_encode($transaction_linked_purchases), "price" => $total_price, "payicam_transaction_id" => $transaction->tra_id, "payicam_transaction_url" => $transaction->url, "event_id" => $event_id);
+        $transaction_data = array("login" => $email, "liste_places_options" => json_encode($transaction_linked_purchases), "price" => $total_price, "payicam_transaction_id" => $transaction->tra_id, "payicam_transaction_url" => $transaction->url, "event_id" => $event_id, "icam_id" => $icam_id);
 
         insert_transaction($transaction_data);
 

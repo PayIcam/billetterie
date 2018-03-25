@@ -33,3 +33,13 @@ function get_ticketing_state($event, $promo_id, $site_id, $email, $icam_has_rese
     }
     return 'open';
 }
+
+function redirect_if_not_admin($is_admin)
+{
+    global $_CONFIG;
+    if(!$is_admin)
+    {
+        header('Location: '.$_CONFIG['public_url']);
+        die();
+    }
+}

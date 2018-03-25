@@ -385,8 +385,16 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
             }
             if($left_to_pay!=0)
             {
-                $error = true;
-                add_error_to_ajax_response("Le prix total n'est pas bon.");
+                if($left_to_pay>0.01)
+                {
+                    $error = true;
+                    add_error_to_ajax_response("Le prix total n'est pas bon.");
+                }
+                else
+                {
+                    global $total_price;
+                    $total_price+=$participant_data->price;
+                }
             }
             else
             {
@@ -494,8 +502,16 @@ function is_correct_participant_supplement_data($participant_data, $participant_
             }
             if($left_to_pay!=0)
             {
-                $error = true;
-                add_error_to_ajax_response("Le prix total n'est pas bon.");
+                if($left_to_pay>0.01)
+                {
+                    $error = true;
+                    add_error_to_ajax_response("Le prix total n'est pas bon.");
+                }
+                else
+                {
+                    global $total_price;
+                    $total_price+=$participant_data->price;
+                }
             }
             else
             {
