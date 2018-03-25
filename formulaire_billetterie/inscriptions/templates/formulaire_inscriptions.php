@@ -58,8 +58,15 @@
             </div>
         </div>
         <br><br>
+        <div id="message_submit" class="container">
+            <div class="alert alert-info alert-dismissible waiting">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong>Parfait !</strong> Modification en cours
+            </div>
+            <br><br>
+        </div>
         <div class="text-center">
-            <button type="submit" class="btn btn-primary">Passer au payement</button>
+            <button id="button_submit_form" type="submit" class="btn btn-primary">Passer au payement</button>
         </div>
     </form>
     <div id="alerts">

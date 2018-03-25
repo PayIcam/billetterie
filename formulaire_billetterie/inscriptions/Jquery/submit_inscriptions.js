@@ -142,6 +142,8 @@ function submit_inscriptions(submit)
     }
 
     var post_url = $('form').prop('action');
+    $('#message_submit').show();
+    $("#button_submit_form").prop('disabled', 'disabled');
 
     function ajax_success(data)
     {
@@ -162,11 +164,15 @@ function submit_inscriptions(submit)
         }
         else
         {
+            $('#message_submit').hide();
+            $("#button_submit_form").prop('disabled', '');
             $("#alerts").append(data.message);
         }
     }
     function error_ajax()
     {
+        $('#message_submit').hide();
+        $("#button_submit_form").prop('disabled', '');
         add_error('La requête Ajax permettant de submit les informations et ajouter les participants a échoué');
     }
 
@@ -200,12 +206,15 @@ function submit_inscriptions(submit)
     //     }
     //     else
     //     {
+    //         $('#message_submit').hide();
+    //         $("#button_submit_form").prop('disabled', '');
     //         $("#alerts").append(data);
     //     }
     // }
     // function error_ajax()
     // {
-    //     console.log('error');
+    //     $('#message_submit').hide();
+    //     $("#button_submit_form").prop('disabled', '');
     //     add_error('La requête Ajax permettant de submit les informations et ajouter les participants a échoué');
     // }
 

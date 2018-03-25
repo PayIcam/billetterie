@@ -315,17 +315,17 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
             }
             if($participant_type=='icam')
             {
-                if($participant_data->prenom != $prenom)//Faire avec les variables de session
+                if($participant_data->prenom != $prenom)
                 {
                     add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prénom <br>");
                     $error = true;
                 }
-                if($participant_data->nom != $nom)//Faire avec les variables de session
+                if($participant_data->nom != $nom)
                 {
                     add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom <br>");
                     $error = true;
                 }
-                if($participant_data->email != $email)//Faire avec les variables de session
+                if($participant_data->email != $email)
                 {
                     add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de l'email <br>");
                     $error = true;
@@ -348,7 +348,7 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
             }
             elseif($participant_type=='icam')
             {
-                if(!is_string($participant_data->prenom))//Faire avec les variables de session
+                if(!is_string($participant_data->prenom))
                 {
                     add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prénom <br>");
                     $error = true;
@@ -357,7 +357,7 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
                 {
                     add_error_to_ajax_response($participant_type . " : Le prenom a-t-il besoin d'être si long ?<br>");
                 }
-                if(!is_string($participant_data->nom))//Faire avec les variables de session
+                if(!is_string($participant_data->nom))
                 {
                     add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom <br>");
                     $error = true;

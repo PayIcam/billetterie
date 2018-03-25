@@ -28,6 +28,7 @@ function initialisation_formulaire()
     $("#options").hide();//On cache la partie traitant des options
     $("#submit_form_div").hide();//On cache le bouton de submit
     $("#input_additions").hide();//On cache les inputs hidden
+    $("#message_submit").hide();
 
     $("select[multiple]").each(function()
     {

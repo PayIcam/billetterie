@@ -66,7 +66,7 @@ function prepare_edit_submit()
             }
         }
 
-        $("#errors").empty();
+        $("#alerts").empty();
 
         if(!check_urls(add_error))
         {
@@ -165,6 +165,8 @@ function prepare_edit_submit()
         }
 
         var post_url = $('form').prop('action');
+        $("#message_submit").show();
+        $('#button_submit_form').prop('disabled', 'disabled');
 
         function ajax_success(data)
         {
@@ -186,11 +188,15 @@ function prepare_edit_submit()
             }
             else
             {
+                $('#message_submit').hide();
+                $('#button_submit_form').prop('disabled', '');
                 $("#alerts").append(data.message);
             }
         }
         function error_ajax()
         {
+            $('#message_submit').hide();
+            $('#button_submit_form').prop('disabled', '');
             add_error('La requête Ajax permettant de submit les informations et ajouter les modifications a échoué');
         }
 
@@ -222,11 +228,15 @@ function prepare_edit_submit()
         //     }
         //     else
         //     {
+        //         $('#message_submit').hide();
+        //         $('#button_submit_form').prop('disabled', '');
         //         $("#alerts").append(data);
         //     }
         // }
         // function error_ajax()
         // {
+        //     $('#message_submit').hide();
+        //     $('#button_submit_form').prop('disabled', '');
         //     add_error('La requête Ajax permettant de submit les informations et ajouter les modifications a échoué');
         // }
 
