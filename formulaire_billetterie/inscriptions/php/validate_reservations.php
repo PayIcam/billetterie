@@ -29,4 +29,4 @@ else
     }
 }
 
-// header('Location: '.$_CONFIG['public_url']);
+header('Location: '.$_CONFIG['public_url']);

@@ -101,7 +101,6 @@ if(!empty($_POST))
     {
         $payutcClient->deleteProduct(array("obj_id" => $promo['scoobydoo_article_id'], "fun_id" => $fundation_id));
         delete_specification_details(array("event_id" => $event_id, "promo_id" => $promo['promo_id'], "site_id" => $promo['site_id']));
-        echo '1 deletion';
     }
 
     //options & its accessibilities
@@ -260,9 +259,16 @@ if(!empty($_POST))
     foreach($previous_options as $previous_option)
     {
         $specifications= json_decode($previous_option['specifications']);
-        foreach($specifications as $specification)
+        if($previous_option['type']=='Select')
         {
-            deleteProduct(array("obj_id" => $specification->scoobydoo_article_id, "fun_id" => $fundation_id));
+            foreach($specifications as $specification)
+            {
+                $payutcClient->deleteProduct(array("obj_id" => $specification->scoobydoo_article_id, "fun_id" => $fundation_id));
+            }
+        }
+        elseif($previous_option['type']=='Checkbox')
+        {
+            $payutcClient->deleteProduct(array("obj_id" => $specifications->scoobydoo_article_id, "fun_id" => $fundation_id));
         }
         delete_option(array("event_id" => $event_id, "option_id" => $previous_option['option_id']));
     }

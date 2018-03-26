@@ -145,7 +145,7 @@ function is_correct_event_data()
             add_error("Le nom de l'évènement n'est même pas une chaine de caractères.");
             $error = true;
         }
-        elseif(strlen($event->name)>40)
+        elseif(strlen($event->name)>60)
         {
             add_error("Est ce vraiment nécessaire d'avoir un nom d'évènement si grand ?");
             $error = true;
@@ -285,6 +285,7 @@ function is_correct_event_accessibility()
 function are_correct_options()
 {
     global $options;
+    global $event;
     $error = false;
 
     foreach($options as &$option)
@@ -309,9 +310,14 @@ function are_correct_options()
             add_error("Le nom de l'option n'est même pas une chaine de caractères");
             $error = true;
         }
-        elseif(strlen($option->name)>40)
+        elseif(strlen($option->name)>45)
         {
             add_error("Est-il nécessaire d'avoir un nom si long pour votre option ?");
+            $error = true;
+        }
+        elseif(strlen($event->name . " Option " . $option->name)>100)
+        {
+            add_error("Le nom combiné de votre évènement et de votre option est trop grand... Enlevez quelques caractères là ou vous pouvez. La description est faire pour ça !");
             $error = true;
         }
         if(!is_string($option->description))
@@ -381,6 +387,11 @@ function are_correct_options()
                 elseif(!strlen($suboption->name)>40)
                 {
                     add_error("Est-il nécessaire d'avoir une sous-option si longue ?");
+                    $error = true;
+                }
+                elseif(strlen($event->name . " Option " . $option->name . " Choix " . $suboption->name)>100)
+                {
+                    add_error("Le nom combiné de votre évènement, de votre option, et de votre sous-option est trop grand... Enlevez quelques caractères là ou vous pouvez.");
                     $error = true;
                 }
                 if(!is_numeric($suboption->price))

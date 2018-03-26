@@ -150,7 +150,6 @@ function submit_inscriptions(submit)
         if(data.message=='Votre réservation a bien été prise en compte ! <br>Vous allez être redirigé pour payer !')
         {
             var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data.message + '</div>';
-            console.log(message_displayed);
             $("#alerts").append(message_displayed);
 
             $('form').off('submit').submit(function(submit)

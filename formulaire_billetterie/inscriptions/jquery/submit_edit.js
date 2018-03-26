@@ -2,7 +2,6 @@ function prepare_edit_submit()
 {
     function add_error(message)
     {
-        console.log('submit edit add_error');
         var message_displayed = '<div class="alert alert-danger alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Attention ! </strong>' + message + '</div>'
         $("#alerts").append(message_displayed);
     }
@@ -170,11 +169,9 @@ function prepare_edit_submit()
 
         function ajax_success(data)
         {
-            console.log(data);
             if(data.message=='Votre édition a bien été prise en compte !<br>Vous allez être redirigé pour le payement' || data.message== "Votre édition a bien été prise en compte !<br>Vous n'avez pas pris de nouvelles options payantes.<br>Vous allez être redirigé vers la page d'accueil.")
             {
                 var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data.message + '</div>';
-                console.log(message_displayed);
                 $("#alerts").append(message_displayed);
 
                 $('form').off('submit').submit(function(submit)
