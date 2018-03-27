@@ -1,3 +1,9 @@
 config.php
 vendor/
 composer.lock
+inscriptions/test.php
+inscriptions/reset_participants.php
+creation/test.php
+creation/reset_events.php
+db_creation/event_save.sql
+stats/test.php
