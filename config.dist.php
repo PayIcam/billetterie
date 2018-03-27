@@ -15,7 +15,7 @@ return [
         'key'=>'xxxx',
         'url'=>'https://url/ginger/index.php/v1/',
     ],
-    'public_url' => '/Billetterie/formulaire_billetterie/',
-    'base_path' => '/Billetterie/formulaire_billetterie/',
+    'public_url' => '/billetterie/',
+    'base_path' => '/billetterie/',
     'site_name' => basename(__DIR__)
 ];
