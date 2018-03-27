@@ -16,12 +16,15 @@ if(!empty($_POST))
     $fundation_id = $scoobydoo_infos['fundation_id'];
 
     $scoobydoo_ids = json_decode($scoobydoo_infos['scoobydoo_category_ids']);
+    $scoobydoo_event_category_id = $scoobydoo_ids->scoobydoo_event_id;
     $scoobydoo_promos_id = $scoobydoo_ids->scoobydoo_promos_id;
     $scoobydoo_options_id = $scoobydoo_ids->scoobydoo_options_id;
 
     $previous_event_accessibilty = get_specification_details($event_id);
 
     //Table events
+
+    $payutcClient->setCategory(array("obj_id" => $scoobydoo_event_category_id, "name" => $event->name, "parent_id" => null, "fun_id" => $fundation_id))->success;
 
     $table_event_data = array(
         "event_id" => $event_id,
@@ -43,6 +46,7 @@ if(!empty($_POST))
         {
             if($promo_data->promo_id == $previous_promo['promo_id'] && $promo_data->site_id == $previous_promo['site_id'])
             {
+
                 $payutcClient->setProduct(array(
                     "obj_id" => $previous_promo['scoobydoo_article_id'],
                     "name" => $event->name . " Prix " . $promo_data->promo . " " . $promo_data->site,

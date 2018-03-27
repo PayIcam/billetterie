@@ -29,14 +29,18 @@ function getPayutcClient($service)
         "PayIcam Json PHP Client",
         isset($_SESSION['payutc_cookie']) ? $_SESSION['payutc_cookie'] : "");
 }
+// routes //
+
+$route = str_replace($_CONFIG['base_path'], '', $_SERVER['REQUEST_URI']);
+$route = current(explode('?', $route, 2));
 
 switch($_SERVER['REQUEST_URI'])
 {
-    case is_int(strpos($_SERVER['REQUEST_URI'], '/creation/')):
+    case strpos($_SERVER['REQUEST_URI'], '/creation/') !== false:
         $payutcClient = getPayutcClient("GESARTICLE");
-        redirect_if_not_admin($payutcClient->isAdmin());
+        redirect_if_not_admin($payutcClient->isSuperAdmin());
         break;
-    case is_int(strpos($_SERVER['REQUEST_URI'], '/stats/')):
+    case strpos($_SERVER['REQUEST_URI'], '/stats/') !== false:
         $payutcClient = getPayutcClient("STATS");
         redirect_if_not_admin($payutcClient->isAdmin());
         break;
@@ -48,9 +52,6 @@ $is_super_admin = $payutcClient->isSuperAdmin();
 $is_admin = $payutcClient->isAdmin();
 $status = $payutcClient->getStatus();
 
-// routes //
-$route = str_replace($_CONFIG['base_path'], '', $_SERVER['REQUEST_URI']);
-$route = current(explode('?', $route, 2));
 $casUrl = $payutcClient->getCasUrl()."login?service=".urlencode($_CONFIG['public_url']."login.php");
 $logoutUrl = $payutcClient->getCasUrl()."logout?service=".urlencode($_CONFIG['public_url']."login.php");
 

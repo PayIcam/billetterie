@@ -80,7 +80,6 @@ function submit_inscriptions(submit)
     var nom = $('input[name=icam_lastname]').val();
     var email = $('input[name=icam_email]').val();
     var telephone = $('input[name=icam_phone_number]').val();
-    var birthdate = $('input[name=icam_birth_date]').val();
     var event_price = parseFloat($('#registration_icam .event_price').text());
     var total_icam_price = event_price;
     var promo_id = $('input[name=icam_promo_id]').val();
@@ -91,7 +90,7 @@ function submit_inscriptions(submit)
     var options = [];
     $("#icam_options").children('div').each(prepare_option_data);
 
-    var icam_data = {prenom: prenom, nom: nom, is_icam: is_icam, email: email, price: total_icam_price, telephone: telephone, birthdate: birthdate, options: options, site_id: site_id, promo_id: promo_id, icam_event_article_id: icam_event_article_id};
+    var icam_data = {prenom: prenom, nom: nom, is_icam: is_icam, email: email, price: total_icam_price, telephone: telephone, options: options, site_id: site_id, promo_id: promo_id, icam_event_article_id: icam_event_article_id};
     var json_icam_data = JSON.stringify(icam_data);
     $("#hidden_inputs input[name=icam_informations]").attr('value', json_icam_data);
 
@@ -115,7 +114,6 @@ function submit_inscriptions(submit)
             else
             {
                 var is_icam = 0;
-                var birthdate = $(this).find('.guest_birthdate').val();
                 var event_price = parseFloat($(this).find('.event_price').text());
                 total_guest_price = event_price;
                 var promo_id = $(this).find('.guest_promo_id').val();
@@ -126,7 +124,7 @@ function submit_inscriptions(submit)
                 options = [];
                 $(this).find(".guest_options div").each(prepare_option_data);
 
-                var guest_data = {prenom: prenom, nom: nom, is_icam: is_icam, price: total_guest_price, birthdate: birthdate, options: options, site_id: site_id, promo_id: promo_id, guest_event_article_id: guest_event_article_id};
+                var guest_data = {prenom: prenom, nom: nom, is_icam: is_icam, price: total_guest_price, options: options, site_id: site_id, promo_id: promo_id, guest_event_article_id: guest_event_article_id};
                 guests_data.push(guest_data);
             }
         }

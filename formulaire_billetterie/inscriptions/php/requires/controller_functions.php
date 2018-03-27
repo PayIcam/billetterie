@@ -274,7 +274,7 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
     }
     else
     {
-        $participant_data_length = $participant_type=='icam' ? 11:9;
+        $participant_data_length = $participant_type=='icam' ? 10:8;
         if(count(get_object_vars($participant_data)) != $participant_data_length)
         {
             add_error_to_ajax_response($participant_type . " : Il n'y a pas le bon nombre d'éléments dans l'objet. <br>");
@@ -367,11 +367,6 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
                     add_error_to_ajax_response($participant_type . " : Le nom a-t-il besoin d'être si long ?<br>");
                 }
             }
-            if(!preg_match("#^[0-9]{4}-[0-9]{2}-[0-9]{2}$#", $participant_data->birthdate) and $participant_data->birthdate!='')
-            {
-                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de la date de naissance <br>");
-                $error = true;
-            }
             if(!is_array($participant_data->options))
             {
                 add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur des options <br>");
@@ -422,7 +417,7 @@ function is_correct_participant_supplement_data($participant_data, $participant_
     }
     else
     {
-        $participant_data_length = $participant_type=='icam' ? 8:9;
+        $participant_data_length = $participant_type=='icam' ? 7:8;
         if(count(get_object_vars($participant_data)) != $participant_data_length)
         {
             add_error_to_ajax_response($participant_type . " : Il n'y a pas le bon nombre d'éléments dans l'objet. <br>");
@@ -483,11 +478,6 @@ function is_correct_participant_supplement_data($participant_data, $participant_
                 {
                     add_error_to_ajax_response($participant_type . " : Le nom a-t-il besoin d'être si long ?<br>");
                 }
-            }
-            if(!preg_match("#^[0-9]{4}-[0-9]{2}-[0-9]{2}$#", $participant_data->birthdate) and $participant_data->birthdate!='')
-            {
-                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de la date de naissance <br>");
-                $error = true;
             }
             if(!is_array($participant_data->options))
             {

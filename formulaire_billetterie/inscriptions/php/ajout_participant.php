@@ -117,7 +117,6 @@ if(!empty($_POST))
 
     if($icam_data!=false)
     {
-        $icam_data->birthdate = $icam_data->birthdate == '' ? null : $icam_data->birthdate;
         $icam_data->telephone = $icam_data->telephone == '' ? null : $icam_data->telephone;
 
         $icam_insertion_data = array(
@@ -127,7 +126,6 @@ if(!empty($_POST))
             "email" => $icam_data->email,
             "price" => $icam_data->price,
             "telephone" => $icam_data->telephone,
-            "birthdate" => $icam_data->birthdate,
             "event_id" => $event_id,
             "site_id" => $icam_data->site_id,
             "promo_id" => $icam_data->promo_id
@@ -146,14 +144,12 @@ if(!empty($_POST))
         {
             foreach($guests_data as $guest_data)
             {
-                $guest_data->birthdate = $guest_data->birthdate == '' ? null : $guest_data->birthdate;
 
                 $guest_insertion_data = array(
                     "prenom" => $guest_data->prenom,
                     "nom" => $guest_data->nom,
                     "is_icam" => $guest_data->is_icam,
                     "price" => $guest_data->price,
-                    "birthdate" => $guest_data->birthdate,
                     "event_id" => $event_id,
                     "site_id" => $guest_data->site_id,
                     "promo_id" => $guest_data->promo_id

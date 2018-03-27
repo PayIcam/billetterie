@@ -114,13 +114,9 @@ if(!empty($_POST))
     {
         $icam_id = $icam_data->icam_id;
 
-        $icam_data->birthdate = $icam_data->birthdate == '' ? null : $icam_data->birthdate;
-        $icam_data->telephone = $icam_data->telephone == '' ? null : $icam_data->telephone;
-
         $icam_insertion_data = array(
             "price_addition" => $icam_data->price,
             "telephone" => $icam_data->telephone,
-            "birthdate" => $icam_data->birthdate,
             "event_id" => $event_id,
             "site_id" => $icam_data->site_id,
             "promo_id" => $icam_data->promo_id,
@@ -139,8 +135,6 @@ if(!empty($_POST))
         {
             foreach($previous_guests_data as $previous_guest_data)
             {
-                $previous_guest_data->birthdate = $previous_guest_data->birthdate == '' ? null : $previous_guest_data->birthdate;
-
                 $guest_id = $previous_guest_data->guest_id;
 
                 $guest_insertion_data = array(
@@ -148,7 +142,6 @@ if(!empty($_POST))
                     "prenom" => $previous_guest_data->prenom,
                     "nom" => $previous_guest_data->nom,
                     "price_addition" => $previous_guest_data->price,
-                    "birthdate" => $previous_guest_data->birthdate,
                     "event_id" => $event_id,
                     "site_id" => $previous_guest_data->site_id,
                     "promo_id" => $previous_guest_data->promo_id
@@ -162,14 +155,11 @@ if(!empty($_POST))
         {
             foreach($new_guests_data as $new_guest_data)
             {
-                $new_guest_data->birthdate = $new_guest_data->birthdate == '' ? null : $new_guest_data->birthdate;
-
                 $guest_insertion_data = array(
                     "prenom" => $new_guest_data->prenom,
                     "nom" => $new_guest_data->nom,
                     "is_icam" => $new_guest_data->is_icam,
                     "price" => $new_guest_data->price,
-                    "birthdate" => $new_guest_data->birthdate,
                     "event_id" => $event_id,
                     "site_id" => $new_guest_data->site_id,
                     "promo_id" => $new_guest_data->promo_id

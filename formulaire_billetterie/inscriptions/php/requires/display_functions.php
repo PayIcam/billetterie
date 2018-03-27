@@ -35,11 +35,6 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
                 <label for="icam_phone_number">Numéro de téléphone : </label>
                 <input value="<?= $icam_reservation['telephone'] ?? '' ?>" type="text" class="form-control" name="icam_phone_number" id="icam_phone_number" placeholder="Numéro de téléphone">
             </div>
-
-            <div class="col-sm-6 form-group">
-                <label for="icam_birth_date">Date de naissance :</label>
-                <input value="<?= $icam_reservation['birthdate'] ?? '' ?>" type="date" class="form-control" name="icam_birth_date" id="icam_birth_date" placeholder="Date de naissance">
-            </div>
         </div>
         <input type="hidden" name="price" value="<?= $promo_specifications['price'] ?>">
         <input type="hidden" name="is_icam" value=1>
@@ -87,11 +82,6 @@ function form_guest($event, $guest_specifications, $options, $i, $guest_reservat
                 <div class="col-sm-5 form-group">
                     <label for="guest_<?=$i?>_lastname">Nom : </label>
                     <input value="<?= $guest_reservation['nom'] ?? '' ?>" type="text" class="form-control guest_lastname" name="guest_<?=$i?>_lastname" id="guest_<?=$i?>_lastname" placeholder="Nom">
-                </div>
-
-                <div class="col-sm-3 form-group">
-                    <label for="guest_<?=$i?>_birthdate">Date de naissance :</label>
-                    <input value="<?= $guest_reservation['birthdate'] ?? '' ?>" type="date" class="form-control guest_birthdate" name="birth_date" id="guest_<?=$i?>_birthdate" placeholder="Date de naissance">
                 </div>
             </div>
             <input type="hidden" class="guest_promo_id" name="guest_promo_id" value=<?=$guest_specifications['promo_id']?> >

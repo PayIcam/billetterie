@@ -80,7 +80,6 @@ function prepare_edit_submit()
 
         var icam_id = $("input[name=icam_id]").val();
         var telephone = $('input[name=icam_phone_number]').val();
-        var birthdate = $('input[name=icam_birth_date]').val();
         var icam_price_addition = 0;
         var promo_id = $('input[name=icam_promo_id]').val();
         var site_id = $('input[name=icam_site_id]').val();
@@ -90,7 +89,7 @@ function prepare_edit_submit()
         var options = [];
         $("#icam_options").children('div:not(div[data-payed=1])').each(prepare_option_data);
 
-        var icam_data = {icam_id: icam_id, price: icam_price_addition, telephone: telephone, birthdate: birthdate, options: options, site_id: site_id, promo_id: promo_id, icam_event_article_id: icam_event_article_id};
+        var icam_data = {icam_id: icam_id, price: icam_price_addition, telephone: telephone, options: options, site_id: site_id, promo_id: promo_id, icam_event_article_id: icam_event_article_id};
         var json_icam_data = JSON.stringify(icam_data);
         $("#hidden_inputs input[name=icam_informations]").attr('value', json_icam_data);
 
@@ -117,7 +116,6 @@ function prepare_edit_submit()
                     if($(this).hasClass('previous_guest'))
                     {
                         var guest_id = $(this).find("input[name=guest_id]").val();
-                        var birthdate = $(this).find('.guest_birthdate').val();
                         guest_price_addition = 0;
                         var promo_id = $(this).find('.guest_promo_id').val();
                         var site_id = $(this).find('.guest_site_id').val();
@@ -127,13 +125,12 @@ function prepare_edit_submit()
                         options = [];
                         $(this).find(".guest_options").children("div:not(div[data-payed=1])").each(prepare_option_data);
 
-                        var guest_data = {guest_id: guest_id, prenom: prenom, nom: nom, price: guest_price_addition, birthdate: birthdate, options: options, site_id: site_id, promo_id: promo_id, guest_event_article_id: guest_event_article_id};
+                        var guest_data = {guest_id: guest_id, prenom: prenom, nom: nom, price: guest_price_addition, options: options, site_id: site_id, promo_id: promo_id, guest_event_article_id: guest_event_article_id};
                         previous_guests_data.push(guest_data);
                     }
                     else
                     {
                         var is_icam = 0;
-                        var birthdate = $(this).find('.guest_birthdate').val();
                         var event_price = parseFloat($(this).find('.event_price').text());
                         guest_price_addition = event_price;
                         var promo_id = $(this).find('.guest_promo_id').val();
@@ -144,7 +141,7 @@ function prepare_edit_submit()
                         options = [];
                         $(this).find(".guest_options div").each(prepare_option_data);
 
-                        var guest_data = {prenom: prenom, nom: nom, is_icam: is_icam, price: guest_price_addition, birthdate: birthdate, options: options, site_id: site_id, promo_id: promo_id, guest_event_article_id: guest_event_article_id};
+                        var guest_data = {prenom: prenom, nom: nom, is_icam: is_icam, price: guest_price_addition, options: options, site_id: site_id, promo_id: promo_id, guest_event_article_id: guest_event_article_id};
                         new_guests_data.push(guest_data);
                     }
                 }

@@ -40,14 +40,14 @@ function get_current_select_option_quota($data)
 function insert_icam_participant($icam_data)
 {
     global $db;
-    $icam_insertion = $db->prepare('INSERT INTO participants(status, prenom, nom, is_icam, email, price, telephone, birthdate, event_id, site_id, promo_id) VALUES ("W", :prenom, :nom, :is_icam, :email, :price, :telephone, :birthdate, :event_id, :site_id, :promo_id)');
+    $icam_insertion = $db->prepare('INSERT INTO participants(status, prenom, nom, is_icam, email, price, telephone, event_id, site_id, promo_id) VALUES ("W", :prenom, :nom, :is_icam, :email, :price, :telephone, :event_id, :site_id, :promo_id)');
     $icam_insertion->execute($icam_data);
     return $db->lastInsertId();
 }
 function update_icam_participant($icam_data)
 {
     global $db;
-    $icam_update = $db->prepare('UPDATE participants SET price=price+:price_addition, telephone=:telephone, birthdate=:birthdate, event_id=:event_id, site_id=:site_id, promo_id=:promo_id WHERE participant_id=:icam_id');
+    $icam_update = $db->prepare('UPDATE participants SET price=price+:price_addition, telephone=:telephone, event_id=:event_id, site_id=:site_id, promo_id=:promo_id WHERE participant_id=:icam_id');
     return $icam_update->execute($icam_data);
 }
 function update_participant_status($data)
@@ -59,14 +59,14 @@ function update_participant_status($data)
 function insert_guest_participant($guest_data)
 {
     global $db;
-    $icam_insertion = $db->prepare('INSERT INTO participants(status, prenom, nom, is_icam, price, birthdate, event_id, site_id, promo_id) VALUES ("W", :prenom, :nom, :is_icam, :price, :birthdate, :event_id, :site_id, :promo_id)');
+    $icam_insertion = $db->prepare('INSERT INTO participants(status, prenom, nom, is_icam, price, event_id, site_id, promo_id) VALUES ("W", :prenom, :nom, :is_icam, :price, :event_id, :site_id, :promo_id)');
     $icam_insertion->execute($guest_data);
     return $db->lastInsertId();
 }
 function update_guest_participant($guest_data)
 {
     global $db;
-    $icam_update = $db->prepare('UPDATE participants SET price=price+:price_addition, prenom=:prenom, nom=:nom, birthdate=:birthdate, event_id=:event_id, site_id=:site_id, promo_id=:promo_id WHERE participant_id=:guest_id');
+    $icam_update = $db->prepare('UPDATE participants SET price=price+:price_addition, prenom=:prenom, nom=:nom, event_id=:event_id, site_id=:site_id, promo_id=:promo_id WHERE participant_id=:guest_id');
     return $icam_update->execute($guest_data);
 }
 function get_option($ids)
