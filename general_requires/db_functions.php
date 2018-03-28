@@ -169,3 +169,31 @@ function get_current_participants_number($event_id)
     $count_promo->execute(array("event_id" => $event_id));
     return $count_promo->fetch()['current_total_quota'];
 }
+
+function get_pending_reservations($event_id=false, $login=false)
+{
+    global $db;
+    if($login==false && $event_id==false)
+    {
+        $pending_reservations = $db->query('SELECT * FROM transactions INNER JOIN events ON events.event_id = transactions.event_id WHERE status = "W"');
+        return $pending_reservations->fetchAll();
+    }
+    elseif($event_id==false)
+    {
+        $pending_reservations = $db->prepare('SELECT * FROM transactions INNER JOIN events ON events.event_id = transactions.event_id WHERE status = "W" and login= :login');
+        $pending_reservations->execute(array("login" => $login));
+        return $pending_reservations->fetchAll();
+    }
+    elseif($login==false)
+    {
+        $pending_reservations = $db->prepare('SELECT * FROM transactions INNER JOIN events ON events.event_id = transactions.event_id WHERE status = "W" and transactions.event_id= :event_id');
+        $pending_reservations->execute(array("event_id" => $event_id));
+        return $pending_reservations->fetchAll();
+    }
+    else
+    {
+        $pending_reservations = $db->prepare('SELECT * FROM transactions INNER JOIN events ON events.event_id = transactions.event_id WHERE status = "W" and login= :login and transactions.event_id= :event_id');
+        $pending_reservations->execute(array("login" => $login, "event_id" => $event_id));
+        return $pending_reservations->fetchAll();
+    }
+}

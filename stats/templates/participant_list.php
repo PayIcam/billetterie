@@ -52,5 +52,6 @@
             </div>
         </div>
         <script src="jquery/participants.js"></script>
+        <script> $('[data-toggle="popover"]').popover(); </script>
     </body>
 </html>

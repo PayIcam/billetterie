@@ -42,3 +42,11 @@ function get_promo_guest_number($ids)
     $promo_guest_number->execute($ids);
     return $promo_guest_number->fetch()['guest_number'];
 }
+
+function get_option_name($option_id)
+{
+    global $db;
+    $promo_guest_number = $db->prepare('SELECT name FROM options WHERE option_id=:option_id');
+    $promo_guest_number->execute(array("option_id" => $option_id));
+    return $promo_guest_number->fetch()['name'];
+}

@@ -112,7 +112,7 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
     }
 }
 
-function display_liste_head($specification="", $id=true, $status=false, $price=true, $email=true, $telephone=true, $guest_number=true, $options=true, $edit=false, $add_guest=false, $bracelet=false, $date_inscription=true, $date_payement=false)
+function display_liste_head($specification="", $id=true, $status=false, $price=true, $email=true, $telephone=true, $guest_number=true, $options=true, $edit=false, $add_guest=false, $bracelet=false, $date_inscription=true, $date_payement=false, $pending_indicator=true)
 {
 /**
  *
@@ -164,12 +164,62 @@ function display_liste_head($specification="", $id=true, $status=false, $price=t
         <?php if($date_payement) { ?> <th scope="col">Date Payement</th> <?php } ?>
         <?php if($guest_number) { ?> <th scope="col">Nombre d'invités</th> <?php } ?>
         <?php if($options) { ?> <th scope="col">Options</th> <?php } ?>
+        <?php if($pending_indicator) { ?> <th scope="col">Attente</th> <?php } ?>
         <?php if($edit) { ?> <th scope="col">Editer</th> <?php } ?>
         <?php if($add_guest) { ?> <th scope="col">Ajouter un invité </th> <?php } ?>
     <?php
 }
 
-function display_participant_info($participant, $specification="", $id=true, $status=false, $price=true, $email=true, $telephone=true, $guest_number=true, $options=true, $edit=false, $add_guest=false, $bracelet=false, $date_inscription=true, $date_payement=false)
+function create_option_text($options)
+{
+    foreach($options as $option)
+    {
+        $select_message = $option['option_details']!=null ? json_decode($option['option_details'])->select_option : "";
+        $select_message = $select_message != "" ? " Choix " . $select_message : "";
+        echo get_option_name($option['option_id']) . $select_message . '<br>';
+    }
+}
+function display_options($participant)
+{
+    ?>
+        <td>
+            <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Options du participant : " data-content="<?= create_option_text($participant['validated_options']) ?>" type="button">
+                <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
+            </button>
+        </td>
+    <?php
+}
+
+function display_pending_reservations($participant)
+{
+    ?>
+    <td>
+    <?php
+    if($participant['is_icam']==1)
+    {
+        if(count(get_pending_reservations($participant['event_id'], $participant['email'])) >=1 )
+        {
+            ?>
+            <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="" data-content="" type="button">
+                <span style="color: yellow" class="glyphicon glyphicon-map-marker option_tooltip_glyph"></span>
+            </button>
+            <?php
+        }
+        else
+        {
+            ?>
+            <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="" data-content="" type="button">
+                <span style="color: green" class="glyphicon glyphicon-map-marker option_tooltip_glyph"></span>
+            </button>
+            <?php
+        }
+    }
+    ?>
+    </td>
+    <?php
+}
+
+function display_participant_info($participant, $specification="", $id=true, $status=false, $price=true, $email=true, $telephone=true, $guest_number=true, $options=true, $edit=false, $add_guest=false, $bracelet=false, $date_inscription=true, $date_payement=false, $pending_indicator=true)
 {
     if($specification == 'info_icam')
     {
@@ -207,7 +257,8 @@ function display_participant_info($participant, $specification="", $id=true, $st
         <?= $telephone ? "<td>" . htmlspecialchars($participant['telephone']) . "</td>" : "" ?>
         <?= $date_inscription ? "<td>" . $participant['inscription_date'] . "</td>" : "" ?>
         <?= $guest_number ? "<td>" . $participant['current_promo_guest_number'] . "</td>" : "" ?>
-        <?= $options ? "<td><span class='glyphicon glyphicon-info-sign'></span></td>" : "" ?>
+        <?= $options ? display_options($participant) : "" ?>
+        <?= $pending_indicator ? display_pending_reservations($participant) : "" ?>
     </tr>
     <?php
 }
