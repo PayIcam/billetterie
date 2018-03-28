@@ -17,8 +17,8 @@ if(isset($_GET['event_id']))
 
         $event = get_event_details($event_id);
 
-        $event['ticketing_start_date'] = date('d/m/Y h:i a', strtotime($event['ticketing_start_date']));
-        $event['ticketing_end_date'] = date('d/m/Y h:i a', strtotime($event['ticketing_end_date']));
+        $event['ticketing_start_date'] = date('m/d/Y h:i a', strtotime($event['ticketing_start_date']));
+        $event['ticketing_end_date'] = date('m/d/Y h:i a', strtotime($event['ticketing_end_date']));
 
         $promos_specifications = get_specification_details($event_id);
 

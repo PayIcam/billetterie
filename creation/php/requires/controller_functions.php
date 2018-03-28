@@ -69,6 +69,7 @@ function check_and_prepare_data()
         {
             global $event;
             $event = json_decode($_POST['event_data_json']);
+
             if(!is_correct_event_data())
             {
                 die();
