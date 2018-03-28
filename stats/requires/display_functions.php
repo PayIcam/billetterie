@@ -201,7 +201,7 @@ function display_pending_reservations($participant)
         {
             ?>
             <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="" data-content="" type="button">
-                <span style="color: yellow" class="glyphicon glyphicon-map-marker option_tooltip_glyph"></span>
+                <span style="color: red" class="glyphicon glyphicon-map-marker option_tooltip_glyph"></span>
             </button>
             <?php
         }
