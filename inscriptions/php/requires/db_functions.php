@@ -16,13 +16,6 @@ function get_promo_specification_details($promo_details)
     return current($promos_query->fetchAll());
 }
 
-function get_current_promo_quota($ids)
-{
-    global $db;
-    $count_promo = $db->prepare('SELECT COUNT(*) current_promo_quota FROM participants WHERE event_id= :event_id and site_id= :site_id and promo_id= :promo_id and status= "V"');
-    $count_promo->execute($ids);
-    return $count_promo->fetch()['current_promo_quota'];
-}
 function get_current_option_quota($ids)
 {
     global $db;

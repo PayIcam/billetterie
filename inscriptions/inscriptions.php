@@ -25,7 +25,7 @@ if(isset($_GET['event_id']))
             die();
         }
 
-        check_if_event_should_be_displayed($event,$promo_id, $site_id, $email);
+        check_if_event_should_be_displayed($event, $promo_id, $site_id, $email);
 
         $promo_specifications = get_promo_specification_details(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id));
 
@@ -35,13 +35,22 @@ if(isset($_GET['event_id']))
             $total_quota = $event['total_quota'];
             if($current_participants_number < $total_quota)
             {
-                $options = get_options($event_id);
+                $promo_quota = $promo_specifications['quota']==null ? INF : $promo_specifications['quota'];
+                if(get_current_promo_site_quota(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id)) < $promo_quota)
+                {
+                    $options = get_options($event_id);
 
-                $guests_specifications = get_promo_specification_details(array('event_id' => $event_id, 'promo_id' => get_promo_id('Invités'), 'site_id' => $site_id));
+                    $guests_specifications = get_promo_specification_details(array('event_id' => $event_id, 'promo_id' => get_promo_id('Invités'), 'site_id' => $site_id));
 
-                $actual_guest_number = $promo_specifications['guest_number']>0 ? number_of_guests_to_be_displayed($promo_specifications, $guests_specifications, $current_participants_number+1, $total_quota) : 0;
+                    $actual_guest_number = $promo_specifications['guest_number']>0 ? number_of_guests_to_be_displayed($promo_specifications, $guests_specifications, $current_participants_number+1, $total_quota) : 0;
 
-                require 'templates/formulaire_inscriptions.php';
+                    require 'templates/formulaire_inscriptions.php';
+                }
+                else
+                {
+                    set_alert_style();
+                    add_error('Toutes les places proposées à votre promo ont été vendues...');
+                }
             }
             else
             {

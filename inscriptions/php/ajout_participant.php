@@ -34,7 +34,7 @@ if(!empty($_POST))
 
     if(isset($_POST['icam_informations']))
     {
-        if(get_current_promo_quota(array("event_id" => $event_id, "promo_id" => $promo_id, "site_id" => $site_id)) + 1 > $promo_specifications['quota'])
+        if(get_current_promo_site_quota(array("event_id" => $event_id, "promo_id" => $promo_id, "site_id" => $site_id)) + 1 > $promo_specifications['quota'])
         {
             add_error_to_ajax_response("Le quota pour les " . $promo . " de " . $site . " est déjà plein. ");
             echo json_encode($ajax_json_response);
@@ -66,7 +66,7 @@ if(!empty($_POST))
                 {
                     $guests_specifications = get_promo_specification_details(array("event_id" => $event_id, "promo_id" => get_promo_id('Invités'), "site_id" => $site_id));
 
-                    if(get_current_promo_quota(array("event_id" => $event_id, "promo_id" => get_promo_id('Invités'), "site_id" => $site_id)) + count($guests_data) > $guests_specifications['quota'])
+                    if(get_current_promo_site_quota(array("event_id" => $event_id, "promo_id" => get_promo_id('Invités'), "site_id" => $site_id)) + count($guests_data) > $guests_specifications['quota'])
                     {
                         add_error_to_ajax_response("Le quota pour les invités de " . $site . " est déjà plein. ");
                         echo json_encode($ajax_json_response);

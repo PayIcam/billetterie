@@ -6,9 +6,10 @@
                 <div class="col-md-5">
                     <p><h3>Liste des participants pour l'évènement : <?= htmlspecialchars($event['name'])?></h3></p>
                     <p>Actuellement <?= $number_participants ?> invités</p>
+                    <p><?=$_SESSION['search_match'] ?? '' ?></p>
                 </div>
             </div>
-            <form action="participants.php?event_id=<?=$event_id?>" method="post">
+            <form action="participants.php?event_id=<?=$_GET['event_id']?>&rows=<?=$rows_per_page?>" method="post">
                 <div class="row">
                     <div class= "col-md-3">
                         <input type="input-medium search-query" class="form-control" name ="recherche" id="recherche" placeholder="Nom, prénom, initiales..." value="<?= isset($_POST['recherche']) ? htmlspecialchars($_POST['recherche']) : '' ?>">

@@ -126,7 +126,7 @@ function number_of_guests_to_be_displayed($promo_specifications, $guests_specifi
     }
 
     $guest_quota = $guests_specifications['quota'];
-    $current_guests_number = get_current_promo_quota(array('event_id' => $promo_specifications['event_id'], 'promo_id' => get_promo_id('Invités'), 'site_id' => $promo_specifications['site_id']));
+    $current_guests_number = get_current_promo_site_quota(array('event_id' => $promo_specifications['event_id'], 'promo_id' => get_promo_id('Invités'), 'site_id' => $promo_specifications['site_id']));
 
     $actual_guest_number = min($temporary_guest_number, $guest_quota-$current_guests_number);
     $actual_guest_number = $actual_guest_number>=0 ? $actual_guest_number : 0;

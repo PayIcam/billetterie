@@ -5,7 +5,7 @@ function change_number_rows($rows_per_page)
     global $event_id;
     ?>
     <div id="change_number_rows">
-        <form method="get" action="participants.php?event_id=<?=$event_id?>">
+        <form method="post" action="participants.php?event_id=<?=$event_id?>">
             <input type="hidden" value="<?=$event_id?>" name="event_id">
             <label for ="#change_rows"> Nombre de lignes par page : </label> <br/>
             <select class="custom-select mr-sm-2" id="change_rows" name="rows">
@@ -27,73 +27,57 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
     if(!function_exists('next_page')) {
     function next_page($current_page, $rows_per_page)
     {
-        $page_text = '?page='.$current_page+1;
+        $wanted_page = $current_page+1;
         $row_text ='&rows=' . $rows_per_page;
-        $link = "participants.php" . ($rows_per_page == 25) ? $page_text : $page_text.$row_text;
-    ?>
-    <div class="change_page">
-        <span class="change_page_text">
+        $event_text = '?event_id=' . $_GET['event_id'];
+        $link = ($rows_per_page == 25) ? "participants.php" . $event_text : "participants.php" . $event_text.$row_text;
+    ?><span class="change_page_text">
             <form method="post" action="<?= $link ?>">
                 <?= isset($_POST['recherche']) ? '<input type="hidden" name="recherche" value="' . $_POST['recherche'] . '" > ' : "" ?>
                 <input type="submit" value=">" />
             </form>
-        </span>
-    </div>
-    <?php
+        </span><?php
     }}
     if(!function_exists('prev_page')) {
     function prev_page($current_page, $rows_per_page)
     {
-        $page_text = '?page='.$current_page-1;
+        $wanted_page = $current_page-1;
         $row_text ='&rows=' . $rows_per_page;
-        $link = "participants.php" . ($rows_per_page == 25) ? $page_text : $page_text.$row_text;
-    ?>
-
-    <div class="change_page">
-        <span class="change_page_text">
+        $event_text = '?event_id=' . $_GET['event_id'];
+        $link = ($rows_per_page == 25) ? "participants.php" . $event_text : "participants.php" . $event_text.$row_text;
+    ?><span class="change_page_text">
             <form method="post" action="<?= $link ?>">
                 <?= isset($_POST['recherche']) ? '<input type="hidden" name="recherche" value="' . $_POST['recherche'] . '" > ' : "" ?>
                 <input type="submit" value="<" />
             </form>
-        </span>
-    </div>
-    <?php
+        </span><?php
     }}
     if(!function_exists('last_page')) {
     function last_page($current_page, $rows_per_page, $total_number_pages)
     {
-        $page_text = '?page='.$total_number_pages;
         $row_text ='&rows=' . $rows_per_page;
-        $link = "participants.php" . ($rows_per_page == 25) ? $page_text : $page_text.$row_text;
-    ?>
-    <div class="change_page">
-        <span class="change_page_text">
+        $event_text = '?event_id=' . $_GET['event_id'];
+        $link = ($rows_per_page == 25) ? "participants.php" . $event_text : "participants.php" . $event_text.$row_text;
+    ?><span class="change_page_text">
             <form method="post" action="<?= $link ?>">
                 <?= isset($_POST['recherche']) ? '<input type="hidden" name="recherche" value="' . $_POST['recherche'] . '" > ' : "" ?>
                 <input type="submit" value=">>>" />
             </form>
-        </span>
-    </div>
-    <?php
+        </span><?php
     }}
     if(!function_exists('first_page')) {
     function first_page($current_page, $rows_per_page)
     {
-        $page_text = '?page='.'1';
         $row_text ='&rows=' . $rows_per_page;
-        $link = "participants.php" . ($rows_per_page == 25) ? $page_text : $page_text.$row_text;
-    ?>
-    <div class="change_page">
-        <span class="change_page_text">
+        $event_text = '?event_id=' . $_GET['event_id'];
+        $link = ($rows_per_page == 25) ? "participants.php" . $event_text : "participants.php" . $event_text.$row_text;
+    ?><span class="change_page_text">
             <form method="post" action="<?= $link ?>">
                 <?= isset($_POST['recherche']) ? '<input type="hidden" name="recherche" value="' . $_POST['recherche'] . '" > ' : "" ?>
                 <input type="submit" value="<<<" />
             </form>
-        </span>
-    </div>
-    <?php
+        </span><?php
     }}
-
     if($current_page>2)
     {
         first_page($current_page, $rows_per_page);
@@ -112,7 +96,7 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
     }
 }
 
-function display_liste_head($specification="", $id=true, $status=false, $price=true, $email=true, $telephone=true, $guest_number=true, $options=true, $edit=false, $add_guest=false, $bracelet=false, $date_inscription=true, $date_payement=false, $pending_indicator=true)
+function display_liste_head($specification="", $id=true, $status=false, $price=true, $email=false, $telephone=true, $guest_number=true, $options=true, $edit=false, $add_guest=false, $bracelet=false, $date_inscription=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
 {
 /**
  *
@@ -151,8 +135,8 @@ function display_liste_head($specification="", $id=true, $status=false, $price=t
     ?>
         <?php if($id) { ?> <th scope="col">ID</th> <?php } ?>
         <?php if($status) { ?> <th scope="col">Status</th> <?php } ?>
-        <th scope="col">Nom</th>
         <th scope="col">Prénom</th>
+        <th scope="col">Nom</th>
         <?php if($price) { ?> <th scope="col">Prix</th> <?php } ?>
         <th scope="col">Promo</th>
         <?php if($bracelet) { ?> <th scope="col">Bracelet</th> <?php } ?>
@@ -164,6 +148,7 @@ function display_liste_head($specification="", $id=true, $status=false, $price=t
         <?php if($date_payement) { ?> <th scope="col">Date Payement</th> <?php } ?>
         <?php if($guest_number) { ?> <th scope="col">Nombre d'invités</th> <?php } ?>
         <?php if($options) { ?> <th scope="col">Options</th> <?php } ?>
+        <?php if($guest_info) { ?> <th scope="col">Liens</th> <?php } ?>
         <?php if($pending_indicator) { ?> <th scope="col">Attente</th> <?php } ?>
         <?php if($edit) { ?> <th scope="col">Editer</th> <?php } ?>
         <?php if($add_guest) { ?> <th scope="col">Ajouter un invité </th> <?php } ?>
@@ -183,9 +168,11 @@ function display_options($participant)
 {
     ?>
         <td>
+            <?php if(!empty($participant['validated_options'])) { ?>
             <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Options du participant : " data-content="<?= create_option_text($participant['validated_options']) ?>" type="button">
                 <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
             </button>
+            <?php } ?>
         </td>
     <?php
 }
@@ -219,7 +206,40 @@ function display_pending_reservations($participant)
     <?php
 }
 
-function display_participant_info($participant, $specification="", $id=true, $status=false, $price=true, $email=true, $telephone=true, $guest_number=true, $options=true, $edit=false, $add_guest=false, $bracelet=false, $date_inscription=true, $date_payement=false, $pending_indicator=true)
+function create_guests_text($guests)
+{
+    foreach($guests as $guest)
+    {
+        echo $guest['prenom'] . ' ' . $guest['nom'] . '<br>';
+    }
+}
+
+function display_guest_infos($participant)
+{
+    global $event_id;
+    ?> <td> <?php
+        if($participant['is_icam'] == 1)
+        {
+            $guests = get_guests_data($participant['participant_id']);
+            if(!empty($guests)) { ?>
+                <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Invités :" data-content="<?= create_guests_text($guests) ?>" type="button">
+                    <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
+                </button>
+            <?php }
+        }
+        else
+        {
+            $icam_data = get_icam_inviter_data($participant['participant_id']);
+            if(!empty($icam_data)) { ?>
+                <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-content="Invité par <?=$icam_data['prenom'] . " " . $icam_data['nom'] ?>" type="button">
+                    <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
+                </button>
+            <?php }
+        }
+    ?> </td> <?php
+}
+
+function display_participant_info($participant, $specification="", $id=true, $status=false, $price=true, $email=false, $telephone=true, $guest_number=true, $options=true, $edit=false, $add_guest=false, $bracelet=false, $date_inscription=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
 {
     if($specification == 'info_icam')
     {
@@ -249,8 +269,8 @@ function display_participant_info($participant, $specification="", $id=true, $st
     <tr>
         <?= $id ? "<td>" . $participant['participant_id'] . "</td>" : "" ?>
         <?= $status ? "<td>" . $participant['status'] . "</td>" : "" ?>
-        <td><?= htmlspecialchars($participant['nom']) ?></td>
         <td><?= htmlspecialchars($participant['prenom']) ?></td>
+        <td><?= htmlspecialchars($participant['nom']) ?></td>
         <?= $price ? "<td><span style='background-color: #3a87ad' class='badge badge-pill badge-info'>" . $participant['price'] . "€</span></td>" : "" ?>
         <td><?= htmlspecialchars($participant['promo']) ?></td>
         <?= $email ? "<td>" . $participant['email'] . "</td>" : "" ?>
@@ -258,6 +278,7 @@ function display_participant_info($participant, $specification="", $id=true, $st
         <?= $date_inscription ? "<td>" . $participant['inscription_date'] . "</td>" : "" ?>
         <?= $guest_number ? "<td>" . $participant['current_promo_guest_number'] . "</td>" : "" ?>
         <?= $options ? display_options($participant) : "" ?>
+        <?= $guest_info ? display_guest_infos($participant) : "" ?>
         <?= $pending_indicator ? display_pending_reservations($participant) : "" ?>
     </tr>
     <?php

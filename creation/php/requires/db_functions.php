@@ -56,15 +56,6 @@ function get_fundations_events($fundation_id)
     $fundation_events->execute(array("fundation_id" => $fundation_id));
     return $fundation_events->fetchAll();
 }
-
-function get_specification_details($event_id)
-{
-    global $db;
-    $promos_query = $db->prepare('SELECT * FROM promos_site_specifications WHERE event_id=:event_id');
-    $promos_query->execute(array('event_id'=>$event_id));
-    $promos_specifications = $promos_query->fetchAll();
-    return $promos_specifications;
-}
 function insert_specification_details($table_specification_data)
 {
     global $db;

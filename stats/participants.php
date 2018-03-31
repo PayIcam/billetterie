@@ -21,11 +21,19 @@ if(isset($_GET['event_id']))
 
         if(isset($_POST['recherche']))
         {
-            die();
-            $participants = determination_recherche($_POST['recherche'], $start_lign, $rows_per_page);
-            $number_pages = $_SESSION['count_recherche'] / $rows_per_page;
-            $total_number_pages = ceil($number_pages);
-            unset($_SESSION['count_recherche']);
+            if(trim($_POST['recherche'])=='')
+            {
+                $number_pages = $number_participants / $rows_per_page;
+                $total_number_pages = ceil($number_pages);
+                $participants = get_displayed_participants($event_id, $start_lign, $rows_per_page);
+            }
+            else
+            {
+                $participants = determination_recherche($_POST['recherche'], $start_lign, $rows_per_page);
+                $number_pages = $_SESSION['count_recherche'] / $rows_per_page;
+                $total_number_pages = ceil($number_pages);
+                unset($_SESSION['count_recherche']);
+            }
         }
         else
         {

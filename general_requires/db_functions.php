@@ -68,6 +68,23 @@ function event_id_is_correct($event_id)
     }
 }
 
+function get_specification_details($event_id)
+{
+    global $db;
+    $promos_query = $db->prepare('SELECT * FROM promos_site_specifications WHERE event_id=:event_id');
+    $promos_query->execute(array('event_id'=>$event_id));
+    $promos_specifications = $promos_query->fetchAll();
+    return $promos_specifications;
+}
+
+function get_current_promo_site_quota($ids)
+{
+    global $db;
+    $count_promo = $db->prepare('SELECT COUNT(*) current_promo_quota FROM participants WHERE event_id= :event_id and site_id= :site_id and promo_id= :promo_id and status= "V"');
+    $count_promo->execute($ids);
+    return $count_promo->fetch()['current_promo_quota'];
+}
+
 function get_promo_id($name)
 {
     global $db;
