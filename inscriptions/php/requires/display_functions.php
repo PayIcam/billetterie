@@ -6,10 +6,6 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
     $prenom = $_SESSION['icam_informations']->prenom;
     $nom = $_SESSION['icam_informations']->nom;
 
-    var_dump($email);
-    var_dump($prenom);
-    var_dump($nom);
-
     $icam_id = $icam_reservation == null ? -1 : $icam_reservation['participant_id'];
     ?>
    <div id="icam_informations">
