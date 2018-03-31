@@ -15,17 +15,17 @@ function add_option_html_code($option_number, $option=null, $option_specificatio
                                 <h4>A) Généralités sur l'option</h4>
                                 <div class="form-group">
                                     <label for=<?= '"option_'.$option_number.'_name"'; ?> >Nom de votre option :</label>
-                                    <input value="<?= $option['name'] ?? '' ?>" type="text" class="form-control" name="option_name" id=<?= '"option_'.$option_number.'_name"'; ?> placeholder="Nom de l'option" autofocus required>
+                                    <input value="<?= htmlspecialchars($option['name']) ?? '' ?>" type="text" class="form-control" name="option_name" id=<?= '"option_'.$option_number.'_name"'; ?> placeholder="Nom de l'option" autofocus required>
                                 </div>
 
                                 <div class="form-group">
                                     <label for=<?= '"option_'.$option_number.'_description"'; ?> >Description de votre option :</label>
-                                    <textarea class="form-control" name="option_description" id=<?= '"option_'.$option_number.'_description"'; ?> placeholder="Descrivez rapidement votre option" required><?= $option['description'] ?? '' ?></textarea>
+                                    <textarea class="form-control" name="option_description" id=<?= '"option_'.$option_number.'_description"'; ?> placeholder="Descrivez rapidement votre option" required><?= htmlspecialchars($option['description']) ?? '' ?></textarea>
                                 </div>
 
                                 <div class="form-group">
                                     <label for=<?= '"option_'.$option_number.'_quota"'; ?> >Quota de places disponibles pour votre option :</label>
-                                    <input value="<?= $option['quota'] ?? '' ?>" type="number" min=0 class="form-control" name="option_quota" id=<?= '"option_'.$option_number.'_quota"'; ?> aria-describedby=<?= '"option_'.$option_number.'_quota_help"'; ?> placeholder="Nombre de places">
+                                    <input value="<?= htmlspecialchars($option['quota']) ?? '' ?>" type="number" min=0 class="form-control" name="option_quota" id=<?= '"option_'.$option_number.'_quota"'; ?> aria-describedby=<?= '"option_'.$option_number.'_quota_help"'; ?> placeholder="Nombre de places">
                                     <small id=<?= '"option_'.$option_number.'_quota_help"'; ?> class="form-text text-muted">Il ne sera pas possible de dépasser ce quota, cette option se bloquera automatiquement une fois ce nombre atteint.</small>
                                 </div>
 
@@ -68,7 +68,7 @@ function add_option_html_code($option_number, $option=null, $option_specificatio
                                     <h5>Option de type checkbox :</h5>
                                     <div class="form-group option_checkbox_price">
                                         <label for=<?= '"option_'.$option_number.'_checkbox_price_input"'; ?> >Prix de l'option:</label>
-                                        <input value="<?= isset($option['type']) ? ($option['type']=='Checkbox' ? $option_specifications->price : '') : '' ?>" type="number" step="0.01" class="form-control" name="checkbox_price" id=<?= '"option_'.$option_number.'_checkbox_price_input"'; ?> aria-describedby=<?= '"option_'.$option_number.'_checkbox_price_input_help"'; ?> placeholder="Prix à fixer à la sélection">
+                                        <input value="<?= isset($option['type']) ? ($option['type']=='Checkbox' ? htmlspecialchars($option_specifications->price) : '') : '' ?>" type="number" step="0.01" class="form-control" name="checkbox_price" id=<?= '"option_'.$option_number.'_checkbox_price_input"'; ?> aria-describedby=<?= '"option_'.$option_number.'_checkbox_price_input_help"'; ?> placeholder="Prix à fixer à la sélection">
                                         <small id=<?= '"option_'.$option_number.'_checkbox_price_input_help"'; ?> class="form-text text-muted">Définissez le prix de votre option checkbox.</small> <br>
                                     </div>
                                     <div class="checkbox_example form-check">

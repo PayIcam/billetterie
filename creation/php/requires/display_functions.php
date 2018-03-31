@@ -4,7 +4,7 @@ function insert_as_select_option($array_to_insert)
 {
     foreach ($array_to_insert as $element)
     {
-        echo '<option>'. $element[0] .'</option>';
+        echo '<option>'. htmlspecialchars($element[0]) .'</option>';
     }
 }
 
@@ -16,11 +16,11 @@ function insert_event_accessibility_rows($promos_specifications)
         ?>
         <tr>
             <th><?= $numero ?></th>
-            <td><?= get_site_name($promo_specifications['site_id']) ?></td>
-            <td><?= get_promo_name($promo_specifications['promo_id']) ?></td>
-            <td><?= $promo_specifications['price'] . '€'?></td>
-            <td><?= $promo_specifications['quota']?></td>
-            <td><?= $promo_specifications['guest_number']?></td>
+            <td><?= htmlspecialchars(get_site_name($promo_specifications['site_id'])) ?></td>
+            <td><?= htmlspecialchars(get_promo_name($promo_specifications['promo_id'])) ?></td>
+            <td><?= htmlspecialchars($promo_specifications['price']) . '€'?></td>
+            <td><?= htmlspecialchars($promo_specifications['quota'])?></td>
+            <td><?= htmlspecialchars($promo_specifications['guest_number'])?></td>
             <td><button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></td>
         </tr>
         <?php
@@ -36,8 +36,8 @@ function insert_option_accessibility_rows($promo_options)
         ?>
         <tr>
             <th><?= $numero ?></th>
-            <td><?= get_site_name($promo_option['site_id']) ?></td>
-            <td><?= get_promo_name($promo_option['promo_id']) ?></td>
+            <td><?= htmlspecialchars(get_site_name($promo_option['site_id'])) ?></td>
+            <td><?= htmlspecialchars(get_promo_name($promo_option['promo_id'])) ?></td>
             <td><button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></td>
         </tr>
         <?php
@@ -53,9 +53,9 @@ function insert_option_select_rows($option_specifications)
         ?>
         <tr>
             <th><?= $numero ?></th>
-            <td><?= $option_specification->name ?></td>
-            <td><?= $option_specification->price.'€' ?></td>
-            <td><?= $option_specification->quota ?></td>
+            <td><?= htmlspecialchars($option_specification->name) ?></td>
+            <td><?= htmlspecialchars($option_specification->price).'€' ?></td>
+            <td><?= htmlspecialchars($option_specification->quota) ?></td>
             <td><button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></td>
         </tr>
         <?php
@@ -75,7 +75,7 @@ function display_fundations_events_admin($fundation)
 {
     ?>
     <div class="col-sm-4">
-        <a data-toggle="collapse" href="#button_links_<?=$fundation->fun_id?>" role="button" aria-expanded="false" aria-controls="#button_links_<?=$fundation->fun_id?>"><h2><?=$fundation->name?></h2></a>
+        <a data-toggle="collapse" href="#button_links_<?=$fundation->fun_id?>" role="button" aria-expanded="false" aria-controls="#button_links_<?=$fundation->fun_id?>"><h2><?=htmlspecialchars($fundation->name)?></h2></a>
         <div class="collapse" id="button_links_<?=$fundation->fun_id?>">
             <a href="new_ticketing.php?fundation_id=<?=$fundation->fun_id?>" class="btn btn-primary"><h5>Créer une billetterie</h5></a><br><br>
             <?php

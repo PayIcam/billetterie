@@ -11,32 +11,32 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
    <div id="icam_informations">
         <h4>
             Votre propre place
-            <span class="badge event_price" style="background-color: #468847"><?= $promo_specifications['price']. "€" ?></span>
+            <span class="badge event_price" style="background-color: #468847"><?= htmlspecialchars($promo_specifications['price']). "€" ?></span>
         </h4>
 
         <div class="row">
             <div class="col-sm-4 form-group">
                 <label for="icam_firstname">Prénom : </label>
-                <input value="<?= $icam_reservation['prenom'] ?? $prenom ?>" type="text" class="form-control" name="icam_firstname" id="icam_firstname" placeholder="Prénom" disabled>
+                <input value="<?= htmlspecialchars($icam_reservation['prenom']) ?? $prenom ?>" type="text" class="form-control" name="icam_firstname" id="icam_firstname" placeholder="Prénom" disabled>
             </div>
 
             <div class="col-sm-4 form-group">
                 <label for="icam_lastname">Nom : </label>
-                <input value="<?= $icam_reservation['nom'] ?? $nom ?>" type="text" class="form-control" name="icam_lastname" id="icam_lastname" placeholder="Nom" disabled>
+                <input value="<?= htmlspecialchars($icam_reservation['nom']) ?? $nom ?>" type="text" class="form-control" name="icam_lastname" id="icam_lastname" placeholder="Nom" disabled>
             </div>
 
             <div class="col-sm-4 form-group">
                 <label for="icam_email">Email Icam : </label>
-                <input value="<?= $icam_reservation['email'] ?? $email ?>" type="text" class="form-control" name="icam_email" id="icam_email" placeholder="email" disabled>
+                <input value="<?= htmlspecialchars($icam_reservation['email']) ?? $email ?>" type="text" class="form-control" name="icam_email" id="icam_email" placeholder="email" disabled>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-6 form-group">
                 <label for="icam_phone_number">Numéro de téléphone : </label>
-                <input value="<?= $icam_reservation['telephone'] ?? '' ?>" type="text" class="form-control" name="icam_phone_number" id="icam_phone_number" placeholder="Numéro de téléphone">
+                <input value="<?= htmlspecialchars($icam_reservation['telephone']) ?? '' ?>" type="text" class="form-control" name="icam_phone_number" id="icam_phone_number" placeholder="Numéro de téléphone">
             </div>
         </div>
-        <input type="hidden" name="price" value="<?= $promo_specifications['price'] ?>">
+        <input type="hidden" name="price" value="<?= htmlspecialchars($promo_specifications['price']) ?>">
         <input type="hidden" name="is_icam" value=1>
         <input type="hidden" name="icam_promo_id" value="<?=$promo_specifications['promo_id']?>" >
         <input type="hidden" name="icam_site_id" value="<?=$promo_specifications['site_id']?>" >
@@ -68,7 +68,7 @@ function form_guest($event, $guest_specifications, $options, $i, $guest_reservat
     <div class="guest_form col-sm-6 <?= $guest_reservation!=null ? "previous_guest" : "" ?>">
         <h3 class="guest_title">
             <span class="actual_guest_title">Invité n°<?=$i?></span>
-            <span class="badge event_price" style="background-color: #b94a48"><?= $guest_specifications['price']. "€" ?></span>
+            <span class="badge event_price" style="background-color: #b94a48"><?= htmlspecialchars($guest_specifications['price']). "€" ?></span>
         </h3>
         <div class="guest_informations">
             <span class="guest_title_default_text" style="display:none">Invité n°<?=$i?></span>
@@ -76,12 +76,12 @@ function form_guest($event, $guest_specifications, $options, $i, $guest_reservat
             <div class="row guest_inputs">
                 <div class="col-sm-4 form-group">
                     <label for="guest_<?=$i?>_firstname">Prénom : </label>
-                    <input value="<?= $guest_reservation['prenom'] ?? '' ?>" type="text" class="form-control guest_firstname" name="guest_<?=$i?>_firstname" id="guest_<?=$i?>_firstname" placeholder="Prénom">
+                    <input value="<?= htmlspecialchars($guest_reservation['prenom']) ?? '' ?>" type="text" class="form-control guest_firstname" name="guest_<?=$i?>_firstname" id="guest_<?=$i?>_firstname" placeholder="Prénom">
                 </div>
 
                 <div class="col-sm-5 form-group">
                     <label for="guest_<?=$i?>_lastname">Nom : </label>
-                    <input value="<?= $guest_reservation['nom'] ?? '' ?>" type="text" class="form-control guest_lastname" name="guest_<?=$i?>_lastname" id="guest_<?=$i?>_lastname" placeholder="Nom">
+                    <input value="<?= htmlspecialchars($guest_reservation['nom']) ?? '' ?>" type="text" class="form-control guest_lastname" name="guest_<?=$i?>_lastname" id="guest_<?=$i?>_lastname" placeholder="Nom">
                 </div>
             </div>
             <input type="hidden" class="guest_promo_id" name="guest_promo_id" value=<?=$guest_specifications['promo_id']?> >
@@ -112,13 +112,13 @@ function checkbox_form($option, $checked=false)
     <div class="checkbox_option form-check" <?= $checked ? "data-payed=1" : "" ?> >
         <input class="form-check-input has_option" name="has_option" type="checkbox" value="<?=$option['specifications']->scoobydoo_article_id?>" <?= $checked ? "checked disabled data-payed=1" : "" ?> >
         <label class="form-check-label">
-            <span class="option_name"><?= $option['name'] ?></span>
-            <span class="checkbox_price badge" style="background-color: #3a87ad"><?= $option['specifications']->price . ' €' ?></span>
-            <button class="btn option_tooltip" data-container="body" data-toggle="popover" title="Description de l'option : " data-content="<?= $option['description'] ?>" type="button">
+            <span class="option_name"><?= htmlspecialchars($option['name']) ?></span>
+            <span class="checkbox_price badge" style="background-color: #3a87ad"><?= htmlspecialchars($option['specifications']->price) . ' €' ?></span>
+            <button class="btn option_tooltip" data-container="body" data-toggle="popover" title="Description de l'option : " data-content="<?= htmlspecialchars($option['description']) ?>" type="button">
                 <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
             </button>
         </label>
-        <input type="hidden" name="option_price" value="<?=$option['specifications']->price?>">
+        <input type="hidden" name="option_price" value="<?=htmlspecialchars($option['specifications']->price)?>">
         <input type="hidden" name="option_id" value="<?=$option['option_id']?>">
         <input type="hidden" class="option_article_id" name="option_article_id" value="<?=$option['specifications']->scoobydoo_article_id?>">
     </div>
@@ -131,7 +131,7 @@ function select_form($option, $option_subname=null)
         <label>
             <span><?= $option['name'] ?></span>
             <span class="select_price badge" style="background-color: #468847"></span>
-            <button class="btn option_tooltip" type="button" data-container="body" data-toggle="popover" title="Description de l'option : " data-content="<?= $option['description'] ?>">
+            <button class="btn option_tooltip" type="button" data-container="body" data-toggle="popover" title="Description de l'option : " data-content="<?= htmlspecialchars($option['description']) ?>">
                 <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
             </button>
         </label>
@@ -156,7 +156,7 @@ function insert_according_select_options($option, $option_subname=null)
             {
                 ?>
                 <option value="<?= $option_specification->scoobydoo_article_id?>" <?=($option['is_mandatory']==1 and $compteur==0) ? 'selected' : ''?> >
-                    <?= $option_specification->name . ' (' . $option_specification->price . '€)' ?>
+                    <?= htmlspecialchars($option_specification->name) . ' (' . htmlspecialchars($option_specification->price) . '€)' ?>
                 </option>
                 <?php
                 $compteur++;
@@ -165,7 +165,7 @@ function insert_according_select_options($option, $option_subname=null)
         elseif(trim($option_subname) == trim($option_specification->name))
         {
             ?>
-            <option value="<?= $option_specification->scoobydoo_article_id?>" selected data-payed=1><?= $option_specification->name . '(' . $option_specification->price . '€)' ?></option>
+            <option value="<?= $option_specification->scoobydoo_article_id?>" selected data-payed=1><?= htmlspecialchars($option_specification->name) . '(' . $option_specification->price . '€)' ?></option>
             <?php
         }
     }

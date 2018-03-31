@@ -25,17 +25,17 @@
 
                 <div class="form-group">
                     <label for="event_name">Nom de votre évènement :</label>
-                    <input value="<?= $event['name'] ?? '' ?>" type="text" class="form-control" name="event_name" id="event_name" placeholder="Nom de l'évènement" autofocus required>
+                    <input value="<?= htmlspecialchars($event['name']) ?? '' ?>" type="text" class="form-control" name="event_name" id="event_name" placeholder="Nom de l'évènement" autofocus required>
                 </div>
 
                 <div class="form-group">
                     <label for="event_description">Description de votre évènement :</label>
-                    <textarea class="form-control" name="event_description" id="event_description" placeholder="Descrivez rapidement votre évènement" required><?= $event['description'] ?? '' ?></textarea>
+                    <textarea class="form-control" name="event_description" id="event_description" placeholder="Descrivez rapidement votre évènement" required><?= htmlspecialchars($event['description']) ?? '' ?></textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="event_quota">Quota de places disponibles pour votre évènement :</label>
-                    <input value="<?= $event['total_quota'] ?? '' ?>" type="number" min=0 class="form-control" name="event_quota" id="event_quota" aria-describedby="quota_place_help" placeholder="Nombre de places" required>
+                    <input value="<?= htmlspecialchars($event['total_quota']) ?? '' ?>" type="number" min=0 class="form-control" name="event_quota" id="event_quota" aria-describedby="quota_place_help" placeholder="Nombre de places" required>
                     <small id="quota_place_help" class="form-text text-muted">Il ne sera pas possible de dépasser ce quota, les inscriptions se bloqueront automatiquement une fois ce nombre atteint.</small>
                 </div>
 
@@ -43,7 +43,7 @@
                     <div class='form-group'>
                         <label for="ticketing_start_date">Début des inscriptions :</label>
                         <div class='input-group date' id='start_date_div'>
-                            <input value="<?= $event['ticketing_start_date'] ?? '' ?>" type='text' class="form-control" name="ticketing_start_date" id="ticketing_start_date" aria-describedby="ticketing_start_date_help" placeholder="Ouverture de la billetterie" required>
+                            <input value="<?= htmlspecialchars($event['ticketing_start_date']) ?? '' ?>" type='text' class="form-control" name="ticketing_start_date" id="ticketing_start_date" aria-describedby="ticketing_start_date_help" placeholder="Ouverture de la billetterie" required>
                             <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                         </div>
                         <small id="ticketing_start_date_help" class="form-text text-muted">A la date indiquée, la billetterie de votre évènement deviendra ouverte au public ciblé automatiquement.</small>
@@ -51,7 +51,7 @@
                     <div class='form-group'>
                         <label for="ticketing_end_date">Fin des inscriptions :</label>
                         <div class='input-group date' id='end_date_div'>
-                            <input value="<?= $event['ticketing_end_date'] ?? '' ?>" type='text' class="form-control" name="ticketing_end_date" id="ticketing_end_date" aria-describedby="ticketing_end_date_help" placeholder="Fermeture de la billetterie" required>
+                            <input value="<?= htmlspecialchars($event['ticketing_end_date']) ?? '' ?>" type='text' class="form-control" name="ticketing_end_date" id="ticketing_end_date" aria-describedby="ticketing_end_date_help" placeholder="Fermeture de la billetterie" required>
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>

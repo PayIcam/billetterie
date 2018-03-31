@@ -1,8 +1,8 @@
 <?php set_header_navbar(isset($icam_event_data) ? 'Edition de votre réservation' : 'Inscriptions' . ' : ' . $event['name'])?>
     <div id="presentation" class="container">
         <div class="jumbotron">
-            <h1 class="text-center"><?= $event['name'] ?></h1>
-            <h2><?= $event['description'] ?></h2>
+            <h1 class="text-center"><?= htmlspecialchars($event['name']) ?></h1>
+            <h2><?= htmlspecialchars($event['description']) ?></h2>
             <h3>Inscrivez vous en remplissant le formulaire ci dessous, et en validant ! Pensez à recharger afin d'avoir de quoi payer au préalable ! </h3>
         </div>
     </div>
@@ -10,16 +10,8 @@
         <div id="registration">
             <div id="registration_icam" class="container">
                 <?php
-                $promo_quota = $promo_specifications['quota']==null ? INF : $promo_specifications['quota'];
-                if(get_current_promo_quota(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id)) < $promo_quota)
-                {
-                    if(!isset($icam_event_data)){$icam_event_data = null;}
-                    form_icam($event, $promo_specifications, $options, $icam_event_data);
-                }
-                else
-                {
-                    add_error('Toutes les places proposées à votre promo ont été vendues...');
-                }
+                if(!isset($icam_event_data)){$icam_event_data = null;}
+                form_icam($event, $promo_specifications, $options, $icam_event_data);
                 ?>
             </div>
             <hr>
@@ -49,7 +41,7 @@
         </div>
         <br><br>
         <div id="recapitulatif" class="container">
-            <h3> Récapitulatif du coût de vos nouvelles réservations : <span id="total_price" class="badge" style="background-color:#428bca; font-size:0.8em;"> <?= isset($icam_event_data) ? 0 : $promo_specifications['price']?>€ </span> </h3>
+            <h3> Récapitulatif du coût de vos nouvelles réservations : <span id="total_price" class="badge" style="background-color:#428bca; font-size:0.8em;"> <?= isset($icam_event_data) ? 0 : htmlspecialchars($promo_specifications['price'])?>€ </span> </h3>
             <div id="recap_icam">
                 <h4>Pour vous même : <span id="icam_total_price" class="badge" style="background-color:#428bca; font-size:0.8em;"><?= isset($icam_event_data) ? 0 : $promo_specifications['price']?>€</span></h4>
             </div>

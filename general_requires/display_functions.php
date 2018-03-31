@@ -10,7 +10,7 @@ function set_header_navbar($title)
                 <meta charset="utf-8">
                 <meta name="description" content="Cette page Web a pour but de permettre aux utilisateurs de PayIcam de s'inscrire à un évènement.">
 
-                <title><?=$title?></title>
+                <title><?=htmlspecialchars($title)?></title>
 
                 <link rel="stylesheet" type="text/css" href="<?=$_CONFIG['public_url']?>css/format.css">
                 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -50,8 +50,8 @@ function insert_select_options($option_specifications, $is_mandatory = 0)
     foreach($option_specifications as $option_specification)
     {
         ?>
-        <option value="<?= $option_specification->name ?>" <?=($is_mandatory==1 and $compteur==0) ? 'selected' : ''?> >
-            <?= $option_specification->name . '(' . $option_specification->price . '€)' ?>
+        <option value="<?= htmlspecialchars($option_specification->name) ?>" <?=($is_mandatory==1 and $compteur==0) ? 'selected' : ''?> >
+            <?= htmlspecialchars($option_specification->name) . '(' . htmlspecialchars($option_specification->price) . '€)' ?>
         </option>
         <?php
         $compteur++;
