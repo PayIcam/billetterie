@@ -308,7 +308,7 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
 
         case ('W'):
         case ('A'):
-            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status=:status and event_id = :event_id LIMIT :start_lign, :rows_per_page');
+            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status=:status and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $recherche_bdd->bindParam('status', $recherche);
             $count_recherche = count_status(array('event_id' => $event_id, 'status' => $recherche));
             break;
