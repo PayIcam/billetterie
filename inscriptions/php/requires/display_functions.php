@@ -6,6 +6,10 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
     $prenom = $_SESSION['icam_informations']->prenom;
     $nom = $_SESSION['icam_informations']->nom;
 
+    var_dump($email);
+    var_dump($prenom);
+    var_dump($nom);
+
     $icam_id = $icam_reservation == null ? -1 : $icam_reservation['participant_id'];
     ?>
    <div id="icam_informations">
@@ -17,23 +21,23 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
         <div class="row">
             <div class="col-sm-4 form-group">
                 <label for="icam_firstname">Prénom : </label>
-                <input value="<?= htmlspecialchars($icam_reservation['prenom']) ?? $prenom ?>" type="text" class="form-control" name="icam_firstname" id="icam_firstname" placeholder="Prénom" disabled>
+                <input value="<?= $icam_reservation['prenom'] ?? $prenom ?>" type="text" class="form-control" name="icam_firstname" id="icam_firstname" placeholder="Prénom" disabled>
             </div>
 
             <div class="col-sm-4 form-group">
                 <label for="icam_lastname">Nom : </label>
-                <input value="<?= htmlspecialchars($icam_reservation['nom']) ?? $nom ?>" type="text" class="form-control" name="icam_lastname" id="icam_lastname" placeholder="Nom" disabled>
+                <input value="<?= $icam_reservation['nom'] ?? $nom ?>" type="text" class="form-control" name="icam_lastname" id="icam_lastname" placeholder="Nom" disabled>
             </div>
 
             <div class="col-sm-4 form-group">
                 <label for="icam_email">Email Icam : </label>
-                <input value="<?= htmlspecialchars($icam_reservation['email']) ?? $email ?>" type="text" class="form-control" name="icam_email" id="icam_email" placeholder="email" disabled>
+                <input value="<?= $icam_reservation['email'] ?? $email ?>" type="text" class="form-control" name="icam_email" id="icam_email" placeholder="email" disabled>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-6 form-group">
                 <label for="icam_phone_number">Numéro de téléphone : </label>
-                <input value="<?= htmlspecialchars($icam_reservation['telephone']) ?? '' ?>" type="text" class="form-control" name="icam_phone_number" id="icam_phone_number" placeholder="Numéro de téléphone">
+                <input value="<?= isset($icam_reservation['telephone']) ? htmlspecialchars($icam_reservation['telephone']) : '' ?>" type="text" class="form-control" name="icam_phone_number" id="icam_phone_number" placeholder="Numéro de téléphone">
             </div>
         </div>
         <input type="hidden" name="price" value="<?= htmlspecialchars($promo_specifications['price']) ?>">
@@ -76,12 +80,12 @@ function form_guest($event, $guest_specifications, $options, $i, $guest_reservat
             <div class="row guest_inputs">
                 <div class="col-sm-4 form-group">
                     <label for="guest_<?=$i?>_firstname">Prénom : </label>
-                    <input value="<?= htmlspecialchars($guest_reservation['prenom']) ?? '' ?>" type="text" class="form-control guest_firstname" name="guest_<?=$i?>_firstname" id="guest_<?=$i?>_firstname" placeholder="Prénom">
+                    <input value="<?= isset($guest_reservation['prenom']) ? htmlspecialchars($guest_reservation['prenom']) : '' ?>" type="text" class="form-control guest_firstname" name="guest_<?=$i?>_firstname" id="guest_<?=$i?>_firstname" placeholder="Prénom">
                 </div>
 
                 <div class="col-sm-5 form-group">
                     <label for="guest_<?=$i?>_lastname">Nom : </label>
-                    <input value="<?= htmlspecialchars($guest_reservation['nom']) ?? '' ?>" type="text" class="form-control guest_lastname" name="guest_<?=$i?>_lastname" id="guest_<?=$i?>_lastname" placeholder="Nom">
+                    <input value="<?= isset($guest_reservation['nom']) ? htmlspecialchars($guest_reservation['nom']) : '' ?>" type="text" class="form-control guest_lastname" name="guest_<?=$i?>_lastname" id="guest_<?=$i?>_lastname" placeholder="Nom">
                 </div>
             </div>
             <input type="hidden" class="guest_promo_id" name="guest_promo_id" value=<?=$guest_specifications['promo_id']?> >

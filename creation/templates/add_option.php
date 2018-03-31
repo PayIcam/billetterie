@@ -6,7 +6,7 @@ function add_option_html_code($option_number, $option=null, $option_specificatio
                     <div id=<?= '"all_option_' . $option_number . '_accordion"' ?> class="panel panel-default">
                         <div class="panel-heading">
                             <div class="panel-title">
-                                <a data-toggle="collapse" data-parent="#option_accordion" href=<?= '"#option_'.$option_number.'"'; ?> ><?= $option['name'] ?? 'Option sans nom' ?> <span class="glyphicon glyphicon-trash" style="color: red"></span></a>
+                                <a data-toggle="collapse" data-parent="#option_accordion" href=<?= '"#option_'.$option_number.'"'; ?> ><?= isset($option['name']) ? $option['name'] : 'Option sans nom' ?> <span class="glyphicon glyphicon-trash" style="color: red"></span></a>
                             </div>
                         </div>
 
@@ -15,17 +15,17 @@ function add_option_html_code($option_number, $option=null, $option_specificatio
                                 <h4>A) Généralités sur l'option</h4>
                                 <div class="form-group">
                                     <label for=<?= '"option_'.$option_number.'_name"'; ?> >Nom de votre option :</label>
-                                    <input value="<?= htmlspecialchars($option['name']) ?? '' ?>" type="text" class="form-control" name="option_name" id=<?= '"option_'.$option_number.'_name"'; ?> placeholder="Nom de l'option" autofocus required>
+                                    <input value="<?= isset($option['name']) ? htmlspecialchars($option['name']) : '' ?>" type="text" class="form-control" name="option_name" id=<?= '"option_'.$option_number.'_name"'; ?> placeholder="Nom de l'option" autofocus required>
                                 </div>
 
                                 <div class="form-group">
                                     <label for=<?= '"option_'.$option_number.'_description"'; ?> >Description de votre option :</label>
-                                    <textarea class="form-control" name="option_description" id=<?= '"option_'.$option_number.'_description"'; ?> placeholder="Descrivez rapidement votre option" required><?= htmlspecialchars($option['description']) ?? '' ?></textarea>
+                                    <textarea class="form-control" name="option_description" id=<?= '"option_'.$option_number.'_description"'; ?> placeholder="Descrivez rapidement votre option" required><?= isset($option['descriptions']) ? htmlspecialchars($option['description']) : '' ?></textarea>
                                 </div>
 
                                 <div class="form-group">
                                     <label for=<?= '"option_'.$option_number.'_quota"'; ?> >Quota de places disponibles pour votre option :</label>
-                                    <input value="<?= htmlspecialchars($option['quota']) ?? '' ?>" type="number" min=0 class="form-control" name="option_quota" id=<?= '"option_'.$option_number.'_quota"'; ?> aria-describedby=<?= '"option_'.$option_number.'_quota_help"'; ?> placeholder="Nombre de places">
+                                    <input value="<?= isset($option['quota']) ? htmlspecialchars($option['quota']) : '' ?>" type="number" min=0 class="form-control" name="option_quota" id=<?= '"option_'.$option_number.'_quota"'; ?> aria-describedby=<?= '"option_'.$option_number.'_quota_help"'; ?> placeholder="Nombre de places">
                                     <small id=<?= '"option_'.$option_number.'_quota_help"'; ?> class="form-text text-muted">Il ne sera pas possible de dépasser ce quota, cette option se bloquera automatiquement une fois ce nombre atteint.</small>
                                 </div>
 
