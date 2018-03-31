@@ -5,7 +5,7 @@ function change_number_rows($rows_per_page)
     global $event_id;
     ?>
     <div id="change_number_rows">
-        <form method="post" action="participants.php?event_id=<?=$event_id?>">
+        <form method="get" action="participants.php?event_id=<?=$event_id?>">
             <input type="hidden" value="<?=$event_id?>" name="event_id">
             <label for ="#change_rows"> Nombre de lignes par page : </label> <br/>
             <select class="custom-select mr-sm-2" id="change_rows" name="rows">
@@ -28,9 +28,10 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
     function next_page($current_page, $rows_per_page)
     {
         $wanted_page = $current_page+1;
+        $page_text='&page=' . $wanted_page;
         $row_text ='&rows=' . $rows_per_page;
         $event_text = '?event_id=' . $_GET['event_id'];
-        $link = ($rows_per_page == 25) ? "participants.php" . $event_text : "participants.php" . $event_text.$row_text;
+        $link = ($rows_per_page == 25) ? "participants.php" . $event_text.$page_text : "participants.php" . $event_text.$page_text.$row_text;
     ?><span class="change_page_text">
             <form method="post" action="<?= $link ?>">
                 <?= isset($_POST['recherche']) ? '<input type="hidden" name="recherche" value="' . $_POST['recherche'] . '" > ' : "" ?>
@@ -42,9 +43,10 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
     function prev_page($current_page, $rows_per_page)
     {
         $wanted_page = $current_page-1;
+        $page_text='&page=' . $wanted_page;
         $row_text ='&rows=' . $rows_per_page;
         $event_text = '?event_id=' . $_GET['event_id'];
-        $link = ($rows_per_page == 25) ? "participants.php" . $event_text : "participants.php" . $event_text.$row_text;
+        $link = ($rows_per_page == 25) ? "participants.php" . $event_text.$page_text : "participants.php" . $event_text.$page_text.$row_text;
     ?><span class="change_page_text">
             <form method="post" action="<?= $link ?>">
                 <?= isset($_POST['recherche']) ? '<input type="hidden" name="recherche" value="' . $_POST['recherche'] . '" > ' : "" ?>
@@ -55,9 +57,10 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
     if(!function_exists('last_page')) {
     function last_page($current_page, $rows_per_page, $total_number_pages)
     {
+        $page_text='&page=' . $total_number_pages;
         $row_text ='&rows=' . $rows_per_page;
         $event_text = '?event_id=' . $_GET['event_id'];
-        $link = ($rows_per_page == 25) ? "participants.php" . $event_text : "participants.php" . $event_text.$row_text;
+        $link = ($rows_per_page == 25) ? "participants.php" . $event_text.$page_text : "participants.php" . $event_text.$page_text.$row_text;
     ?><span class="change_page_text">
             <form method="post" action="<?= $link ?>">
                 <?= isset($_POST['recherche']) ? '<input type="hidden" name="recherche" value="' . $_POST['recherche'] . '" > ' : "" ?>
@@ -68,9 +71,10 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
     if(!function_exists('first_page')) {
     function first_page($current_page, $rows_per_page)
     {
+        $page_text='&page=' . 1;
         $row_text ='&rows=' . $rows_per_page;
         $event_text = '?event_id=' . $_GET['event_id'];
-        $link = ($rows_per_page == 25) ? "participants.php" . $event_text : "participants.php" . $event_text.$row_text;
+        $link = ($rows_per_page == 25) ? "participants.php" . $event_text.$page_text : "participants.php" . $event_text.$page_text.$row_text;
     ?><span class="change_page_text">
             <form method="post" action="<?= $link ?>">
                 <?= isset($_POST['recherche']) ? '<input type="hidden" name="recherche" value="' . $_POST['recherche'] . '" > ' : "" ?>
