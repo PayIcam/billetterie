@@ -259,7 +259,7 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             $count_recherche = count_current_icam_student($event_id);
             break;
 
-        case (preg_match("#^icam[s]? [graduated|diplom[eé][s]?]$#i", $recherche)==1):
+        case (preg_match("#^icam[s]? (graduated|diplom[eé][s]?){1}$#i", $recherche)==1):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and is_icam = 1 and event_id = :event_id and promo_id IN (SELECT promo_id FROM promos WHERE status="V" and still_student=0) ORDER BY participant_id LIMIT :start_lign, :rows_per_page ');
             $count_recherche = count_current_icam_student($event_id, false);
             break;
@@ -285,7 +285,6 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             break;
 
         case (preg_match("#^no[t]? bracelet$#i", $recherche)==1):
-            $champ = 'telephone';
             $recherche_bdd =$db->prepare('SELECT * FROM participants WHERE status="V" and bracelet_identification IS NULL and event_id = :event_id or bracelet_identification="" ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $count_recherche = count_current_bracelet($event_id, false);
             break;
