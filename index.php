@@ -1,6 +1,13 @@
 <?php
 require __DIR__ . '/general_requires/_header.php';
 
+if(isset($_SESSION['REQUEST_URI']))
+{
+    header('Location: '. $_SESSION['REQUEST_URI']);
+    unset($_SESSION['REQUEST_URI']);
+    die();
+}
+
 // homepage
 require 'homepage/requires/display_functions.php';
 require 'homepage/requires/db_functions.php';

@@ -39,7 +39,7 @@ function redirect_if_not_admin($is_admin)
     global $_CONFIG;
     if(!$is_admin)
     {
-        header('Location: '.$_CONFIG['public_url']);
+        header('Location: ' . $_CONFIG['public_url']);
         die();
     }
 }

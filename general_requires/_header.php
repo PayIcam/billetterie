@@ -38,11 +38,17 @@ switch($_SERVER['REQUEST_URI'])
 {
     case strpos($_SERVER['REQUEST_URI'], '/creation/') !== false:
         $payutcClient = getPayutcClient("GESARTICLE");
-        redirect_if_not_admin($payutcClient->isSuperAdmin());
+        if(isset($_SESSION['icam_informations']))
+        {
+            redirect_if_not_admin($payutcClient->isSuperAdmin());
+        }
         break;
     case strpos($_SERVER['REQUEST_URI'], '/stats/') !== false:
         $payutcClient = getPayutcClient("STATS");
-        redirect_if_not_admin($payutcClient->isAdmin());
+        if(isset($_SESSION['icam_informations']))
+        {
+            redirect_if_not_admin($payutcClient->isAdmin());
+        }
         break;
     default:
         $payutcClient = getPayutcClient("WEBSALE");
