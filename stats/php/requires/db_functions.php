@@ -102,6 +102,29 @@ function get_event_promo_site_names($event_id)
     return $promos->fetchAll();
 }
 
+function get_promo_status($promo_name)
+{
+    global $db;
+    $promos = $db->prepare('SELECT still_student FROM promos WHERE promo_name=:promo_name');
+    $promos->execute(array('promo_name' => $promo_name));
+    return $promos->fetch()['still_student'];
+}
+
+function get_icams_guests_info($ids)
+{
+    global $db;
+    $guests_ids = $db->prepare('SELECT * FROM participants WHERE participant_id in (SELECT guest_id FROM icam_has_guests WHERE event_id=:event_id and icam_id=:icam_id)');
+    $guests_ids->execute($ids);
+    return $guests_ids->fetchAll();
+}
+function get_guests_icam_inviter_info($ids)
+{
+    global $db;
+    $guests_ids = $db->prepare('SELECT * FROM participants WHERE participant_id in (SELECT icam_id FROM icam_has_guests WHERE event_id=:event_id and guest_id=:guest_id)');
+    $guests_ids->execute($ids);
+    return $guests_ids->fetch();
+}
+
 function count_current_icam($event_id, $condition=true)
 {
     global $db;
@@ -155,11 +178,31 @@ function count_payement($data)
 function count_status($data)
 {
     global $db;
-    $count = $db->prepare('SELECT COUNT(*) FROM participants WHERE status=:status and event_id = :event_id and status="V"');
+    $count = $db->prepare('SELECT COUNT(*) FROM participants WHERE status=:status and event_id = :event_id');
     $count->execute($data);
     return $count->fetch()['COUNT(*)'];
 }
-
+function bracelet_identification_is_available($data)
+{
+    global $db;
+    $count = $db->prepare('SELECT * FROM participants WHERE status="V" and event_id = :event_id and bracelet_identification=:bracelet_identification and participant_id != :participant_id');
+    $count->execute($data);
+    return empty($count->fetch());
+}
+function update_participant_data($data)
+{
+    global $db;
+    if(count($data)==5)
+    {
+        $update = $db->prepare('UPDATE participants SET bracelet_identification=:bracelet_identification, nom=:nom, prenom=:prenom WHERE event_id=:event_id and participant_id=:participant_id');
+        $update->execute($data);
+    }
+    elseif(count($data==3))
+    {
+        $update = $db->prepare('UPDATE participants SET bracelet_identification=:bracelet_identification WHERE event_id=:event_id and participant_id=:participant_id');
+        $update->execute($data);
+    }
+}
 
 function determination_recherche($recherche, $start_lign, $rows_per_page)
 {

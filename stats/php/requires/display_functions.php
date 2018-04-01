@@ -100,7 +100,7 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
     }
 }
 
-function display_liste_head($specification="", $id=true, $status=false, $price=true, $email=false, $telephone=true, $guest_number=true, $options=true, $edit=false, $add_guest=false, $bracelet=false, $date_inscription=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
+function display_liste_head($specification="", $id=true, $status=false, $price=true, $email=false, $telephone=true, $guest_number=false, $options=true, $edit=true, $add_guest=false, $bracelet=true, $date_inscription=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
 {
 /**
  *
@@ -122,6 +122,7 @@ function display_liste_head($specification="", $id=true, $status=false, $price=t
         $email = false;
         $telephone = false;
         $guest_number = false;
+        $pending_indicator = false;
         $edit = false;
         $add_guest = false;
     }
@@ -135,6 +136,7 @@ function display_liste_head($specification="", $id=true, $status=false, $price=t
         $telephone = false;
         $guest_number = false;
         $add_guest = false;
+        $pending_indicator = false;
     }
     ?>
         <?php if($id) { ?> <th scope="col">ID</th> <?php } ?>
@@ -152,7 +154,7 @@ function display_liste_head($specification="", $id=true, $status=false, $price=t
         <?php if($date_payement) { ?> <th scope="col">Date Payement</th> <?php } ?>
         <?php if($guest_number) { ?> <th scope="col">Nombre d'invités</th> <?php } ?>
         <?php if($options) { ?> <th scope="col">Options</th> <?php } ?>
-        <?php if($guest_info) { ?> <th scope="col">Liens</th> <?php } ?>
+        <?php if($guest_info) { ?> <th scope="col">Invités</th> <?php } ?>
         <?php if($pending_indicator) { ?> <th scope="col">Attente</th> <?php } ?>
         <?php if($edit) { ?> <th scope="col">Editer</th> <?php } ?>
         <?php if($add_guest) { ?> <th scope="col">Ajouter un invité </th> <?php } ?>
@@ -192,7 +194,7 @@ function display_pending_reservations($participant)
         {
             ?>
             <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="" data-content="" type="button">
-                <span style="color: red" class="glyphicon glyphicon-map-marker option_tooltip_glyph"></span>
+                <span style="color: red" class="glyphicon glyphicon-usd option_tooltip_glyph"></span>
             </button>
             <?php
         }
@@ -200,7 +202,7 @@ function display_pending_reservations($participant)
         {
             ?>
             <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="" data-content="" type="button">
-                <span style="color: green" class="glyphicon glyphicon-map-marker option_tooltip_glyph"></span>
+                <span style="color: green" class="glyphicon glyphicon-usd option_tooltip_glyph"></span>
             </button>
             <?php
         }
@@ -227,7 +229,7 @@ function display_guest_infos($participant)
             $guests = get_guests_data($participant['participant_id']);
             if(!empty($guests)) { ?>
                 <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Invités :" data-content="<?= create_guests_text($guests) ?>" type="button">
-                    <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
+                    <?=$participant['current_promo_guest_number']?>
                 </button>
             <?php }
         }
@@ -236,47 +238,69 @@ function display_guest_infos($participant)
             $icam_data = get_icam_inviter_data($participant['participant_id']);
             if(!empty($icam_data)) { ?>
                 <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-content="Invité par <?=$icam_data['prenom'] . " " . $icam_data['nom'] ?>" type="button">
-                    <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
+                    <span class="glyphicon glyphicon-globe option_tooltip_glyph"></span>
                 </button>
             <?php }
         }
     ?> </td> <?php
 }
 
-function display_participant_info($participant, $specification="", $id=true, $status=false, $price=true, $email=false, $telephone=true, $guest_number=true, $options=true, $edit=false, $add_guest=false, $bracelet=false, $date_inscription=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
+function link_to_edit_reservation($participant)
+{
+    $event_id = $_GET['event_id'];
+    ?>
+    <td>
+        <a class="btn btn-primary" href="edit_participant.php?event_id=<?=$event_id?>&participant_id=<?=$participant['participant_id']?>">
+            <span class="glyphicon glyphicon-edit"></span>
+        </a>
+    </td>
+    <?php
+}
+function display_promo($promo)
+{
+    $promo_still_student = get_promo_status($promo);
+    $class = $promo == 'Invités' ? 'warning' : ($promo_still_student==1 ? 'info' : 'primary');
+    ?>
+    <td class="<?=$class?>"> <?=$promo?> </td>
+    <?php
+}
+
+function display_participant_info($participant, $specification="", $id=true, $status=false, $price=true, $email=false, $telephone=true, $guest_number=false, $options=true, $edit=true, $add_guest=false, $bracelet=true, $date_inscription=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
 {
     if($specification == 'info_icam')
     {
-        $editer_set = false;
-        $ajouter_invite_set = false;
+        $edit = false;
+        $add_guest = false;
     }
     elseif($specification == 'info_invite')
     {
-        $mail_set = false;
-        $telephone_set = false;
-        $nombre_invites_set = false;
-        $editer_set = false;
-        $ajouter_invite_set = false;
+        $email = false;
+        $telephone = false;
+        $guest_number = false;
+        $pending_indicator = false;
+        $edit = false;
+        $add_guest = false;
     }
     elseif($specification == 'link_icam')
     {
-        $ajouter_invite_set = false;
+        $add_guest = false;
     }
     elseif($specification == 'link_invite')
     {
-        $mail_set = false;
-        $telephone_set = false;
-        $nombre_invites_set = false;
-        $ajouter_invite_set = false;
+        $email = false;
+        $telephone = false;
+        $guest_number = false;
+        $add_guest = false;
     }
     ?>
     <tr>
         <?= $id ? "<td>" . $participant['participant_id'] . "</td>" : "" ?>
         <?= $status ? "<td>" . $participant['status'] . "</td>" : "" ?>
-        <td><?= htmlspecialchars($participant['prenom']) ?></td>
-        <td><?= htmlspecialchars($participant['nom']) ?></td>
+        <td class="prenom"><?= htmlspecialchars($participant['prenom']) ?></td>
+        <td class="nom"><?= htmlspecialchars($participant['nom']) ?></td>
         <?= $price ? "<td><span style='background-color: #3a87ad' class='badge badge-pill badge-info'>" . $participant['price'] . "€</span></td>" : "" ?>
-        <td><?= htmlspecialchars($participant['promo']) ?></td>
+        <?= display_promo($participant['promo']); ?>
+        <?= $bracelet ? "<td class='bracelet_identification'>" . $participant['bracelet_identification'] . "</td>" : "" ?>
         <?= $email ? "<td>" . $participant['email'] . "</td>" : "" ?>
         <?= $telephone ? "<td>" . htmlspecialchars($participant['telephone']) . "</td>" : "" ?>
         <?= $date_inscription ? "<td>" . $participant['inscription_date'] . "</td>" : "" ?>
@@ -284,6 +308,25 @@ function display_participant_info($participant, $specification="", $id=true, $st
         <?= $options ? display_options($participant) : "" ?>
         <?= $guest_info ? display_guest_infos($participant) : "" ?>
         <?= $pending_indicator ? display_pending_reservations($participant) : "" ?>
+        <?= $edit ? link_to_edit_reservation($participant) : "" ?>
     </tr>
+    <?php
+}
+
+function one_row_participant_table($participant, $specification="")
+{
+    ?>
+    <div class="container">
+        <section class="row" id="tableau">
+            <table class="participant_infos table table-striped">
+                <thead>
+                    <?php display_liste_head($specification) ?>
+                </thead>
+                <tbody>
+                    <?php display_participant_info($participant, $specification) ?>
+                </tbody>
+            </table>
+        </section>
+    </div>
     <?php
 }

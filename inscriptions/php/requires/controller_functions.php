@@ -353,7 +353,7 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
                     add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prénom <br>");
                     $error = true;
                 }
-                elseif(count($participant_data->prenom)>100)
+                elseif(count($participant_data->prenom)>45)
                 {
                     add_error_to_ajax_response($participant_type . " : Le prenom a-t-il besoin d'être si long ?<br>");
                 }
@@ -362,7 +362,7 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
                     add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom <br>");
                     $error = true;
                 }
-                elseif(count($participant_data->nom)>100)
+                elseif(count($participant_data->nom)>45)
                 {
                     add_error_to_ajax_response($participant_type . " : Le nom a-t-il besoin d'être si long ?<br>");
                 }
@@ -464,7 +464,7 @@ function is_correct_participant_supplement_data($participant_data, $participant_
                     add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prénom <br>");
                     $error = true;
                 }
-                elseif(count($participant_data->prenom)>100)
+                elseif(count($participant_data->prenom)>45)
                 {
                     add_error_to_ajax_response($participant_type . " : Le prenom a-t-il besoin d'être si long ?<br>");
                 }
@@ -474,7 +474,7 @@ function is_correct_participant_supplement_data($participant_data, $participant_
                     add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom <br>");
                     $error = true;
                 }
-                elseif(count($participant_data->nom)>100)
+                elseif(count($participant_data->nom)>45)
                 {
                     add_error_to_ajax_response($participant_type . " : Le nom a-t-il besoin d'être si long ?<br>");
                 }

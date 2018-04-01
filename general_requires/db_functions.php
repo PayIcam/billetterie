@@ -165,7 +165,7 @@ function participant_has_its_place($identification_data)
 function get_participant_event_data($ids)
 {
     global $db;
-    $participant_data = $db->prepare('SELECT * FROM participants WHERE event_id = :event_id and participant_id = :participant_id');
+    $participant_data = $db->prepare('SELECT * FROM participants WHERE event_id = :event_id and participant_id = :participant_id and status="V" ');
     $participant_data->execute($ids);
     return $participant_data->fetch();
 }

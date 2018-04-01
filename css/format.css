@@ -63,7 +63,10 @@ button[class='btn option_tooltip']
 {
     background-color: #aaa;
 }
-
+.participant_infos th,td
+{
+    text-align: center;
+}
 
 
 .badge-error {

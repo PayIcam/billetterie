@@ -157,7 +157,7 @@ function check_urls(add_error)
 
     if(current_path == base_path + "inscriptions/inscriptions.php")
     {
-        if(action_url != public_url + "inscriptions/php/ajout_participant.php?event_id=" + event_id)
+        if(action_url != public_url + "inscriptions/php/ajout_reservation.php?event_id=" + event_id)
         {
             add_error("A quoi joues tu ? Arrète de trafiquer les redirections.");
             return false;
@@ -165,7 +165,7 @@ function check_urls(add_error)
     }
     else if(current_path == base_path + "inscriptions/edit_reservation.php")
     {
-        if(action_url != public_url + "inscriptions/php/edition_participant.php?event_id=" + event_id)
+        if(action_url != public_url + "inscriptions/php/edition_reservation.php?event_id=" + event_id)
         {
             add_error("A quoi joues tu ? Arrète de trafiquer les redirections.");
             return false;

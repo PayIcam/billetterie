@@ -33,7 +33,7 @@
                 <?php change_pages($current_page, $rows_per_page, $total_number_pages) ?>
             </div>
             <section class="row" id="tableau">
-                <table class="table table-striped">
+                <table class="participant_infos table table-striped">
                     <thead>
                         <?php display_liste_head(); ?>
                     </thead>
