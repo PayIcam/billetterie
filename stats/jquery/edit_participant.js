@@ -7,23 +7,30 @@ $('form').submit(function(submit)
     }
 
     $('#alerts').empty();
-
-    var nom = $('input[name=nom]').val();
-    var prenom = $('input[name=prenom]').val();
-    var bracelet_identification = $('input[name=bracelet_identification]').val();
+    $('#alerts').show();
 
     var error = false;
-    if(nom.length > 45)
+
+    if($('input[name=nom]').length)
     {
-        error = true;
-        add_error('Le nouveau nom est trop grand');
+        var nom = $('input[name=nom]').val();
+        if(nom.length > 45)
+        {
+            error = true;
+            add_error('Le nouveau nom est trop grand');
+        }
     }
-    else if(prenom.length > 45)
+    if($('input[name=prenom]').length)
     {
-        error = true;
-        add_error('Le nouveau prénom est trop grand');
+        var prenom = $('input[name=prenom]').val();
+        if(prenom.length > 45)
+        {
+            error = true;
+            add_error('Le nouveau prenom est trop grand');
+        }
     }
-    else if(bracelet_identification.length > 25)
+    var bracelet_identification = $('input[name=bracelet_identification]').val();
+    if(bracelet_identification.length > 25)
     {
         error = true;
         add_error("L'identifiant de bracelet est trop grand");
@@ -32,8 +39,8 @@ $('form').submit(function(submit)
     {
         bracelet_identification = null;
     }
-    var post_url = $('form').prop('action');
 
+    var post_url = $('form').prop('action');
     if($.trim(post_url.split('?')[0]) != $.trim(public_url + 'stats/php/update_participant.php'))
     {
         error = true;
@@ -47,10 +54,6 @@ $('form').submit(function(submit)
             {
                 var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data + '</div>';
                 $("#alerts").append(message_displayed);
-                $('form').off('submit').submit(function(submit)
-                {
-                    submit.preventDefault();
-                });
 
                 $('table:first td[class=nom]').text(nom);
                 $('h1 .nom').text(nom);

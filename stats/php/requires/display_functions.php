@@ -291,6 +291,7 @@ function display_participant_info($participant, $specification="", $id=true, $st
         $telephone = false;
         $guest_number = false;
         $add_guest = false;
+        $pending_indicator = false;
     }
     ?>
     <tr>

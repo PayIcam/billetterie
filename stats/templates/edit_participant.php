@@ -41,7 +41,7 @@
                     ?>
                     <table class="participant_infos table table-striped">
                         <thead>
-                            <?php display_liste_head(); ?>
+                            <?php display_liste_head($specification); ?>
                         </thead>
                         <tbody>
                             <?php

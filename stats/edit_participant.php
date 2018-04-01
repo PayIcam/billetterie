@@ -18,12 +18,12 @@ if(isset($_GET['event_id']) && isset($_GET['participant_id']))
             $participant = prepare_participant_displaying($participant);
             if($participant['is_icam']==1)
             {
-                $specification = 'link_icam';
+                $specification = 'link_invite';
                 $participants_complementaires = get_icams_guests_info(array('event_id' => $event_id, 'icam_id' => $participant['participant_id']));
             }
             else
             {
-                $specification = 'link_invite';
+                $specification = 'link_icam';
                 $participants_complementaires = get_guests_icam_inviter_info(array('event_id' => $event_id, 'guest_id' => $participant['participant_id']));
             }
             require 'templates/edit_participant.php';
