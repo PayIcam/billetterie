@@ -29,6 +29,15 @@ function set_header_navbar($title)
                         padding-top: 55px;
                     }
                 </style>
+                <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111260636-2"></script>
+                <script>
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+
+                    gtag('config', 'UA-111260636-2');
+                </script>
+
             </head>
             <body>
                 <nav class="navbar navbar-default navbar-inverse navbar-fixed-top">
