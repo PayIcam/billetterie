@@ -67,6 +67,17 @@ button[class='btn option_tooltip']
 {
     text-align: center;
 }
+#registration_guests
+{
+    margin: 0 3%;
+}
+#button_submit_form
+{
+    margin-bottom: 2%;
+    width: 15%;
+    font-size: 1.3vh;
+    font-size: 1.5vw;
+}
 
 
 .badge-error {

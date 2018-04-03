@@ -6,7 +6,7 @@
             <h3>Inscrivez vous en remplissant le formulaire ci dessous, et en validant ! Pensez à recharger afin d'avoir de quoi payer au préalable ! </h3>
         </div>
     </div>
-    <form method="post" action="php/<?= isset($icam_event_data) ? "edition_reservation" : "ajout_participant" ?>.php?event_id=<?=$event_id?>">
+    <form method="post" action="php/<?= isset($icam_event_data) ? "edition_reservation" : "ajout_reservation" ?>.php?event_id=<?=$event_id?>">
         <div id="registration">
             <div id="registration_icam" class="container">
                 <?php
@@ -15,22 +15,24 @@
                 ?>
             </div>
             <hr>
-            <div id="registration_guests" class="container row">
-                <?php
-                for($i=1; $i<=$actual_guest_number; $i++)
-                {
-                    if(!isset($guests_event_data)){$guests_event_data = null;}
-                    if($i<=count($guests_event_data))
+            <div id="registration_guests" class="container">
+                <div class="row">
+                    <?php
+                    for($i=1; $i<=$actual_guest_number; $i++)
                     {
-                        $guest_event_data = $guests_event_data[$i-1];
+                        if(!isset($guests_event_data)){$guests_event_data = null;}
+                        if($i<=count($guests_event_data))
+                        {
+                            $guest_event_data = $guests_event_data[$i-1];
+                        }
+                        else
+                        {
+                            $guest_event_data = null;
+                        }
+                        form_guest($event, $guests_specifications, $options, $i, $guest_event_data);
                     }
-                    else
-                    {
-                        $guest_event_data = null;
-                    }
-                    form_guest($event, $guests_specifications, $options, $i, $guest_event_data);
-                }
-                ?>
+                    ?>
+                </div>
                 <input type="hidden" name="guests_event_article_id" value="<?=$guests_specifications['scoobydoo_article_id']?>">
             </div>
             <div id="hidden_inputs">
