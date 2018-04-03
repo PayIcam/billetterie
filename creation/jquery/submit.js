@@ -212,8 +212,8 @@ function check_then_submit_form(event)
 
     function check_urls()
     {
-        current_path = window.location.pathname;
-        action_url = $('form').prop('action');
+        var current_path = window.location.pathname;
+        var action_url = $('form').prop('action');
 
         if(current_path == base_path + "creation/" || current_path == base_path + "creation/new_ticketing.php")
         {

@@ -10,9 +10,9 @@ if(isset($_GET['fundation_id']))
     require 'php/requires/db_functions.php';
     require 'php/requires/controller_functions.php';
 
-    $student_promos = get_student_promos();
-    $graduated_promos = get_graduated_promos();
-    $sites = get_sites();
+    $student_promos = array_column(get_student_promos(), 'promo_name');
+    $graduated_promos = array_column(get_graduated_promos(), 'promo_name');
+    $sites = array_column(get_sites(), 'site_name');
 
     require 'templates/formulaire_billetterie.php';
 }

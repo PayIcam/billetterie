@@ -1,13 +1,5 @@
 <?php
 
-function insert_as_select_option($array_to_insert)
-{
-    foreach ($array_to_insert as $element)
-    {
-        echo '<option>'. htmlspecialchars($element[0]) .'</option>';
-    }
-}
-
 function insert_event_accessibility_rows($promos_specifications)
 {
     $numero = 1;

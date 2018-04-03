@@ -362,11 +362,6 @@
         </form>
     </div>
 
-    <script>
-        public_url = '<?=$_CONFIG['public_url'];?>';
-        base_path = '<?=$_CONFIG['base_path'];?>';
-        event_id = '<?=$event_id ?? "";?>';
-    </script>
     <script src="jquery/submit.js"></script>
     <script src="jquery/event_functions.js"></script>
     <script src="jquery/option_functions.js"></script>

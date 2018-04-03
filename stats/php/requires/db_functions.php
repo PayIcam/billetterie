@@ -286,7 +286,7 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
 
         case(preg_match("#^[0-9]{1,4}$#", $recherche)==1):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and bracelet_identification = :bracelet_identification and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
-            $recherche_bdd->bindParam('bracelet_identification', $bracelet_identification);
+            $recherche_bdd->bindParam('bracelet_identification', $recherche);
             $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE status="V" and bracelet_identification = :bracelet_identification and event_id=:event_id');
             $count_recherche -> execute(array('bracelet_identification' => $recherche, 'event_id' => $event_id));
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
@@ -398,4 +398,19 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
         print_r($db->errorInfo());
     }
     return $recherche_bdd->fetchAll();
+}
+
+function get_promo_site_ids($event_id)
+{
+    global $db;
+    $ids = $db->query('SELECT promo_id, site_id FROM promos_site_specifications');
+    return $ids->fetchAll();
+}
+
+function add_participant($participant_data)
+{
+    global $db;
+    $addition = $db->prepare('INSERT INTO participants(prenom, nom, status, is_icam, price, payement, email, telephone, bracelet_identification, event_id, site_id, promo_id) VALUES (:prenom, :nom, :status, :is_icam, :price, :payement, :email, :telephone, :bracelet_identification, :event_id, :site_id, :promo_id)');
+    $addition->execute($participant_data);
+    return $db->lastInsertId();
 }

@@ -101,3 +101,175 @@ function check_update_participant_data($data, $is_icam)
     }
     return !$error;
 }
+
+function check_prepare_addition_data($data, $icam_site_id)
+{
+    global $promos, $sites;
+
+    $error = false;
+    $data_nb_inputs = $icam_site_id === false ? 9 : 5;
+
+    if(count($data)==$data_nb_inputs)
+    {
+        if(isset($data['prenom']))
+        {
+            if(count($data['prenom']) > 45)
+            {
+                $error = true;
+                add_error_to_ajax_response('Le prénom de votre nouveau participant est trop long.');
+            }
+        }
+        else
+        {
+            $error = true;
+            add_error_to_ajax_response("Le prénom n'est pas défini.");
+        }
+        if(isset($data['nom']))
+        {
+            if(count($data['nom']) > 45)
+            {
+                $error = true;
+                add_error_to_ajax_response('Le nom de votre nouveau participant est trop long.');
+            }
+        }
+        else
+        {
+            $error = true;
+            add_error_to_ajax_response("Le nom n'est pas défini.");
+        }
+        if($icam_site_id === false)
+        {
+            if(isset($data['telephone']))
+            {
+                if(!count($data['telephone']) > 25)
+                {
+                    $error = true;
+                    add_error_to_ajax_response('Le numéro de téléphone de votre nouveau participant est trop long.');
+                }
+            }
+            else
+            {
+                $error = true;
+                add_error_to_ajax_response("Le numéro de télephone n'est pas défini.");
+            }
+            if(isset($data['email']))
+            {
+                if(!count($data['email']) > 255)
+                {
+                    $error = true;
+                    add_error_to_ajax_response("L'email de votre nouveau participant est trop long.");
+                }
+            }
+            else
+            {
+                $error = true;
+                add_error_to_ajax_response("L'email de votre participant n'est pas défini.");
+            }
+        }
+        if(isset($data['bracelet_identification']))
+        {
+            if(!count($data['bracelet_identification']) > 25)
+            {
+                $error = true;
+                add_error_to_ajax_response("L'identifiant de bracelet de votre nouveau participant est trop long.");
+            }
+        }
+        else
+        {
+            $error = true;
+            add_error_to_ajax_response("L'identifiant du bracelet n'est pas défini.");
+        }
+        if(isset($data['price']))
+        {
+            if(is_numeric($data['price']))
+            {
+                if(floor(100*$data['price']) != 100*$data['price'])
+                {
+                    add_error_to_ajax_response("Le prix est défini avec une précision plus grande que le centime, ou n'est même pas positif");
+                    $error = true;
+                }
+            }
+            else
+            {
+                $error = true;
+                add_error_to_ajax_response("Le prix de votre nouveau participant n'est pas numérique.");
+            }
+        }
+        else
+        {
+            $error = true;
+            add_error_to_ajax_response("Le prix n'est pas défini.");
+        }
+        if(isset($data['payement']))
+        {
+            if(is_string($data['payement']))
+            {
+                if(!count($data['payement'])>45)
+                {
+                    $error = true;
+                    add_error_to_ajax_response("Non seulement vous avez changé les propositions, mais en plus, vous avez mit trop de caractères.");
+                }
+            }
+            else
+            {
+                $error = true;
+                add_error_to_ajax_response("Non seulement vous avez changé les propositions, mais en plus, vous avez mit trop de caractères.");
+            }
+        }
+        else
+        {
+            $error = true;
+            add_error_to_ajax_response("Le moyen de payement n'est pas défini.");
+        }
+        if($icam_site_id === false)
+        {
+            if(isset($data['promo']))
+            {
+                if(in_array($data['promo'], $promos))
+                {
+                    $_POST['promo_id'] = get_promo_id($data['promo']);
+                }
+                else
+                {
+                    $error = true;
+                    add_error_to_ajax_response("La promo n'a pas été reconnue.");
+                }
+            }
+            else
+            {
+                $error = true;
+                add_error_to_ajax_response("L'identifiant du bracelet n'est pas défini.");
+            }
+            if(isset($data['site']))
+            {
+                if(in_array($data['site'], $sites))
+                {
+                    $_POST['site_id'] = get_site_id($data['site']);
+                }
+                else
+                {
+                    $error = true;
+                    add_error_to_ajax_response("Le site n'a pas été reconnu.");
+                }
+            }
+            else
+            {
+                $error = true;
+                add_error_to_ajax_response("L'identifiant du bracelet n'est pas défini.");
+            }
+        }
+        else
+        {
+            $_POST['promo_id'] = get_promo_id('Invités');
+            $_POST['site_id'] = get_site_id($icam_site_id);
+            $_POST['email'] = null;
+            $_POST['telephone'] = null;
+        }
+    }
+    else
+    {
+        $error = true;
+        add_error_to_ajax_response("Il n'y a pas le bon nombre de données transmises.");
+    }
+    return !$error;
+}

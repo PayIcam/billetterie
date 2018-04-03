@@ -2,7 +2,7 @@
 
 function set_header_navbar($title)
 {
-    global $_CONFIG, $is_super_admin;
+    global $_CONFIG, $is_super_admin, $event_id;
     ?>
     <!DOCTYPE html>
         <html lang="fr">
@@ -36,6 +36,15 @@ function set_header_navbar($title)
                     gtag('js', new Date());
 
                     gtag('config', 'UA-111260636-2');
+                </script>
+                <script>
+                    $(document).ready(function()
+                    {
+                        $('[data-toggle="popover"]').popover();
+                        public_url = '<?=$_CONFIG['public_url']?>';
+                        base_path = '<?=$_CONFIG['base_path']?>';
+                        event_id = '<?=$event_id ?? ""?>';
+                    });
                 </script>
 
             </head>
@@ -108,4 +117,12 @@ function set_alert_style()
         }
     </style>
     <?php
+}
+
+function insert_as_select_option($array_to_insert)
+{
+    foreach ($array_to_insert as $element)
+    {
+        echo '<option>'. htmlspecialchars($element) .'</option>';
+    }
 }

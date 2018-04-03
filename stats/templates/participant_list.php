@@ -1,6 +1,5 @@
 <?php set_header_navbar('Liste des participants')?>
-        <div class = 'container all_index'>
-
+        <div class="container all_index">
 
             <div class="row">
                 <div class="col-md-5">
@@ -53,6 +52,5 @@
             </div>
         </div>
         <script src="jquery/participants.js"></script>
-        <script> $('[data-toggle="popover"]').popover(); </script>
     </body>
 </html>

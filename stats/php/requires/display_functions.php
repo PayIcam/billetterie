@@ -100,7 +100,7 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
     }
 }
 
-function display_liste_head($specification="", $id=true, $status=false, $price=true, $email=false, $telephone=true, $guest_number=false, $options=true, $edit=true, $add_guest=false, $bracelet=true, $date_inscription=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
+function display_liste_head($specification="", $id=true, $status=false, $price=true, $email=false, $telephone=true, $guest_number=false, $options=true, $edit=true, $add_guest=true, $bracelet=true, $date_inscription=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
 {
 /**
  *
@@ -112,6 +112,12 @@ function display_liste_head($specification="", $id=true, $status=false, $price=t
  * En particulier, certains arguments permettent de ne pas tout retapper, tout étant géré dans la fonction
  *
  */
+    global $Auth;
+    if(!$Auth->hasRole('admin'))
+    {
+        $add_guest = false;
+    }
+
     if($specification == 'info_icam')
     {
         $edit = false;
@@ -157,7 +163,7 @@ function display_liste_head($specification="", $id=true, $status=false, $price=t
         <?php if($guest_info) { ?> <th scope="col">Invités</th> <?php } ?>
         <?php if($pending_indicator) { ?> <th scope="col">Attente</th> <?php } ?>
         <?php if($edit) { ?> <th scope="col">Editer</th> <?php } ?>
-        <?php if($add_guest) { ?> <th scope="col">Ajouter un invité </th> <?php } ?>
+        <?php if($add_guest) { ?> <th scope="col">Ajouter invité</th> <?php } ?>
     <?php
 }
 
@@ -238,7 +244,7 @@ function display_guest_infos($participant)
             $icam_data = get_icam_inviter_data($participant['participant_id']);
             if(!empty($icam_data)) { ?>
                 <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-content="Invité par <?=$icam_data['prenom'] . " " . $icam_data['nom'] ?>" type="button">
-                    <span class="glyphicon glyphicon-globe option_tooltip_glyph"></span>
+                    <span class="glyphicon glyphicon-user option_tooltip_glyph"></span>
                 </button>
             <?php }
         }
@@ -256,6 +262,20 @@ function link_to_edit_reservation($participant)
     </td>
     <?php
 }
+function link_to_guest_addition($participant)
+{
+    $event_id = $_GET['event_id'];
+    ?>
+    <td>
+        <?php if($participant['is_icam']==1) { ?>
+        <a class="btn btn-primary" href="ajout_participant.php?event_id=<?=$event_id?>&icam_id=<?=$participant['participant_id']?>">
+            <span class="glyphicon glyphicon-plus"></span>
+        </a>
+        <?php } ?>
+    </td>
+    <?php
+}
+
 function display_promo($promo)
 {
     $promo_still_student = get_promo_status($promo);
@@ -265,8 +285,14 @@ function display_promo($promo)
     <?php
 }
 
-function display_participant_info($participant, $specification="", $id=true, $status=false, $price=true, $email=false, $telephone=true, $guest_number=false, $options=true, $edit=true, $add_guest=false, $bracelet=true, $date_inscription=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
+function display_participant_info($participant, $specification="", $id=true, $status=false, $price=true, $email=false, $telephone=true, $guest_number=false, $options=true, $edit=true, $add_guest=true, $bracelet=true, $date_inscription=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
 {
+    global $Auth;
+    if(!$Auth->hasRole('admin'))
+    {
+        $add_guest = false;
+    }
+
     if($specification == 'info_icam')
     {
         $edit = false;
@@ -310,6 +336,7 @@ function display_participant_info($participant, $specification="", $id=true, $st
         <?= $guest_info ? display_guest_infos($participant) : "" ?>
         <?= $pending_indicator ? display_pending_reservations($participant) : "" ?>
         <?= $edit ? link_to_edit_reservation($participant) : "" ?>
+        <?= $add_guest ? link_to_guest_addition($participant) : "" ?>
     </tr>
     <?php
 }

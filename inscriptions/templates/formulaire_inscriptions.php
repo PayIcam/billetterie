@@ -66,11 +66,6 @@
     <div id="alerts">
 
     </div>
-    <script>
-        public_url = '<?=$_CONFIG['public_url'];?>';
-        base_path = '<?=$_CONFIG['base_path'];?>';
-        event_id = '<?=$event_id ?? "";?>';
-    </script>
     <script src="jquery/submit_inscriptions.js"></script>
     <script src="jquery/general_behaviour.js"></script>
     <?php if($icam_event_data!=null)

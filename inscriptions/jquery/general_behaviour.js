@@ -2,8 +2,6 @@ function initialisation_inscriptions()
 {
     $("form")[0].reset();
 
-    $('[data-toggle="popover"]').popover();
-
     filling_form_behaviour();
 
     $('.guest_options').find('input, select').attr('disabled', 'true');
@@ -152,8 +150,8 @@ function filling_form_behaviour()
 
 function check_urls(add_error)
 {
-    current_path = window.location.pathname;
-    action_url = $('form').prop('action');
+    var current_path = window.location.pathname;
+    var action_url = $('form').prop('action');
 
     if(current_path == base_path + "inscriptions/inscriptions.php")
     {
