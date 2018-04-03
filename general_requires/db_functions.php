@@ -214,3 +214,9 @@ function get_pending_reservations($event_id=false, $login=false)
         return $pending_reservations->fetchAll();
     }
 }
+function insert_icams_guest($ids)
+{
+    global $db;
+    $icams_guest = $db->prepare('INSERT INTO icam_has_guests VALUES (:event_id, :icam_id, :guest_id)');
+    return $icams_guest->execute($ids);
+}

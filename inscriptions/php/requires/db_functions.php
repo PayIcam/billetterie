@@ -69,12 +69,6 @@ function get_option($ids)
     $option_query->execute($ids);
     return $option_query->fetch();
 }
-function insert_icams_guest($ids)
-{
-    global $db;
-    $icams_guest = $db->prepare('INSERT INTO icam_has_guests VALUES (:event_id, :icam_id, :guest_id)');
-    return $icams_guest->execute($ids);
-}
 function insert_participant_option($option_data)
 {
     global $db;

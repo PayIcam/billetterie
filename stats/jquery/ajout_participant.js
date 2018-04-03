@@ -92,12 +92,14 @@ $(document).ready(function()
                     {
                         $("#alerts").append(data);
                         $("#submit_form").prop('disabled', '');
+                        $('.waiting').hide();
                     }
                 }
                 function error_ajax()
                 {
                     add_error('La requête Ajax permettant de submit les informations et ajouter le participant a échoué');
                     $("#submit_form").prop('disabled', '');
+                    $('.waiting').hide();
                 }
 
                 $.post(
