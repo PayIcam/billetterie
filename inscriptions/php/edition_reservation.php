@@ -5,7 +5,6 @@ require __DIR__ . '/../../general_requires/_header.php';
 if(!empty($_POST))
 {
     $ajax_json_response = array("message" => "" , "transaction_url" => "");
-    echo 'nique ta race';
     require 'requires/db_functions.php';
     require 'requires/controller_functions.php';
 
