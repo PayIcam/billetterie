@@ -187,10 +187,15 @@ function prepare_edit_submit()
                 $("#alerts").append(data.message);
             }
         }
-        function error_ajax()
+        function error_ajax(jqXHR, textStatus, errorThrown)
         {
             $('#message_submit').hide();
             $('#button_submit_form').prop('disabled', '');
+            console.log(jqXHR);
+            console.log();
+            console.log(textStatus);
+            console.log();
+            console.log(errorThrown);
             add_error('La requête Ajax permettant de submit les informations et ajouter les modifications a échoué');
         }
 

@@ -73,8 +73,13 @@ $('form').submit(function(submit)
                 $("#submit_participant_update").prop('disabled', '');
             }
         }
-        function error_ajax()
+        function error_ajax(jqXHR, textStatus, errorThrown)
         {
+            console.log(jqXHR);
+            console.log();
+            console.log(textStatus);
+            console.log();
+            console.log(errorThrown);
             add_error("La requête Ajax permettant d'éditer les infos du participant a échoué");
             $("#submit_participant_update").prop('disabled', '');
         }

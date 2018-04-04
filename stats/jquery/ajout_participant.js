@@ -95,8 +95,13 @@ $(document).ready(function()
                         $('.waiting').hide();
                     }
                 }
-                function error_ajax()
+                function error_ajax(jqXHR, textStatus,errorThrown)
                 {
+                    console.log(jqXHR);
+                    console.log();
+                    console.log(textStatus);
+                    console.log();
+                    console.log(errorThrown);
                     add_error('La requête Ajax permettant de submit les informations et ajouter le participant a échoué');
                     $("#submit_form").prop('disabled', '');
                     $('.waiting').hide();

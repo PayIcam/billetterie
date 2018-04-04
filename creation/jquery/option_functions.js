@@ -16,8 +16,13 @@ function add_option(option_number)
             cache_parties_option();
             attach_option_events();
         },
-        error: function()
+        error: function(jqXHR, textStatus, errorThrown)
         {
+            console.log(jqXHR);
+            console.log();
+            console.log(textStatus);
+            console.log();
+            console.log(errorThrown);
             alert('La requête Ajax pour récupérer le formulaire des options a échoué. Contactez PayIcam si vous êtes un utilisateur, sinon, contactez Grégoire Giraud.'); //Sinon, on alerte qu'il y a un problème.
         }
     });
