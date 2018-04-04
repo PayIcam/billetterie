@@ -5,7 +5,7 @@ require __DIR__ . '/../../general_requires/_header.php';
 if(!empty($_POST))
 {
     $ajax_json_response = array("message" => "" , "transaction_url" => "");
-
+    echo 'nique ta race';
     require 'requires/db_functions.php';
     require 'requires/controller_functions.php';
 
@@ -63,7 +63,7 @@ if(!empty($_POST))
 
                     if(get_current_promo_site_quota(array("event_id" => $event_id, "promo_id" => get_promo_id('Invités'), "site_id" => $site_id)) + $participant_additions > $guests_specifications['quota'])
                     {
-                        add_error_to_ajax_response("Le quota pour les invités de " . get_site_name($site) . " est déjà plein. ");
+                        add_error_to_ajax_response("Le quota pour les invités de " . get_site_name($site_id) . " est déjà plein. ");
                         echo json_encode($ajax_json_response);
                         die();
                     }
