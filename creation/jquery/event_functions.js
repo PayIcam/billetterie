@@ -125,7 +125,7 @@ function question_change()
         else//Si l'utilisateur répond "Non" à la question "Voulez vous des invités ?"
         {
             $("#specific_message").empty();
-            $("#table_availabilities #specification_table tbody tr").each(function()
+            $("#table_availabilities #specification_table tbody tr").not('.removed').each(function()
             {
                 if($(this).children(":nth-child(3)").text()=='Invités')
                 {
@@ -333,7 +333,7 @@ function add_row(site, promo, price=0, quota='', guest_number=0)
      * @param  {string} promo
      * @return {boolean} true si la promo n'est pas présente, et qu'il faut faire un ajout, false sinon
      */
-    function check_not_present(site, promo)
+    function row_is_not_present(site, promo)
     {
         not_present = true;
         $("#specification_table tbody tr").each(function()
@@ -359,9 +359,7 @@ function add_row(site, promo, price=0, quota='', guest_number=0)
         }
     }
 
-    var row_not_present_yet = check_not_present(site, promo);
-
-    if(!row_not_present_yet)
+    if(!row_is_not_present(site, promo))
     {
         return false; //On arrète tout, le message d'erreur a déjà été envoyé, il est temps de se barrer
     }
@@ -371,7 +369,7 @@ function add_row(site, promo, price=0, quota='', guest_number=0)
     guest_number = (guest_number== '' | guest_number<0 | isNaN(guest_number) | promo=='Invités') ? 0 : Math.round(guest_number);
 
     var table_body = $("#table_availabilities #specification_table tbody");
-    var previous_row =$("#table_availabilities #specification_table tbody tr:last");//On récupère la ligne précédente dans la table AFFICHEE, celle dans laquelle on ajoute
+    var previous_row =$("#table_availabilities #specification_table tbody tr").not('.removed').last();//On récupère la ligne précédente dans la table AFFICHEE, celle dans laquelle on ajoute
 
     if(previous_row.length ==0)//Si il n'y en a pas déjà
     {
@@ -391,7 +389,7 @@ function add_row(site, promo, price=0, quota='', guest_number=0)
     new_row.children(":nth-child(4)").text(price+"€");
     new_row.children(":nth-child(5)").text(quota);
     new_row.children(":nth-child(6)").text(guest_number);
-    new_row.children(":nth-child(7)").html('<button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>'); //Potentiellement, il n'y avait pas de bouton supprimer (si on l'avait justement enlevé pour les promos permanents & invités), il faut donc le rajouter au cas où.
+    new_row.children(":nth-child(7)").html('<button type="button" class="btn btn-danger creation_button_icons"><span class="glyphicon glyphicon-trash"></span></button>'); //Potentiellement, il n'y avait pas de bouton supprimer (si on l'avait justement enlevé pour les promos permanents & invités), il faut donc le rajouter au cas où.
     new_row.children(":nth-child(7)").children().click(function()
     {
         var confirm_delete = window.confirm("Voulez vous vraiment supprimer cette promo ?");

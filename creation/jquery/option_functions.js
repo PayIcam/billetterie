@@ -84,11 +84,32 @@ function attach_option_events()
 
         var row = $("<tr></tr>");//On crée de toute pièce notre ligne à ajouter, en effet, elle est pas bien grande, ça évite d'avoir des problèmes en clonant, s'il n'y a rien auparavant.
         $("<th></th>").text(index).appendTo(row);
-        $("<td></td>").text(name).appendTo(row);
-        $("<td></td>").text(price+'€').appendTo(row);
-        $("<td></td>").text(quota).appendTo(row);
+        $("<td></td>").text(name).click(function()
+            {
+                var input_value = $(this).text();
+                $(this).html("<input class='form-control' type='text'>").children().val(input_value).focus().blur(function()
+                {
+                    $(this).parent().text($(this).val());
+                });
+            }).appendTo(row);
+        $("<td></td>").text(price+'€').click(function()
+            {
+                var input_value = $(this).text().slice(0,-1);
+                $(this).html("<input class='form-control' type='number' step=0.01 min=0>").children().val(input_value).focus().blur(function()
+                {
+                    $(this).parent().text($(this).val()=='' ? 0 : Math.round(100*$(this).val())/100 +"€");
+                });
+            }).appendTo(row);
+        $("<td></td>").text(quota).click(function()
+            {
+                var input_value = $(this).text();
+                $(this).html("<input class='form-control' type='number' step=1 min=0>").children().val(input_value).focus().blur(function()
+                {
+                    $(this).parent().text($(this).val()=='' ? 0 : Math.round($(this).val()));
+                });
+            }).appendTo(row);
 
-        var delete_button = $("<td></td>").html('<button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>')//Comme d'hab, un bouton servant à supprimer la ligne
+        var delete_button = $("<td></td>").html('<button type="button" class="btn btn-danger creation_button_icons"><span class="glyphicon glyphicon-trash"></span></button>')//Comme d'hab, un bouton servant à supprimer la ligne
         delete_button.children().click(function()
         {
             var confirm_delete = window.confirm("Voulez vous vraiment enlever cette sous-option ?");
@@ -193,7 +214,7 @@ function attach_option_events()
         new_rows.children(":nth-child(5)").remove();
         new_rows.children(":nth-child(4)").remove();
 
-        new_rows.children(":nth-child(4)").html('<button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>');
+        new_rows.children(":nth-child(4)").html('<button type="button" class="btn btn-danger creation_button_icons"><span class="glyphicon glyphicon-trash"></span></button>');
         new_rows.children(":nth-child(4)").children().click(function()//Et voilà, si on clique ici, on vire bien la promo.
         {
             var confirm_delete = window.confirm("Voulez vous vraiment enlever l'accès à votre option à cette promo ?");

@@ -20,7 +20,7 @@ if(!empty($_POST))
     $scoobydoo_promos_id = $scoobydoo_ids->scoobydoo_promos_id;
     $scoobydoo_options_id = $scoobydoo_ids->scoobydoo_options_id;
 
-    $previous_event_accessibilty = get_specification_details($event_id);
+    $previous_event_accessibilty = get_all_specification_details($event_id);
 
     //Table events
 
@@ -46,7 +46,6 @@ if(!empty($_POST))
         {
             if($promo_data->promo_id == $previous_promo['promo_id'] && $promo_data->site_id == $previous_promo['site_id'])
             {
-
                 $payutcClient->setProduct(array(
                     "obj_id" => $previous_promo['scoobydoo_article_id'],
                     "name" => $event->name . " Prix " . $promo_data->promo . " " . $promo_data->site,
@@ -103,12 +102,18 @@ if(!empty($_POST))
 
     foreach($previous_event_accessibilty as $promo)
     {
-        $payutcClient->deleteProduct(array("obj_id" => $promo['scoobydoo_article_id'], "fun_id" => $fundation_id));
-        delete_specification_details(array("event_id" => $event_id, "promo_id" => $promo['promo_id'], "site_id" => $promo['site_id']));
+        if(can_delete_promo(array('event_id' => $event_id, 'promo_id' => $promo['promo_id'], 'site_id' => $promo['site_id'])))
+        {
+            delete_specification_details(array("event_id" => $event_id, "promo_id" => $promo['promo_id'], "site_id" => $promo['site_id']));
+            $payutcClient->deleteProduct(array("obj_id" => $promo['scoobydoo_article_id'], "fun_id" => $fundation_id));
+        }
+        else
+        {
+            remove_promo(array('event_id' => $event_id, 'promo_id' => $promo['promo_id'], 'site_id' => $promo['site_id']));
+        }
     }
 
     //options & its accessibilities
-
 
     $previous_options = get_options($event_id);
 
@@ -262,19 +267,26 @@ if(!empty($_POST))
     }
     foreach($previous_options as $previous_option)
     {
-        $specifications= json_decode($previous_option['specifications']);
-        if($previous_option['type']=='Select')
+        if(can_delete_option(array('event_id' => $previous_option['event_id'], 'option_id' => $previous_option['option_id'])))
         {
-            foreach($specifications as $specification)
+            delete_option(array("event_id" => $event_id, "option_id" => $previous_option['option_id']));
+            $specifications= json_decode($previous_option['specifications']);
+            if($previous_option['type']=='Select')
             {
-                $payutcClient->deleteProduct(array("obj_id" => $specification->scoobydoo_article_id, "fun_id" => $fundation_id));
+                foreach($specifications as $specification)
+                {
+                    $payutcClient->deleteProduct(array("obj_id" => $specification->scoobydoo_article_id, "fun_id" => $fundation_id));
+                }
+            }
+            elseif($previous_option['type']=='Checkbox')
+            {
+                $payutcClient->deleteProduct(array("obj_id" => $specifications->scoobydoo_article_id, "fun_id" => $fundation_id));
             }
         }
-        elseif($previous_option['type']=='Checkbox')
+        else
         {
-            $payutcClient->deleteProduct(array("obj_id" => $specifications->scoobydoo_article_id, "fun_id" => $fundation_id));
+            remove_option(array('event_id' => $previous_option['event_id'], 'option_id' => $previous_option['option_id']));
         }
-        delete_option(array("event_id" => $event_id, "option_id" => $previous_option['option_id']));
     }
     echo 'Les modifications ont bien été pris en compte !';
 }

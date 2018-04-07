@@ -1,19 +1,19 @@
 <?php
 
-function insert_event_accessibility_rows($promos_specifications)
+function insert_event_accessibility_rows($promos_specifications, $class="")
 {
-    $numero = 1;
+    static $numero = 1;
     foreach($promos_specifications as $promo_specifications)
     {
         ?>
-        <tr>
+        <tr class="<?=$class?>">
             <th><?= $numero ?></th>
             <td><?= htmlspecialchars(get_site_name($promo_specifications['site_id'])) ?></td>
             <td><?= htmlspecialchars(get_promo_name($promo_specifications['promo_id'])) ?></td>
             <td><?= htmlspecialchars($promo_specifications['price']) . '€'?></td>
             <td><?= htmlspecialchars($promo_specifications['quota'])?></td>
             <td><?= htmlspecialchars($promo_specifications['guest_number'])?></td>
-            <td><button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></td>
+            <td><button type="button" class="btn btn-danger creation_button_icons"><span class="glyphicon glyphicon-trash"></span></button></td>
         </tr>
         <?php
         $numero+=1;
@@ -30,7 +30,7 @@ function insert_option_accessibility_rows($promo_options)
             <th><?= $numero ?></th>
             <td><?= htmlspecialchars(get_site_name($promo_option['site_id'])) ?></td>
             <td><?= htmlspecialchars(get_promo_name($promo_option['promo_id'])) ?></td>
-            <td><button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></td>
+            <td><button type="button" class="btn btn-danger creation_button_icons"><span class="glyphicon glyphicon-trash"></span></button></td>
         </tr>
         <?php
         $numero+=1;
@@ -48,7 +48,7 @@ function insert_option_select_rows($option_specifications)
             <td><?= htmlspecialchars($option_specification->name) ?></td>
             <td><?= htmlspecialchars($option_specification->price).'€' ?></td>
             <td><?= htmlspecialchars($option_specification->quota) ?></td>
-            <td><button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></td>
+            <td><button type="button" class="btn btn-danger creation_button_icons"><span class="glyphicon glyphicon-trash"></span></button></td>
         </tr>
         <?php
         $numero+=1;

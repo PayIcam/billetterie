@@ -40,7 +40,7 @@ function get_event_radio_values($promos_specifications)
     $permanents = 0;
     $graduated = 0;
 
-    global $list_graduated_promos;
+    global $graduated_promos;
 
     foreach($promos_specifications as $promo_specifications)
     {
@@ -52,7 +52,7 @@ function get_event_radio_values($promos_specifications)
         {
             $permanents = 1;
         }
-        elseif(in_array(get_promo_name($promo_specifications['promo_id']), $list_graduated_promos))
+        elseif(in_array(get_promo_name($promo_specifications['promo_id']), $graduated_promos))
         {
             $graduated = 1;
         }
@@ -365,6 +365,17 @@ function are_correct_options()
             {
                 add_error("Les infos à propos de la facultativité ou non de l'option sont mal passées.");
                 $error = true;
+            }
+            elseif($option->is_mandatory==1)
+            {
+                if(get_option(array('event_id' => $_GET['event_id'], 'option_id' => $option->option_id))['is_mandatory']==0)
+                {
+                    if(a_participant_would_have_to_pay_obliged_option(array('event_id' => $_GET['event_id'], 'option_id' => $option->option_id)))
+                    {
+                        add_error("Il est impossible de forcer cette option à être obligatoire après que la billetterie ait commencé. En effet, certains participants ont déjà payé leur place sans prendre cette option. Si vous souhaitez tout de même faire ce changement, venez voir l'organisation de PayIcam pour en discuter.");
+                        $error = true;
+                    }
+                }
             }
             if(count($option->type_specification)<=1)
             {

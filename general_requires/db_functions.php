@@ -71,7 +71,7 @@ function event_id_is_correct($event_id)
 function get_specification_details($event_id)
 {
     global $db;
-    $promos_query = $db->prepare('SELECT * FROM promos_site_specifications WHERE event_id=:event_id');
+    $promos_query = $db->prepare('SELECT * FROM promos_site_specifications WHERE event_id=:event_id and is_removed=0');
     $promos_query->execute(array('event_id'=>$event_id));
     $promos_specifications = $promos_query->fetchAll();
     return $promos_specifications;
@@ -131,7 +131,7 @@ function get_all_events_id()
 function get_options($event_id)
 {
     global $db;
-    $option_query = $db->prepare('SELECT * FROM options WHERE event_id=:event_id');
+    $option_query = $db->prepare('SELECT * FROM options WHERE event_id=:event_id and is_removed=0');
     $option_query->execute(array('event_id'=>$event_id));
     $options = $option_query->fetchAll();
     return $options;
@@ -140,7 +140,7 @@ function get_options($event_id)
 function get_promos_events($ids)
 {
     global $db;
-    $promos = $db->prepare('SELECT promos_site_specifications.event_id FROM promos_site_specifications JOIN events on events.event_id = promos_site_specifications.event_id WHERE promo_id=:promo_id and site_id=:site_id and events    .is_active=1');
+    $promos = $db->prepare('SELECT promos_site_specifications.event_id FROM promos_site_specifications JOIN events on events.event_id = promos_site_specifications.event_id WHERE promo_id=:promo_id and site_id=:site_id and events.is_active=1 and promos_site_specifications.is_removed=0');
     $promos->execute($ids);
     return $promos->fetchAll();
 }
@@ -173,7 +173,7 @@ function get_participant_event_data($ids)
 function event_has_option($ids)
 {
     global $db;
-    $option = $db->prepare('SELECT * FROM options WHERE event_id = :event_id and option_id = :option_id');
+    $option = $db->prepare('SELECT * FROM options WHERE event_id = :event_id and option_id = :option_id and is_removed=0');
     $option->execute($ids);
     $option = $option->fetch();
     return empty($option) ? false : true;
@@ -219,4 +219,18 @@ function insert_icams_guest($ids)
     global $db;
     $icams_guest = $db->prepare('INSERT INTO icam_has_guests VALUES (:event_id, :icam_id, :guest_id)');
     return $icams_guest->execute($ids);
+}
+function get_icams_guests($ids)
+{
+    global $db;
+    $guests = $db->prepare('SELECT * FROM participants WHERE event_id=:event_id and participant_id IN(SELECT guest_id FROM icam_has_guests WHERE icam_id=:icam_id) and status="V"');
+    $guests->execute($ids);
+    return $guests->fetchAll();
+}
+function get_option($ids)
+{
+    global $db;
+    $option_query = $db->prepare('SELECT * FROM options WHERE event_id=:event_id and option_id=:option_id and is_removed=0');
+    $option_query->execute($ids);
+    return $option_query->fetch();
 }

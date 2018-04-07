@@ -48,7 +48,6 @@ function check_update_participant_data($data, $is_icam)
             {
                 if(count($data['prenom']) > 45)
                 {
-                    var_dump(count($data['prenom']));
                     $error = true;
                     add_error('Le prénom entré est trop grand');
                 }
@@ -62,7 +61,6 @@ function check_update_participant_data($data, $is_icam)
             {
                 if(count($data['nom']) > 45)
                 {
-                    var_dump(count($data['nom']));
                     $error = true;
                     add_error('Le nom entré est trop grand');
                 }
@@ -78,7 +76,6 @@ function check_update_participant_data($data, $is_icam)
             $data['bracelet_identification'] = $data['bracelet_identification'] == '' ? null : $data['bracelet_identification'];
             if(count($data['bracelet_identification']) > 25)
             {
-                var_dump(count($data['bracelet_identification']));
                 $error = true;
                 add_error('Le bracelet_identification entré est trop grand');
             }

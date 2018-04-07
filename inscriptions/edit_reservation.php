@@ -36,7 +36,7 @@ if(isset($_GET['event_id']))
             header('Location: inscriptions.php?event_id='.$event_id);
             die();
         }
-        $guests_event_data = get_icams_guests_data(array("event_id" => $event_id, "icam_id" => $icam_event_data['participant_id']));
+        $guests_event_data = get_icams_guests(array("event_id" => $event_id, "icam_id" => $icam_event_data['participant_id']));
 
         $promo_specifications = get_promo_specification_details(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id));
 

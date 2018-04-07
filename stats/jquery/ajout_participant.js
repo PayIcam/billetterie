@@ -118,7 +118,6 @@ $(document).ready(function()
 
                 // function ajax_success(data)
                 // {
-                //     console.log('successs');
                 //     if(data=="L'ajout a bien été effectué")
                 //     {
                 //         var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data + '</div>';
@@ -140,7 +139,6 @@ $(document).ready(function()
                 // }
                 // function error_ajax()
                 // {
-                //     console.log('errro');
                 //     add_error('La requête Ajax permettant de submit les informations et ajouter la billetterie a échoué');
                 //     $("#submit_form").prop('disabled', '');
                 // }

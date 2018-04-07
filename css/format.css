@@ -2,15 +2,12 @@ table tr
 {
     height: 20px;
 }
-button[class="btn btn-danger"]
+#creation_button_icons
 {
     width: 20px;
     height: 20px;
     font-size: 0.8em;
     padding: 0px;
-}
-#add_option_button
-{
     margin-bottom: 15px;
 }
 #submit_form

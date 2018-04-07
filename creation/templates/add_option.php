@@ -20,7 +20,7 @@ function add_option_html_code($option_number, $option=null, $option_specificatio
 
                                 <div class="form-group">
                                     <label for=<?= '"option_'.$option_number.'_description"'; ?> >Description de votre option :</label>
-                                    <textarea class="form-control" name="option_description" id=<?= '"option_'.$option_number.'_description"'; ?> placeholder="Descrivez rapidement votre option" required><?= isset($option['descriptions']) ? htmlspecialchars($option['description']) : '' ?></textarea>
+                                    <textarea class="form-control" name="option_description" id=<?= '"option_'.$option_number.'_description"'; ?> placeholder="Descrivez rapidement votre option" required><?= isset($option['description']) ? htmlspecialchars($option['description']) : '' ?></textarea>
                                 </div>
 
                                 <div class="form-group">

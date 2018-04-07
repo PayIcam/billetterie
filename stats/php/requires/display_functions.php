@@ -113,6 +113,10 @@ function display_liste_head($specification="", $id=true, $status=false, $price=t
  *
  */
     global $Auth;
+    if(!$Auth->hasRole('super-admin'))
+    {
+        $id = false;
+    }
     if(!$Auth->hasRole('admin'))
     {
         $add_guest = false;
@@ -232,7 +236,7 @@ function display_guest_infos($participant)
     ?> <td> <?php
         if($participant['is_icam'] == 1)
         {
-            $guests = get_guests_data($participant['participant_id']);
+            $guests = get_icams_guests(array('event_id' => $_GET['event_id'], 'icam_id' => $participant['participant_id']));
             if(!empty($guests)) { ?>
                 <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Invités :" data-content="<?= create_guests_text($guests) ?>" type="button">
                     <?=$participant['current_promo_guest_number']?>
@@ -288,6 +292,10 @@ function display_promo($promo)
 function display_participant_info($participant, $specification="", $id=true, $status=false, $price=true, $email=false, $telephone=true, $guest_number=false, $options=true, $edit=true, $add_guest=true, $bracelet=true, $date_inscription=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
 {
     global $Auth;
+    if(!$Auth->hasRole('super-admin'))
+    {
+        $id = false;
+    }
     if(!$Auth->hasRole('admin'))
     {
         $add_guest = false;

@@ -513,18 +513,6 @@ function is_correct_participant_supplement_data($participant_data, $participant_
     return !$error;
 }
 
-function get_icams_guests_data($ids)
-{
-    $guests_ids = get_icams_guests_ids($ids);
-    $guests_data = [];
-    foreach($guests_ids as $guests_id)
-    {
-        $guest_data = get_participant_event_data(array("event_id" => $ids['event_id'], "participant_id" => $guests_id['guest_id']));
-        array_push($guests_data, $guest_data);
-    }
-    return $guests_data;
-}
-
 function prevent_displaying_on_wrong_ticketing_state($ticketing_state)
 {
     global $ajax_json_response;
@@ -595,12 +583,14 @@ function check_if_event_should_be_displayed($event,$promo_id, $site_id, $email)
 
 function update_reservation_status($status, $pending_reservation)
 {
+    $update = false;
     $list_purchases = json_decode($pending_reservation['liste_places_options']);
     foreach($list_purchases->participant_ids as $participant_id)
     {
         $participant_data = get_participant_event_data(array("event_id" => $pending_reservation['event_id'], "participant_id" => $participant_id));
         if($participant_data['status'] != $status)
         {
+            $update=true;
             update_participant_status(array("participant_id" => $participant_id, "status" => $status));
         }
     }
@@ -609,10 +599,14 @@ function update_reservation_status($status, $pending_reservation)
         $option_data = get_participant_option(array("event_id" => $pending_reservation['event_id'], "participant_id" => $ids->participant_id, "option_id" => $ids->option_id));
         if($option_data['status'] != $status)
         {
+            $update=true;
             update_option_status(array("participant_id" => $ids->participant_id, "status" => $status, "option_id" => $ids->option_id));
         }
     }
-    update_transaction_status(array("transaction_id" => $pending_reservation['transaction_id'], "status" => $status));
+    if($update)
+    {
+        update_transaction_status(array("transaction_id" => $pending_reservation['transaction_id'], "status" => $status));
+    }
 }
 
 function handle_pending_reservations($login, $event_id)

@@ -11,9 +11,9 @@ if(isset($_GET['event_id']))
         require 'php/requires/controller_functions.php';
         require 'templates/add_option.php';
 
-        $student_promos = get_student_promos();
-        $graduated_promos = get_graduated_promos();
-        $sites = get_sites();
+        $student_promos = array_column(get_student_promos(), 'promo_name');
+        $graduated_promos = array_column(get_graduated_promos(), 'promo_name');
+        $sites = array_column(get_sites(), 'site_name');
 
         $event = get_event_details($event_id);
 
@@ -21,14 +21,8 @@ if(isset($_GET['event_id']))
         $event['ticketing_end_date'] = date('m/d/Y h:i a', strtotime($event['ticketing_end_date']));
 
         $promos_specifications = get_specification_details($event_id);
-
-        $list_graduated_promos = array();
-        foreach($graduated_promos as $graduated_promo)
-        {
-            array_push($list_graduated_promos, $graduated_promo['promo_name']);
-        }
+        $removed_promos_specifications = get_removed_specification_details($event_id);
         $event_radios = get_event_radio_values($promos_specifications);
-
         $options = get_options($event_id);
 
         if(count($options)>0)

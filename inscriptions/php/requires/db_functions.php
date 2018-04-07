@@ -11,7 +11,7 @@ function promo_has_option($ids)
 function get_promo_specification_details($promo_details)
 {
     global $db;
-    $promos_query = $db->prepare('SELECT * FROM promos_site_specifications WHERE event_id=:event_id and promo_id=:promo_id and site_id=:site_id');
+    $promos_query = $db->prepare('SELECT * FROM promos_site_specifications WHERE event_id=:event_id and promo_id=:promo_id and site_id=:site_id and is_removed=0');
     $promos_query->execute($promo_details);
     return current($promos_query->fetchAll());
 }
@@ -61,13 +61,6 @@ function update_guest_participant($guest_data)
     global $db;
     $icam_update = $db->prepare('UPDATE participants SET price=price+:price_addition, prenom=:prenom, nom=:nom, event_id=:event_id, site_id=:site_id, promo_id=:promo_id WHERE participant_id=:guest_id');
     return $icam_update->execute($guest_data);
-}
-function get_option($ids)
-{
-    global $db;
-    $option_query = $db->prepare('SELECT * FROM options WHERE event_id=:event_id and option_id=:option_id');
-    $option_query->execute($ids);
-    return $option_query->fetch();
 }
 function insert_participant_option($option_data)
 {

@@ -135,7 +135,7 @@ function check_then_submit_form(event)
     function get_accessibility_infos()
     {
         var rows = [];
-        $('#specification_table tbody tr').each(function()
+        $('#specification_table tbody tr').not('.removed').each(function()
         {
             var site = $(this).children(':nth-child(2)').text();
             var promo = $(this).children(':nth-child(3)').text();
@@ -269,6 +269,7 @@ function check_then_submit_form(event)
 
             function ajax_success(data)
             {
+                $('.waiting').hide();
                 if(data=='Les informations ont bien été pris en compte !' | data == 'Les modifications ont bien été pris en compte !')
                 {
                     var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data + '</div>';
@@ -299,11 +300,10 @@ function check_then_submit_form(event)
                 console.log(errorThrown);
                 add_error('La requête Ajax permettant de submit les informations et ajouter la billetterie a échoué');
                 $("#submit_form").prop('disabled', '');
+                $('.waiting').hide();
             }
 
             $("#submit_form").prop('disabled', 'disabled');
-
-            // throw('bite');
 
             $.post(
             {

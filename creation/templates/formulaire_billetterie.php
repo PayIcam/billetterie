@@ -151,7 +151,7 @@
                                     <td>0€</td>
                                     <td>500</td>
                                     <td>3</td>
-                                    <td><button type="button" id="add_site_promo" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></td>
+                                    <td><button type="button" class="btn btn-danger creation_button_icons"><span class="glyphicon glyphicon-trash"></span></button></td>
                                 </tr>
                             </table>
                             </div>
@@ -165,15 +165,14 @@
                                         <th scope="col">Prix</th>
                                         <th scope="col">Quota</th>
                                         <th scope="col">Nombre d'invités</th>
-                                        <th scope="col">Supprimer</th>
+                                        <th scope="col">Supprimer/Restaurer</th>
                                     </tr>
                                 </thead>
                                 <tbody><!--Le tbody va se remplir dynamiquement grâce à Jquery, pas d'inquiétudes-->
-                                    <?php isset($promos_specifications) ? insert_event_accessibility_rows($promos_specifications) : '' ?>
+                                    <?php isset($promos_specifications) ? insert_event_accessibility_rows($promos_specifications, 'success') : '' ?>
+                                    <?php isset($removed_promos_specifications) ? insert_event_accessibility_rows($removed_promos_specifications, 'removed danger') : '' ?>
                                 </tbody>
                             </table>
-
-                            <div id="specific_message"></div><!--On affiche des tooltips, ou des messages d'erreurs ici.-->
                         </div>
 
                         <div class="panel-group" id="accordion_accessibility_choice"><!--Les sites, on va pouvoir ajouter pour toutes les promos d'un site-->

@@ -32,7 +32,7 @@
                     <?php } ?>
                     <div class="col-sm-4 form-group">
                         <label for="bracelet_identification">Identifiant du bracelet</label>
-                        <input required type="text" class="form-control" id="bracelet_identification" name="bracelet_identification">
+                        <input type="text" class="form-control" id="bracelet_identification" name="bracelet_identification">
                     </div>
                 </div>
                 <div class="row">

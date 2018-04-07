@@ -50,13 +50,21 @@ function get_option_name($option_id)
     $option_name->execute(array("option_id" => $option_id));
     return $option_name->fetch()['name'];
 }
-function get_guests_data($icam_id)
+function get_option_names($event_id)
 {
     global $db;
-    $participant_data = $db->prepare('SELECT participants.* FROM participants WHERE participant_id IN (SELECT guest_id from icam_has_guests WHERE icam_id=:icam_id)');
-    $participant_data->execute(array("icam_id" => $icam_id));
-    return $participant_data->fetchAll();
+    $option_name = $db->prepare('SELECT name FROM options WHERE event_id=:event_id');
+    $option_name->execute(array("event_id" => $event_id));
+    return array_column($option_name->fetchAll(), 'name');
 }
+function get_option_id($option_name)
+{
+    global $db;
+    $option_id = $db->prepare('SELECT option_id FROM options WHERE name=:name');
+    $option_id->execute(array("name" => $option_name));
+    return $option_id->fetch()['option_id'];
+}
+
 function get_icam_inviter_data($guest_id)
 {
     global $db;
@@ -65,39 +73,24 @@ function get_icam_inviter_data($guest_id)
     return $participant_data->fetch();
 }
 
-function get_current_promo_quota($ids)
-{
-    global $db;
-    $count_promo = $db->prepare('SELECT COUNT(*) current_promo_quota FROM participants WHERE event_id= :event_id and promo_id= :promo_id and status= "V"');
-    $count_promo->execute($ids);
-    return $count_promo->fetch()['current_promo_quota'];
-}
-function get_current_site_quota($ids)
-{
-    global $db;
-    $count_promo = $db->prepare('SELECT COUNT(*) current_site_quota FROM participants WHERE event_id= :event_id and site_id= :site_id and status= "V"');
-    $count_promo->execute($ids);
-    return $count_promo->fetch()['current_site_quota'];
-}
-
 function get_event_promo_names($event_id)
 {
     global $db;
-    $promos = $db->prepare('SELECT promo_name FROM promos WHERE promo_id IN (SELECT DISTINCT promo_id FROM promos_site_specifications WHERE event_id = :event_id)');
+    $promos = $db->prepare('SELECT promo_name FROM promos WHERE promo_id IN (SELECT DISTINCT promo_id FROM promos_site_specifications WHERE event_id = :event_id and is_removed=0)');
     $promos->execute(array('event_id' => $event_id));
     return $promos->fetchAll();
 }
 function get_event_site_names($event_id)
 {
     global $db;
-    $promos = $db->prepare('SELECT site_name FROM sites WHERE site_id IN (SELECT DISTINCT site_id FROM promos_site_specifications WHERE event_id = :event_id)');
+    $promos = $db->prepare('SELECT site_name FROM sites WHERE site_id IN (SELECT DISTINCT site_id FROM promos_site_specifications WHERE event_id = :event_id and is_removed=0)');
     $promos->execute(array('event_id' => $event_id));
     return $promos->fetchAll();
 }
 function get_event_promo_site_names($event_id)
 {
     global $db;
-    $promos = $db->prepare('SELECT promo_name FROM promos p WHERE promo_id IN (SELECT DISTINCT promo_id FROM promos_site_specifications WHERE event_id = :event_id)')->fetchAll();
+    $promos = $db->prepare('SELECT promo_name FROM promos p WHERE promo_id IN (SELECT DISTINCT promo_id FROM promos_site_specifications WHERE event_id = :event_id and is_removed=0)');
     $promos->execute(array('event_id' => $event_id));
     return $promos->fetchAll();
 }
@@ -203,6 +196,13 @@ function update_participant_data($data)
         $update->execute($data);
     }
 }
+function count_participants_with_option($event_id, $condition=true)
+{
+    global $db;
+    $count = $condition ? $db->prepare('SELECT COUNT(*) FROM participants WHERE event_id = :event_id and status="V" and participant_id IN(SELECT participant_id FROM participant_has_options)') : $db->prepare('SELECT COUNT(*) FROM participants WHERE event_id = :event_id and status="V" and participant_id NOT IN(SELECT participant_id FROM participant_has_options)');
+    $count->execute(array('event_id' => $event_id));
+    return $count->fetch()['COUNT(*)'];
+}
 
 function determination_recherche($recherche, $start_lign, $rows_per_page)
 {
@@ -243,6 +243,14 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
     }
     $payement_search_regex = substr($payement_search_regex, 0, count($payement_search_regex)-2).'){1}#i';
 
+    $options = get_option_names($event_id);
+    $option_search_regex = '#(';
+    foreach($options as $option)
+    {
+        $option_search_regex .= $option . '|';
+    }
+    $option_search_regex = substr($option_search_regex, 0, count($option_search_regex)-2).'){1}#i';
+
     switch ($recherche)
     {
         case (preg_match("#^0[1-68]([-. ]?[0-9]{2}){4}$#", $recherche)==1):
@@ -281,6 +289,15 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             $recherche_bdd->bindParam('site_id', $site_id);
             $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE status="V" and site_id = :site_id and event_id=:event_id');
             $count_recherche->execute(array('site_id' => $site_id, 'event_id' => $event_id));
+            $count_recherche = $count_recherche->fetch()['COUNT(*)'];
+            break;
+
+        case(preg_match($option_search_regex, $recherche) ==1):
+            $recherche_bdd = $db->prepare('SELECT * FROM participants p WHERE event_id = :event_id and status="V" and participant_id IN(SELECT DISTINCT participant_id FROM participant_has_options WHERE option_id=:option_id) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $option_id = get_option_id($recherche);
+            $recherche_bdd->bindParam('option_id', $option_id);
+            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE event_id = :event_id and status="V" and participant_id IN(SELECT DISTINCT participant_id FROM participant_has_options WHERE option_id=:option_id)');
+            $count_recherche->execute(array('event_id' => $event_id, 'option_id' => $option_id));
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
             break;
 
@@ -355,6 +372,11 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             $count_recherche = count_status(array('event_id' => $event_id, 'status' => $recherche));
             break;
 
+        case (preg_match('#^option$#i', $recherche)==1):
+            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE event_id = :event_id and participant_id IN (SELECT participant_id FROM participant_has_options) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $count_recherche = count_participants_with_option($event_id);
+            break;
+
         case (preg_match("#^[a-zéèçôîûâ]{1}+[a-zçôîûâ]{1}$#i", $recherche)==1):
             $prenom = '^'.$recherche[0];
             $nom = '^'.$recherche[1];
@@ -379,7 +401,6 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
             break;
 
-
         default:
             $recherche_bdd =$db-> prepare('SELECT * FROM participants WHERE status="V" and event_id = :event_id and (nom REGEXP :recherche OR prenom REGEXP :recherche) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $recherche_bdd->bindParam('recherche', $recherche);
@@ -403,7 +424,7 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
 function get_promo_site_ids($event_id)
 {
     global $db;
-    $ids = $db->query('SELECT promo_id, site_id FROM promos_site_specifications');
+    $ids = $db->query('SELECT promo_id, site_id FROM promos_site_specifications and is_removed=0');
     return $ids->fetchAll();
 }
 

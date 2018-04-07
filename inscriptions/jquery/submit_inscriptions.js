@@ -189,7 +189,6 @@ function submit_inscriptions(submit)
 
     // function ajax_success(data)
     // {
-    //     console.log('success');
     //     console.log(data);
     //     if(data=='Votre réservation a bien été prise en compte ! <br>Vous allez être redirigé pour payer !')
     //     {
