@@ -28,6 +28,12 @@ if(isset($_GET['event_id']))
         check_if_event_should_be_displayed($event, $promo_id, $site_id, $email);
 
         $promo_specifications = get_promo_specification_details(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id));
+        if(empty($promo_specifications))
+        {
+            set_alert_style();
+            add_error("Votre promotion n'a pas accès à cet évènement.");
+            die();
+        }
 
         if(count($promo_specifications) > 0)
         {

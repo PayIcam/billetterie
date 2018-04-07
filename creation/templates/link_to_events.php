@@ -7,11 +7,17 @@
         <div class="container">
             <div class="row">
                 <?php
+                $i=1;
                 foreach($fundations as $fundation)
                 {
                     if($fundation->name == 'Toutes les fundations')
                         continue;
                     display_fundations_events_admin($fundation);
+                    if($i%3==0)
+                    {
+                        echo '</div><div class="row">';
+                    }
+                    $i++;
                 }
                 ?>
             </div>

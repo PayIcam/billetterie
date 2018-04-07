@@ -62,25 +62,12 @@ function update_guest_participant($guest_data)
     $icam_update = $db->prepare('UPDATE participants SET price=price+:price_addition, prenom=:prenom, nom=:nom, event_id=:event_id, site_id=:site_id, promo_id=:promo_id WHERE participant_id=:guest_id');
     return $icam_update->execute($guest_data);
 }
-function insert_participant_option($option_data)
-{
-    global $db;
-    $option_query = $db->prepare('INSERT INTO participant_has_options VALUES (:event_id, :participant_id, :option_id, "W", :option_details)');
-    return $option_query->execute($option_data);
-}
 function get_icam_options_data($ids)
 {
     global $db;
     $option_query = $db->prepare('SELECT option_id, option_details FROM participant_has_options WHERE event_id=:event_id and participant_id=:participant_id');
     $option_query->execute($ids);
     return $option_query->fetchAll();
-}
-function get_participant_option($ids)
-{
-    global $db;
-    $option_query = $db->prepare('SELECT * FROM participant_has_options WHERE event_id=:event_id and option_id=:option_id and participant_id=:participant_id and status="V" ');
-    $option_query->execute($ids);
-    return $option_query->fetch();
 }
 function update_option_status($ids)
 {

@@ -234,3 +234,16 @@ function get_option($ids)
     $option_query->execute($ids);
     return $option_query->fetch();
 }
+function insert_participant_option($option_data)
+{
+    global $db;
+    $option_query = $db->prepare('INSERT INTO participant_has_options VALUES (:event_id, :participant_id, :option_id, "W", :option_details)');
+    return $option_query->execute($option_data);
+}
+function get_participant_option($ids)
+{
+    global $db;
+    $option_query = $db->prepare('SELECT * FROM participant_has_options WHERE event_id=:event_id and option_id=:option_id and participant_id=:participant_id and status="V" ');
+    $option_query->execute($ids);
+    return $option_query->fetch();
+}

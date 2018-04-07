@@ -32,11 +32,13 @@ if(!empty($_POST))
                     else
                     {
                         add_error_to_ajax_response("Ce n'est pas un Icam à qui vous essayez d'ajouter des invités");
+                        die();
                     }
                 }
                 else
                 {
                     add_error_to_ajax_response("Les informations transmises ne correspondent pas.");
+                    die();
                 }
             }
             else
@@ -46,8 +48,11 @@ if(!empty($_POST))
             }
 
             $validation = check_prepare_addition_data($_POST, $site);
+            $select_mandatory_options = get_select_mandatory_options(array('event_id' => $event_id, 'promo_id' => $_POST['promo_id'], 'site_id' => $_POST['site_id']));
+
             if(!$validation)
             {
+                echo json_encode($ajax_json_response);
                 die();
             }
 
@@ -72,6 +77,17 @@ if(!empty($_POST))
             {
                 insert_icams_guest(array("event_id" => $event_id, "icam_id" => $_GET['icam_id'], "guest_id" => $participant_id));
             }
+            foreach($select_mandatory_options as $select_mandatory_option)
+            {
+                $promo_site_has_options_data = array(
+                    "event_id" => $event_id ,
+                    "participant_id" => $participant_id ,
+                    "option_id" => $select_mandatory_option['option_id'] ,
+                    "option_details" => json_encode(array("select_option" => json_decode($select_mandatory_option['specifications'])[0]->name))
+                    );
+                add_participant_option($promo_site_has_options_data);
+            }
+
             $ajax_json_response['message'] = "L'ajout a bien été effectué";
             echo json_encode($ajax_json_response);
         }

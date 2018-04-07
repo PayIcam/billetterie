@@ -124,9 +124,9 @@ function delete_previous_option_accessibility($event_id)
 function can_delete_promo($ids)
 {
     global $db;
-    $count_promo = $db->prepare('SELECT COUNT(*) current_promo_quota FROM participants WHERE event_id= :event_id and site_id= :site_id and promo_id= :promo_id');
+    $count_promo = $db->prepare('SELECT COUNT(*) rows FROM participants WHERE event_id= :event_id and site_id= :site_id and promo_id= :promo_id');
     $count_promo->execute($ids);
-    return $count_promo->fetch()['current_promo_quota'] == 0 ? true : false;
+    return $count_promo->fetch()['rows'] == 0 ? true : false;
 }
 function remove_promo($ids)
 {
@@ -137,9 +137,9 @@ function remove_promo($ids)
 function can_delete_option($ids)
 {
     global $db;
-    $count_option = $db->prepare('SELECT COUNT(*) current_option_quota FROM participant_has_options WHERE event_id= :event_id and option_id= :option_id');
+    $count_option = $db->prepare('SELECT COUNT(*) rows FROM participant_has_options WHERE event_id= :event_id and option_id= :option_id');
     $count_option->execute($ids);
-    return $count_option->fetch()['current_option_quota'] == 0 ? true : false;
+    return $count_option->fetch()['rows'] == 0 ? true : false;
 }
 function remove_option($ids)
 {

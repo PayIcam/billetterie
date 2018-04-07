@@ -1,8 +1,8 @@
-<?php set_header_navbar("Edition d'un participant")?>
+<?php set_header_navbar("Ajout d'un participant")?>
 
         <h1 style="text-align: center">Ajouter un participant à <?=isset($icam) ? htmlspecialchars($icam['prenom']) . ' ' . htmlspecialchars($icam['nom']) : '' . '(' . htmlspecialchars($event['name']) . ')' ?></h1><hr><br>
 
-        <?php isset($icam) ? one_row_participant_table($icam, 'info_icam') : "" ?>
+        <?php isset($icam) ? $icam['is_icam']==1 ? one_row_participant_table($icam, 'info_icam') : one_row_participant_table($icam, 'info_invite') : "" ?>
 
         <form method="POST" action="php/ajout_participant.php?event_id=<?=isset($icam) ? $event_id.'&icam_id='.$icam['participant_id'] : $event_id?>">
             <div class="container">

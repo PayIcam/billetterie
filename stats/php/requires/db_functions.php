@@ -421,11 +421,12 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
     return $recherche_bdd->fetchAll();
 }
 
-function get_promo_site_ids($event_id)
+function get_participant_promo_site_ids($ids)
 {
     global $db;
-    $ids = $db->query('SELECT promo_id, site_id FROM promos_site_specifications and is_removed=0');
-    return $ids->fetchAll();
+    $promo_site_ids = $db->prepare('SELECT promo_id, site_id FROM participants WHERE event_id =:event_id and participant_id =:participant_id');
+    $promo_site_ids->execute($ids);
+    return $promo_site_ids->fetch();
 }
 
 function add_participant($participant_data)
@@ -434,4 +435,38 @@ function add_participant($participant_data)
     $addition = $db->prepare('INSERT INTO participants(prenom, nom, status, is_icam, price, payement, email, telephone, bracelet_identification, event_id, site_id, promo_id) VALUES (:prenom, :nom, :status, :is_icam, :price, :payement, :email, :telephone, :bracelet_identification, :event_id, :site_id, :promo_id)');
     $addition->execute($participant_data);
     return $db->lastInsertId();
+}
+function add_participant_option($option_data)
+{
+    global $db;
+    $option_query = $db->prepare('INSERT INTO participant_has_options VALUES (:event_id, :participant_id, :option_id, "V", :option_details)');
+    return $option_query->execute($option_data);
+}
+function get_select_mandatory_options($ids)
+{
+    global $db;
+    $select_mandatory_options = $db->prepare('SELECT * FROM options o LEFT JOIN promo_site_has_options psho ON o.option_id = psho.option_id WHERE is_active=1 and is_removed=0 and type="Select" and is_mandatory=1 and o.event_id=:event_id and promo_id=:promo_id and site_id=:site_id');
+    $select_mandatory_options->execute($ids);
+    return $select_mandatory_options->fetchAll();
+}
+function get_optional_options($ids)
+{
+    global $db;
+    $optional_options = $db->prepare('SELECT * FROM options o LEFT JOIN promo_site_has_options psho ON o.option_id = psho.option_id WHERE (is_active=1 and is_removed=0 and o.event_id=:event_id and promo_id=:promo_id and site_id=:site_id and o.option_id NOT IN(SELECT option_id FROM participant_has_options WHERE participant_id=:participant_id)) and ((type="Select" and is_mandatory=0) or (type="Checkbox"))');
+    $optional_options->execute($ids);
+    return $optional_options->fetchAll();
+}
+function option_can_be_added($ids)
+{
+    global $db;
+    $optional_options = $db->prepare('SELECT COUNT(*) matches FROM options o LEFT JOIN promo_site_has_options psho ON o.option_id = psho.option_id WHERE (o.option_id=:option_id and is_removed = 0 and is_active = 1 and promo_id=:promo_id and site_id=:site_id and o.event_id=:event_id) and ((type="Select" and is_mandatory=0) or (type="Checkbox"))');
+    $optional_options->execute($ids);
+    return $optional_options->fetch()['matches'] == 1 ? true : false;
+}
+function participant_has_option($ids)
+{
+    global $db;
+    $optional_options = $db->prepare('SELECT COUNT(*) matches FROM participant_has_options WHERE participant_id=:participant_id and option_id=:option_id and event_id=:event_id');
+    $optional_options->execute($ids);
+    return $optional_options->fetch()['matches'] == 1 ? true : false;
 }

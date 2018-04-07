@@ -270,3 +270,71 @@ function check_prepare_addition_data($data, $icam_site_id)
     }
     return !$error;
 }
+
+function display_option_no_checking($option)
+{
+    if($option['type']=='Checkbox')
+    {
+        checkbox_form_basic($option);
+    }
+    elseif($option['type']=='Select')
+    {
+        select_form_basic($option);
+    }
+}
+
+function check_prepare_option_addition_data($options, $participant_id)
+{
+    $promo_site_ids = get_participant_promo_site_ids(array('event_id' => $_GET['event_id'], 'participant_id' => $participant_id));
+
+    $promo_id = $promo_site_ids['promo_id'];
+    $site_id = $promo_site_ids['site_id'];
+
+    $error = false;
+    foreach($options as $option)
+    {
+        if(option_can_be_added(array('promo_id' => $promo_id, 'site_id' => $site_id, 'option_id' => $option['option_id'], 'event_id' => $_GET['event_id'])))
+        {
+            if(!participant_has_option(array('participant_id' => $participant_id, 'option_id' => $option['option_id'], 'event_id' => $_GET['event_id'])))
+            {
+                $db_option = get_option(array('option_id' => $option['option_id'], 'event_id' => $_GET['event_id']));
+                if($db_option['type']==$option['type'])
+                {
+                    if($db_option['type']=='Select')
+                    {
+                        $found=false;
+                        foreach(json_decode($db_option['specifications']) as $specification)
+                        {
+                            if($specification->name == $option['complement'])
+                            {
+                                $found=true;
+                                break;
+                            }
+                        }
+                        if(!$found)
+                        {
+                            $error=true;
+                            add_error_to_ajax_response("Le nom de la sous-option est faux");
+                        }
+                    }
+                }
+                else
+                {
+                    $error = true;
+                    add_error_to_ajax_response("Le type indiqué est faux.");
+                }
+            }
+            else
+            {
+                $error = true;
+                add_error_to_ajax_response("Le participant a déjà cette option.");
+            }
+        }
+        else
+        {
+            $error = true;
+            add_error_to_ajax_response("Vous n'etes pas censé ajouter cette option.");
+        }
+    }
+    return !$error;
+}

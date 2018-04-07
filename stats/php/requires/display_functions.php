@@ -100,7 +100,7 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
     }
 }
 
-function display_liste_head($specification="", $id=true, $status=false, $price=true, $email=false, $telephone=true, $guest_number=false, $options=true, $edit=true, $add_guest=true, $bracelet=true, $date_inscription=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
+function display_liste_head($specification="", $id=true, $status=false, $price=true, $email=false, $telephone=true, $guest_number=false, $options=true, $edit=true, $additions=true, $bracelet=true, $date_inscription=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
 {
 /**
  *
@@ -119,13 +119,13 @@ function display_liste_head($specification="", $id=true, $status=false, $price=t
     }
     if(!$Auth->hasRole('admin'))
     {
-        $add_guest = false;
+        $additions = false;
     }
 
     if($specification == 'info_icam')
     {
         $edit = false;
-        $add_guest = false;
+        $additions = false;
     }
     elseif($specification == 'info_invite')
     {
@@ -134,18 +134,18 @@ function display_liste_head($specification="", $id=true, $status=false, $price=t
         $guest_number = false;
         $pending_indicator = false;
         $edit = false;
-        $add_guest = false;
+        $additions = false;
     }
     elseif($specification == 'link_icam')
     {
-        $add_guest = false;
+        $additions = false;
     }
     elseif($specification == 'link_invite')
     {
         $email = false;
         $telephone = false;
         $guest_number = false;
-        $add_guest = false;
+        $additions = false;
         $pending_indicator = false;
     }
     ?>
@@ -167,7 +167,7 @@ function display_liste_head($specification="", $id=true, $status=false, $price=t
         <?php if($guest_info) { ?> <th scope="col">Invités</th> <?php } ?>
         <?php if($pending_indicator) { ?> <th scope="col">Attente</th> <?php } ?>
         <?php if($edit) { ?> <th scope="col">Editer</th> <?php } ?>
-        <?php if($add_guest) { ?> <th scope="col">Ajouter invité</th> <?php } ?>
+        <?php if($additions) { ?> <th scope="col">Ajouts</th> <?php } ?>
     <?php
 }
 
@@ -266,7 +266,7 @@ function link_to_edit_reservation($participant)
     </td>
     <?php
 }
-function link_to_guest_addition($participant)
+function links_to_various_addition($participant)
 {
     $event_id = $_GET['event_id'];
     ?>
@@ -276,6 +276,9 @@ function link_to_guest_addition($participant)
             <span class="glyphicon glyphicon-plus"></span>
         </a>
         <?php } ?>
+        <a class="btn btn-primary" href="ajout_options.php?event_id=<?=$event_id?>&participant_id=<?=$participant['participant_id']?>">
+            <span class="glyphicon glyphicon-gift"></span>
+        </a>
     </td>
     <?php
 }
@@ -283,13 +286,13 @@ function link_to_guest_addition($participant)
 function display_promo($promo)
 {
     $promo_still_student = get_promo_status($promo);
-    $class = $promo == 'Invités' ? 'warning' : ($promo_still_student==1 ? 'info' : 'primary');
+    $class = $promo == 'Invités' ? 'warning' : ($promo_still_student==1 ? 'success' : 'info');
     ?>
     <td class="<?=$class?>"> <?=$promo?> </td>
     <?php
 }
 
-function display_participant_info($participant, $specification="", $id=true, $status=false, $price=true, $email=false, $telephone=true, $guest_number=false, $options=true, $edit=true, $add_guest=true, $bracelet=true, $date_inscription=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
+function display_participant_info($participant, $specification="", $id=true, $status=false, $price=true, $email=false, $telephone=true, $guest_number=false, $options=true, $edit=true, $additions=true, $bracelet=true, $date_inscription=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
 {
     global $Auth;
     if(!$Auth->hasRole('super-admin'))
@@ -298,13 +301,13 @@ function display_participant_info($participant, $specification="", $id=true, $st
     }
     if(!$Auth->hasRole('admin'))
     {
-        $add_guest = false;
+        $additions = false;
     }
 
     if($specification == 'info_icam')
     {
         $edit = false;
-        $add_guest = false;
+        $additions = false;
     }
     elseif($specification == 'info_invite')
     {
@@ -313,18 +316,18 @@ function display_participant_info($participant, $specification="", $id=true, $st
         $guest_number = false;
         $pending_indicator = false;
         $edit = false;
-        $add_guest = false;
+        $additions = false;
     }
     elseif($specification == 'link_icam')
     {
-        $add_guest = false;
+        $additions = false;
     }
     elseif($specification == 'link_invite')
     {
         $email = false;
         $telephone = false;
         $guest_number = false;
-        $add_guest = false;
+        $additions = false;
         $pending_indicator = false;
     }
     ?>
@@ -344,7 +347,7 @@ function display_participant_info($participant, $specification="", $id=true, $st
         <?= $guest_info ? display_guest_infos($participant) : "" ?>
         <?= $pending_indicator ? display_pending_reservations($participant) : "" ?>
         <?= $edit ? link_to_edit_reservation($participant) : "" ?>
-        <?= $add_guest ? link_to_guest_addition($participant) : "" ?>
+        <?= $additions ? links_to_various_addition($participant) : "" ?>
     </tr>
     <?php
 }
@@ -365,4 +368,51 @@ function one_row_participant_table($participant, $specification="")
         </section>
     </div>
     <?php
+}
+
+function checkbox_form_basic($option)
+{
+    ?>
+    <div class="checkbox_option form-check">
+        <input class="form-check-input has_option" name="has_option" type="checkbox" value="<?=$option['specifications']->scoobydoo_article_id?>" >
+        <label class="form-check-label">
+            <span class="option_name"><?= htmlspecialchars($option['name']) ?></span>
+            <button class="btn option_tooltip" data-container="body" data-toggle="popover" title="Description de l'option : " data-content="<?= htmlspecialchars($option['description']) ?>" type="button">
+                <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
+            </button>
+        </label>
+        <input type="hidden" name="option_id" value="<?=$option['option_id']?>">
+        <input type="hidden" class="option_article_id" name="option_article_id" value="<?=$option['specifications']->scoobydoo_article_id?>">
+    </div>
+    <?php
+}
+function select_form_basic($option)
+{
+    ?>
+    <div class="select_option form-group">
+        <label>
+            <span><?= $option['name'] ?></span>
+            <button class="btn option_tooltip" type="button" data-container="body" data-toggle="popover" title="Description de l'option : " data-content="<?= htmlspecialchars($option['description']) ?>">
+                <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
+            </button>
+        </label>
+        <select class="form-control">
+            <option disabled selected style="display:none">Sélectionnez l'option que vous voulez offrir !</option>
+            <?php insert_select_options_no_checking($option); ?>
+        </select>
+        <input type="hidden" name="option_id" value="<?=$option['option_id']?>">
+    </div>
+    <?php
+}
+
+function insert_select_options_no_checking($option)
+{
+    foreach($option['specifications'] as $option_specification)
+    {
+        ?>
+        <option value="<?=$option_specification->name?>">
+            <?= htmlspecialchars($option_specification->name) . ' (' . htmlspecialchars($option_specification->price) . '€)' ?>
+        </option>
+        <?php
+    }
 }
