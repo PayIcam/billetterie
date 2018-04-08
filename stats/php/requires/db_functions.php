@@ -35,6 +35,14 @@ function get_current_guest_number_by_status($participant_id)
     return $current_guest_number->fetchAll();
 }
 
+function get_current_participants_number($event_id)
+{
+    global $db;
+    $count_promo = $db->prepare('SELECT COUNT(*) current_total_quota FROM participants WHERE event_id= :event_id and status= "V"');
+    $count_promo->execute(array("event_id" => $event_id));
+    return $count_promo->fetch()['current_total_quota'];
+}
+
 function get_promo_guest_number($ids)
 {
     global $db;

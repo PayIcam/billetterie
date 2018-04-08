@@ -25,17 +25,10 @@ function get_promo_specification_details($promo_details)
     return current($promos_query->fetchAll());
 }
 
-function get_current_option_quota($ids)
-{
-    global $db;
-    $count_promo = $db->prepare('SELECT COUNT(*) current_option_quota FROM participant_has_options WHERE event_id= :event_id and option_id= :option_id and status= "V"');
-    $count_promo->execute($ids);
-    return $count_promo->fetch()['current_option_quota'];
-}
 function get_current_select_option_quota($data)
 {
     global $db;
-    $count_promo = $db->prepare('SELECT COUNT(*) current_option_quota FROM participant_has_options WHERE event_id= :event_id and option_id= :option_id and option_details REGEXP :subname and status= "V"');
+    $count_promo = $db->prepare('SELECT COUNT(*) current_option_quota FROM participant_has_options WHERE event_id= :event_id and option_id= :option_id and option_details REGEXP :subname and status IN("V", "W")');
     $count_promo->execute($data);
     return $count_promo->fetch()['current_option_quota'];
 }

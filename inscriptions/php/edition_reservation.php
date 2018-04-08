@@ -51,7 +51,7 @@ if(!empty($_POST))
 
                     $participant_additions = count($new_guests_data);
 
-                    if(get_current_participants_number($event_id) + $participant_additions > $event['total_quota'])
+                    if(get_whole_current_quota($event_id) + $participant_additions > $event['total_quota'])
                     {
                         add_error_to_ajax_response('Trop de participants sont rajoutés pour le quota général.');
                         echo json_encode($ajax_json_response);
@@ -60,7 +60,15 @@ if(!empty($_POST))
 
                     $guests_specifications = get_promo_specification_details(array("event_id" => $event_id, "promo_id" => get_promo_id('Invités'), "site_id" => $site_id));
 
-                    if(get_current_promo_site_quota(array("event_id" => $event_id, "promo_id" => get_promo_id('Invités'), "site_id" => $site_id)) + $participant_additions > $guests_specifications['quota'] && $participant_additions>0)
+                    $current_guests_quota = get_current_promo_site_quota(array("event_id" => $event_id, "promo_id" => get_promo_id('Invités'), "site_id" => $site_id));
+
+                    if($current_guests_quota > $guests_specifications['quota'] && $participant_additions>0)
+                    {
+                        add_error_to_ajax_response("Le quota pour les invités de " . get_site_name($site_id) . " est déjà plein. ");
+                        echo json_encode($ajax_json_response);
+                        die();
+                    }
+                    elseif($current_guests_quota + $participant_additions > $guests_specifications['quota'] && $participant_additions>0)
                     {
                         add_error_to_ajax_response("Le quota pour les invités de " . get_site_name($site_id) . " est déjà plein. ");
                         echo json_encode($ajax_json_response);

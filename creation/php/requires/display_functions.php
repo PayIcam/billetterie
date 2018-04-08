@@ -69,7 +69,7 @@ function display_fundations_events_admin($fundation)
     <div class="col-sm-4">
         <a data-toggle="collapse" href="#button_links_<?=$fundation->fun_id?>" role="button" aria-expanded="false" aria-controls="#button_links_<?=$fundation->fun_id?>"><h2><?=htmlspecialchars($fundation->name)?></h2></a>
         <div class="collapse" id="button_links_<?=$fundation->fun_id?>">
-            <a href="new_ticketing.php?fundation_id=<?=$fundation->fun_id?>" class="btn btn-primary"><h5>Créer une billetterie</h5></a><br><br>
+            <a href="new_ticketing.php?fundation_id=<?=$fundation->fun_id?>" class="btn btn-success"><h5>Créer une billetterie</h5></a><br><br>
             <?php
             foreach(get_fundations_events($fundation->fun_id) as $event)
             {

@@ -408,7 +408,7 @@ function are_correct_options()
                     {
                         if(get_option(array('event_id' => $_GET['event_id'], 'option_id' => $option->option_id))['is_mandatory']==0)
                         {
-                            if(a_participant_would_have_to_pay_obliged_option(array('event_id' => $_GET['event_id'], 'option_id' => $option->option_id)))
+                            if(a_participant_would_have_to_pay_obliged_option(array('event_id' => $_GET['event_id'], 'option_id' => $option->option_id)) && get_current_option_quota(array('event_id' => $event_id, 'option_id' => $option->option_id)) < $option->quota)
                             {
                                 add_error($option_name . "Il est impossible de forcer cette option à être obligatoire après que la billetterie ait commencé. En effet, certains participants ont déjà payé leur place sans prendre cette option. Si vous souhaitez tout de même faire ce changement, venez voir l'organisation de PayIcam pour en discuter.");
                                 $error = true;
@@ -416,7 +416,7 @@ function are_correct_options()
                         }
                         else
                         {
-                            if(a_participant_would_have_to_pay_obliged_option(array('event_id' => $_GET['event_id'], 'option_id' => $option->option_id)))
+                            if(a_participant_would_have_to_pay_obliged_option(array('event_id' => $_GET['event_id'], 'option_id' => $option->option_id)) && get_current_option_quota(array('event_id' => $event_id, 'option_id' => $option->option_id)) < $option->quota)
                             {
                                 add_error($option_name . "Cette option était déjà obligatoire, mais il y a un problème... Un participant a accès à cette option, sa place, mais n'a pas cette option, supposée obligatoire. Contactez PayIcam si vous voyez ce message.");
                                 $error = true;

@@ -80,7 +80,7 @@ function get_specification_details($event_id)
 function get_current_promo_site_quota($ids)
 {
     global $db;
-    $count_promo = $db->prepare('SELECT COUNT(*) current_promo_quota FROM participants WHERE event_id= :event_id and site_id= :site_id and promo_id= :promo_id and status= "V"');
+    $count_promo = $db->prepare('SELECT COUNT(*) current_promo_quota FROM participants WHERE event_id= :event_id and site_id= :site_id and promo_id= :promo_id and status IN("V", "W")');
     $count_promo->execute($ids);
     return $count_promo->fetch()['current_promo_quota'];
 }
@@ -186,10 +186,10 @@ function event_has_option($ids)
     return empty($option) ? false : true;
 }
 
-function get_current_participants_number($event_id)
+function get_whole_current_quota($event_id)
 {
     global $db;
-    $count_promo = $db->prepare('SELECT COUNT(*) current_total_quota FROM participants WHERE event_id= :event_id and status= "V"');
+    $count_promo = $db->prepare('SELECT COUNT(*) current_total_quota FROM participants WHERE event_id= :event_id and status IN("V", "W")');
     $count_promo->execute(array("event_id" => $event_id));
     return $count_promo->fetch()['current_total_quota'];
 }
@@ -253,4 +253,11 @@ function get_participant_option($ids)
     $option_query = $db->prepare('SELECT * FROM participant_has_options WHERE event_id=:event_id and option_id=:option_id and participant_id=:participant_id and status="V" ');
     $option_query->execute($ids);
     return $option_query->fetch();
+}
+function get_current_option_quota($ids)
+{
+    global $db;
+    $count_promo = $db->prepare('SELECT COUNT(*) current_option_quota FROM participant_has_options WHERE event_id= :event_id and option_id= :option_id and status IN("V", "W")');
+    $count_promo->execute($ids);
+    return $count_promo->fetch()['current_option_quota'];
 }

@@ -42,7 +42,7 @@ if(isset($_GET['event_id']))
 
         if(!empty($promo_specifications))
         {
-            $current_participants_number = get_current_participants_number($event_id);
+            $current_participants_number = get_whole_current_quota($event_id);
             $total_quota = $event['total_quota'];
             $options = get_all_options($event_id);
 
