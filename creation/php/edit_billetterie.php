@@ -292,6 +292,6 @@ if(!empty($_POST))
 }
 else
 {
-    set_alert_style();
+    set_alert_style("Erreur routing");
     add_error('Il y a eu un problème, la variable POST n\'est même pas définie...');
 }

@@ -45,18 +45,20 @@ if(!empty($_POST))
             }
             else
             {
+                set_alert_style("Erreur fonctionnalité");
                 add_error("Ce participant n'existe pas.");
             }
         }
     }
     else
     {
+        set_alert_style("Erreur routing");
         add_error("Il manque des paramètres.");
     }
 }
 else
 {
-    set_alert_style();
+    set_alert_style("Erreur routing");
     add_error("Vous n'avez pas défini de données");
 }
 

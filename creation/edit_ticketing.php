@@ -40,6 +40,6 @@ if(isset($_GET['event_id']))
 }
 else
 {
-    set_alert_style();
+    set_alert_style("Erreur routing");
     add_error("event_id n'est pas défini en GET");
 }

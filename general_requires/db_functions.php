@@ -32,7 +32,7 @@ function event_id_is_correct($event_id)
             }
             else
             {
-                set_alert_style();
+                set_alert_style("Erreur routing");
                 add_error($message);
             }
         }
@@ -47,7 +47,7 @@ function event_id_is_correct($event_id)
         }
         else
         {
-            set_alert_style();
+            set_alert_style("Erreur routing");
             add_error($message);
         }
         return false;
@@ -61,7 +61,7 @@ function event_id_is_correct($event_id)
         }
         else
         {
-            set_alert_style();
+            set_alert_style("Erreur routing");
             add_error($message);
         }
         return false;

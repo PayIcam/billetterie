@@ -48,25 +48,25 @@ if(isset($_GET['event_id']))
                 }
                 else
                 {
-                    set_alert_style();
+                    set_alert_style("Quota promo rempli");
                     add_error('Toutes les places proposées à votre promo ont été vendues...');
                 }
             }
             else
             {
-                set_alert_style();
+                set_alert_style("Quota total rempli");
                 add_error("Toutes les places ont été vendues...");
             }
         }
         else
         {
-            set_alert_style();
+            set_alert_style("Erreur routing");
             add_error("Vous n'avez pas accès à cet évènement. C'est une erreur qu'il vous soit apparu.");
         }
     }
 }
 else
 {
-    set_alert_style();
+    set_alert_style("Erreur routing");
     add_error("Le GET n'est pas défini, vous n'avez pas eu la bonne url.");
 }

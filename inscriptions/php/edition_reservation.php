@@ -205,6 +205,6 @@ if(!empty($_POST))
 }
 else
 {
-    set_alert_style();
+    set_alert_style("Erreur routing");
     add_error("Vous n'êtes pas censés appeler la page directement.");
 }

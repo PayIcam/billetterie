@@ -27,13 +27,13 @@ if(isset($_GET['event_id']))
                 }
                 else
                 {
-                    set_alert_style();
+                    set_alert_style("Erreur fonctionnalité");
                     add_error("Ce n'est pas un Icam à qui vous essayez d'ajouter des invités");
                 }
             }
             else
             {
-                set_alert_style();
+                set_alert_style("Erreur fonctionnalité");
                 add_error("Les informations transmises ne correspondent pas.");
             }
         }
@@ -45,6 +45,6 @@ if(isset($_GET['event_id']))
 }
 else
 {
-    set_alert_style();
+    set_alert_style("Erreur routing");
     add_error("Il manque des paramètres.");
 }

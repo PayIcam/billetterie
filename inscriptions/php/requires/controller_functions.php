@@ -527,7 +527,7 @@ function prevent_displaying_on_wrong_ticketing_state($ticketing_state)
                 }
                 else
                 {
-                    set_alert_style();
+                    set_alert_style("Erreur ticketing state");
                     add_error($message);
                 }
                 die();
@@ -543,7 +543,7 @@ function prevent_displaying_on_wrong_ticketing_state($ticketing_state)
                 }
                 else
                 {
-                    set_alert_style();
+                    set_alert_style("Erreur ticketing state");
                     add_error($message);
                 }
                 die();
@@ -565,7 +565,7 @@ function check_if_event_should_be_displayed($event,$promo_id, $site_id, $email)
         }
         else
         {
-            set_alert_style();
+            set_alert_style("Erreur évènement non actif");
             add_error("L'évènement n'est pas encore actif");
         }
         die();
@@ -622,7 +622,7 @@ function handle_pending_reservations($login, $event_id)
             }
             else
             {
-                set_alert_style();
+                set_alert_style("Erreur transaction attente");
                 cancel_or_finish_transaction($transaction['payicam_transaction_url'], $event_id);
             }
             die();

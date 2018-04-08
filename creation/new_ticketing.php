@@ -18,6 +18,6 @@ if(isset($_GET['fundation_id']))
 }
 else
 {
-    set_alert_style();
+    set_alert_style("Erreur routing");
     add_error("Vous n'avez pas défini l'id de la fondation en GET");
 }

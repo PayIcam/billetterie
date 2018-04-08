@@ -99,14 +99,14 @@ function add_error_to_ajax_response($message)
     $ajax_json_response['message'] .= $html_code_error;
 }
 
-function set_alert_style()
+function set_alert_style($title)
 {
     global $_CONFIG, $is_super_admin, $event_id;
     ?>
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Erreur Billetterie</title>
+        <title><?=$title?></title>
         <link rel="stylesheet" href="../../css/format.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
