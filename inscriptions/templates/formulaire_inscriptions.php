@@ -32,7 +32,7 @@
                         form_guest($event, $guests_specifications, $options, $i, $guest_event_data);
                         if($i%2==0)
                         {
-                            echo '</div><div class="row">';
+                            echo '</div><hr><div class="row">';
                         }
                     }
                     ?>

@@ -285,12 +285,14 @@ function is_correct_event_accessibility()
 
 function are_correct_options()
 {
+    global $event_id;
     global $options;
     global $event;
     $error = false;
 
     foreach($options as &$option)
     {
+        $option_name = isset($option->name) ? $option->name . ' : ' : "" ;
         if(!is_object($option))
         {
             add_error("Les informations sur une des options sont mal passées. Ce n'est même pas un objet.");
@@ -306,175 +308,242 @@ function are_correct_options()
                 continue;
             }
         }
-        if(!is_string($option->name))
+        if(isset($option->name))
         {
-            add_error("Le nom de l'option n'est même pas une chaine de caractères");
-            $error = true;
-        }
-        elseif(strlen($option->name)>45)
-        {
-            add_error("Est-il nécessaire d'avoir un nom si long pour votre option ?");
-            $error = true;
-        }
-        elseif(strlen($event->name . " Option " . $option->name)>100)
-        {
-            add_error("Le nom combiné de votre évènement et de votre option est trop grand... Enlevez quelques caractères là ou vous pouvez. La description est faire pour ça !");
-            $error = true;
-        }
-        if(!is_string($option->description))
-        {
-            add_error("La description de l'option n'est même pas une chaine de caractères");
-            $error = true;
-        }
-        if($option->quota=='')
-        {
-            $option->quota=null;
-        }
-        elseif(!is_numeric($option->quota))
-        {
-            add_error("Le quota d'une des options n'est même pas numérique");
-            $error = true;
-        }
-        elseif(!is_an_integer(1*$option->quota))
-        {
-            add_error("Le quota d'une des options n'est même pas entier");
-            $error = true;
-        }
-        if(!in_array($option->is_active, [0,1]))
-        {
-            add_error("Les infos à propos de l'activation ou non de l'option sont mal passées.");
-            $error = true;
-        }
-        if($option->type=='Checkbox')
-        {
-            $option->is_mandatory = 0;
-            if(!is_numeric($option->type_specification->price))
+            if(!is_string($option->name))
             {
-                add_error("Le prix d'une option checkbox n'est même pas numérique");
+                add_error($option_name . "Le nom de l'option n'est même pas une chaine de caractères");
                 $error = true;
             }
-            elseif(!is_an_integer(100*$option->type_specification->price))
+            elseif(strlen($option->name)>45)
             {
-                add_error("Le prix d'une option checkbox est défini avec une précision plus grande que le centime, ou n'est même pas positif");
+                add_error($option_name . "Est-il nécessaire d'avoir un nom si long pour votre option ?");
+                $error = true;
+            }
+            elseif(strlen($event->name . " Option " . $option->name)>100)
+            {
+                add_error($option_name . "Le nom combiné de votre évènement et de votre option est trop grand... Enlevez quelques caractères là ou vous pouvez. La description est faire pour ça !");
                 $error = true;
             }
         }
-        elseif($option->type=='Select')
+        else
         {
-            if(!in_array($option->is_mandatory, [0,1]))
+            $error = true;
+            add_error($option_name . "Impossible de trouver le nom de l'option");
+        }
+        if(isset($option->description))
+        {
+            if(!is_string($option->description))
             {
-                add_error("Les infos à propos de la facultativité ou non de l'option sont mal passées.");
+                add_error($option_name . "La description de l'option n'est même pas une chaine de caractères");
                 $error = true;
             }
-            elseif($option->is_mandatory==1)
+        }
+        else
+        {
+            add_error($option_name . "Impossible de trouver la description de l'option");
+            $error = true;
+        }
+        if(isset($option->quota))
+        {
+            if($option->quota=='')
             {
-                if(get_option(array('event_id' => $_GET['event_id'], 'option_id' => $option->option_id))['is_mandatory']==0)
+                $option->quota=null;
+            }
+            elseif(!is_numeric($option->quota))
+            {
+                add_error($option_name . "Le quota d'une des options n'est même pas numérique");
+                $error = true;
+            }
+            elseif(!is_an_integer(1*$option->quota))
+            {
+                add_error($option_name . "Le quota d'une des options n'est même pas entier");
+                $error = true;
+            }
+        }
+        else
+        {
+            $error = true;
+            add_error($option_name . "Impossible de trouver le quota de l'option");
+        }
+        if(isset($option->is_active))
+        {
+            if(!in_array($option->is_active, [0,1]))
+            {
+                add_error($option_name . "Les infos à propos de l'activation ou non de l'option sont mal passées.");
+                $error = true;
+            }
+        }
+        else
+        {
+            $error = true;
+            add_error($option_name . "Impossible de trouver l'activité ou non de l'option");
+        }
+        if(isset($option->type))
+        {
+            if($option->type=='Checkbox')
+            {
+                $option->is_mandatory = 0;
+                if(!is_numeric($option->type_specification->price))
                 {
-                    if(a_participant_would_have_to_pay_obliged_option(array('event_id' => $_GET['event_id'], 'option_id' => $option->option_id)))
+                    add_error($option_name . "Le prix d'une option checkbox n'est même pas numérique");
+                    $error = true;
+                }
+                elseif(!is_an_integer(100*$option->type_specification->price))
+                {
+                    add_error($option_name . "Le prix d'une option checkbox est défini avec une précision plus grande que le centime, ou n'est même pas positif");
+                    $error = true;
+                }
+            }
+            elseif($option->type=='Select')
+            {
+                if(!in_array($option->is_mandatory, [0,1]))
+                {
+                    add_error($option_name . "Les infos à propos de la facultativité ou non de l'option sont mal passées.");
+                    $error = true;
+                }
+                elseif($option->is_mandatory==1)
+                {
+                    if(isset($option->option_id))
                     {
-                        add_error("Il est impossible de forcer cette option à être obligatoire après que la billetterie ait commencé. En effet, certains participants ont déjà payé leur place sans prendre cette option. Si vous souhaitez tout de même faire ce changement, venez voir l'organisation de PayIcam pour en discuter.");
-                        $error = true;
-                    }
-                }
-            }
-            if(count($option->type_specification)<=1)
-            {
-                add_error("Il n'y a qu'une seule option select, ce n'est pas normal. Autant utiliser une checkbox.");
-                $error = true;
-            }
-
-            foreach($option->type_specification as &$suboption)
-            {
-                if(!is_object($suboption))
-                {
-                    add_error("Les informations sur une des sous-options select sont mal passées. Ce n'est même pas un objet.");
-                    $error = true;
-                    continue;
-                }
-                if(!is_string($suboption->name))
-                {
-                    add_error("Le nom d'une sous-option select n'est même pas une chaine de caractères");
-                    $error = true;
-                }
-                elseif(!strlen($suboption->name)>40)
-                {
-                    add_error("Est-il nécessaire d'avoir une sous-option si longue ?");
-                    $error = true;
-                }
-                elseif(strlen($event->name . " Option " . $option->name . " Choix " . $suboption->name)>100)
-                {
-                    add_error("Le nom combiné de votre évènement, de votre option, et de votre sous-option est trop grand... Enlevez quelques caractères là ou vous pouvez.");
-                    $error = true;
-                }
-                if(!is_numeric($suboption->price))
-                {
-                    add_error("Le prix d'une sous-option select n'est même pas numérique");
-                    $error = true;
-                }
-                elseif(!is_an_integer(100*$suboption->price))
-                {
-                    add_error("Le prix d'une sous-option select est défini avec une précision plus grande que le centime, ou n'est même pas positif");
-                    $error = true;
-                }
-                if(!is_numeric($suboption->quota))
-                {
-                    if(in_array($suboption->quota, [null, '']))
-                    {
-                        $suboption->quota = null;
+                        if(get_option(array('event_id' => $_GET['event_id'], 'option_id' => $option->option_id))['is_mandatory']==0)
+                        {
+                            if(a_participant_would_have_to_pay_obliged_option(array('event_id' => $_GET['event_id'], 'option_id' => $option->option_id)))
+                            {
+                                add_error($option_name . "Il est impossible de forcer cette option à être obligatoire après que la billetterie ait commencé. En effet, certains participants ont déjà payé leur place sans prendre cette option. Si vous souhaitez tout de même faire ce changement, venez voir l'organisation de PayIcam pour en discuter.");
+                                $error = true;
+                            }
+                        }
+                        else
+                        {
+                            if(a_participant_would_have_to_pay_obliged_option(array('event_id' => $_GET['event_id'], 'option_id' => $option->option_id)))
+                            {
+                                add_error($option_name . "Cette option était déjà obligatoire, mais il y a un problème... Un participant a accès à cette option, sa place, mais n'a pas cette option, supposée obligatoire. Contactez PayIcam si vous voyez ce message.");
+                                $error = true;
+                            }
+                        }
                     }
                     else
                     {
-                        add_error("Le quota d'une sous-option select n'est même pas numérique");
+                        if(participants_already_took_places($event_id))
+                        {
+                            add_error($option_name . "Il est impossible d'ajouter cette option. En effet, au moins un participant a déjà une place ou une place en attente. Il faut absolument définir les options obligatoires au TOUT début. Contactez PayIcam très vite s'il faut absolument ajouter cette option OBLIGATOIRE.");
+                            $error = true;
+                        }
+                    }
+                }
+                if(count($option->type_specification)<=1)
+                {
+                    add_error($option_name .  "Il n'y a qu'une seule option select, ce n'est pas normal. Autant utiliser une checkbox.");
+                    $error = true;
+                }
+
+                foreach($option->type_specification as &$suboption)
+                {
+                    if(!is_object($suboption))
+                    {
+                        add_error($option_name .  "Les informations sur une des sous-options select sont mal passées. Ce n'est même pas un objet.");
+                        $error = true;
+                        continue;
+                    }
+                    if(!is_string($suboption->name))
+                    {
+                        add_error($option_name .  "Le nom d'une sous-option select n'est même pas une chaine de caractères");
+                        $error = true;
+                    }
+                    elseif(!strlen($suboption->name)>40)
+                    {
+                        add_error($option_name .  "Est-il nécessaire d'avoir une sous-option si longue ?");
+                        $error = true;
+                    }
+                    elseif(strlen($event->name . " Option " . $option->name . " Choix " . $suboption->name)>100)
+                    {
+                        add_error($option_name .  "Le nom combiné de votre évènement, de votre option, et de votre sous-option est trop grand... Enlevez quelques caractères là ou vous pouvez.");
+                        $error = true;
+                    }
+                    if(!is_numeric($suboption->price))
+                    {
+                        add_error($option_name .  "Le prix d'une sous-option select n'est même pas numérique");
+                        $error = true;
+                    }
+                    elseif(!is_an_integer(100*$suboption->price))
+                    {
+                        add_error($option_name .  "Le prix d'une sous-option select est défini avec une précision plus grande que le centime, ou n'est même pas positif");
+                        $error = true;
+                    }
+                    if(!is_numeric($suboption->quota))
+                    {
+                        if(in_array($suboption->quota, [null, '']))
+                        {
+                            $suboption->quota = null;
+                        }
+                        else
+                        {
+                            add_error($option_name .  "Le quota d'une sous-option select n'est même pas numérique");
+                            $error = true;
+                        }
+                    }
+                    elseif(!is_an_integer(1*$suboption->quota))
+                    {
+                        add_error($option_name .  "Le quota d'une sous-option select n'est pas un entier");
                         $error = true;
                     }
                 }
-                elseif(!is_an_integer(1*$suboption->quota))
+            }
+            else
+            {
+                add_error($option_name .  "Le type de l'option n'est pas bien défini.");
+                $error = true;
+            }
+        }
+        else
+        {
+            $error = true;
+            add_error($option_name . "Impossible de trouver le type de l'option");
+        }
+        if(isset($option->accessibility))
+        {
+            if(count($option->accessibility)==0)
+            {
+                add_error($option_name . "Aucune promo n'a le droit à cette option.");
+                $error = true;
+            }
+            foreach($option->accessibility as &$promo)
+            {
+                if(!is_string($promo->site))
                 {
-                    add_error("Le quota d'une sous-option select n'est pas un entier");
+                    add_error($option_name . "Le nom du site n'est même pas une chaine de caractères.");
                     $error = true;
+                }
+                else
+                {
+                    $promo->site_id = get_site_id($promo->site);
+                    if(empty($promo->site_id))
+                    {
+                        add_error($option_name . "Aucun site ne correspond au site donné. (".$promo->site.")");
+                        $error = true;
+                    }
+                }
+                if(!is_string($promo->promo))
+                {
+                    add_error($option_name . "Le nom du promo n'est même pas une chaine de caractères.");
+                    $error = true;
+                }
+                else
+                {
+                    $promo->promo_id = get_promo_id($promo->promo);
+                    if(empty($promo->promo_id))
+                    {
+                        add_error($option_name . "Aucun promo ne correspond à la promo donné. (".$promo->promo.")");
+                        $error = true;
+                    }
                 }
             }
         }
         else
         {
-            add_error("Le type de l'option n'est pas bien défini.");
             $error = true;
-        }
-        if(count($option->accessibility)==0)
-        {
-            add_error("Aucune promo n'a le droit à cette option.");
-            $error = true;
-        }
-        foreach($option->accessibility as &$promo)
-        {
-            if(!is_string($promo->site))
-            {
-                add_error("Le nom du site n'est même pas une chaine de caractères.");
-                $error = true;
-            }
-            else
-            {
-                $promo->site_id = get_site_id($promo->site);
-                if(empty($promo->site_id))
-                {
-                    add_error("Aucun site ne correspond au site donné. (".$promo->site.")");
-                    $error = true;
-                }
-            }
-            if(!is_string($promo->promo))
-            {
-                add_error("Le nom du promo n'est même pas une chaine de caractères.");
-                $error = true;
-            }
-            else
-            {
-                $promo->promo_id = get_promo_id($promo->promo);
-                if(empty($promo->promo_id))
-                {
-                    add_error("Aucun promo ne correspond à la promo donné. (".$promo->promo.")");
-                    $error = true;
-                }
-            }
+            add_error($option_name . "Impossible de trouver l'accessibilité de l'option");
         }
     }
     return !$error;

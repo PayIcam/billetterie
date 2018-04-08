@@ -171,3 +171,11 @@ function a_participant_would_have_to_pay_obliged_option($ids)
     $count_option->execute($ids);
     return $count_option->fetch()['COUNT(*)'] == 0 ? false : true;
 }
+
+function participants_already_took_places($event_id)
+{
+    global $db;
+    $count_promo = $db->prepare('SELECT COUNT(*) current_total_quota FROM participants WHERE event_id= :event_id and status IN("V", "W")');
+    $count_promo->execute(array("event_id" => $event_id));
+    return $count_promo->fetch()['current_total_quota'] == 0 ? false : true;
+}

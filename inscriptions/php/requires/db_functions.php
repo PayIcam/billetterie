@@ -8,6 +8,15 @@ function promo_has_option($ids)
     $option_accessibility = $option_accessibility->fetchAll();
     return count($option_accessibility)==1 ? true : false;
 }
+
+function get_all_options($event_id)
+{
+    global $db;
+    $option_query = $db->prepare('SELECT * FROM options WHERE event_id=:event_id');
+    $option_query->execute(array('event_id'=>$event_id));
+    return $option_query->fetchAll();
+}
+
 function get_promo_specification_details($promo_details)
 {
     global $db;

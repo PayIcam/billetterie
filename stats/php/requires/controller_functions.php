@@ -165,10 +165,16 @@ function check_prepare_addition_data($data, $icam_site_id)
         }
         if(isset($data['bracelet_identification']))
         {
-            if(!count($data['bracelet_identification']) > 25)
+            $data['bracelet_identification'] = $data['bracelet_identification'] == '' ? null : $data['bracelet_identification'];
+            if(count($data['bracelet_identification']) > 25)
             {
                 $error = true;
                 add_error_to_ajax_response("L'identifiant de bracelet de votre nouveau participant est trop long.");
+            }
+            elseif(!bracelet_identification_is_available(array('bracelet_identification' => $data['bracelet_identification'], 'event_id' => $_GET['event_id'])))
+            {
+                $error = true;
+                add_error_to_ajax_response('Ce bracelet est déjà pris.');
             }
         }
         else

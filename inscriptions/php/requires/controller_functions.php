@@ -34,10 +34,6 @@ function option_form($option, $promo_id, $site_id, $participant_id=-1)
                     }
                 }
             }
-            else
-            {
-                add_error("Il n'y a plus de places pour l'option ". $option['name']. " !<br>");
-            }
         }
     }
 }

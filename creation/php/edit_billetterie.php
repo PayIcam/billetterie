@@ -115,7 +115,7 @@ if(!empty($_POST))
 
     //options & its accessibilities
 
-    $previous_options = get_options($event_id);
+    $previous_options = get_current_options($event_id);
 
     foreach($options as &$option)
     {

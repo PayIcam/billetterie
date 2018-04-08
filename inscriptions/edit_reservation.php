@@ -40,17 +40,14 @@ if(isset($_GET['event_id']))
 
         $promo_specifications = get_promo_specification_details(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id));
 
-        if(count($promo_specifications) > 0)
+        if(!empty($promo_specifications))
         {
             $current_participants_number = get_current_participants_number($event_id);
             $total_quota = $event['total_quota'];
-
-            $options = get_options($event_id);
+            $options = get_all_options($event_id);
 
             $guests_specifications = get_promo_specification_details(array('event_id' => $event_id, 'promo_id' => get_promo_id('Invités'), 'site_id' => $site_id));
-
             $number_previous_guests = count($guests_event_data);
-
             $new_guests_number = $promo_specifications['guest_number']>0 ? number_of_guests_to_be_displayed($promo_specifications, $guests_specifications, $current_participants_number, $total_quota, $number_previous_guests) : 0;
             $actual_guest_number = $number_previous_guests + $new_guests_number;
 

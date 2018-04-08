@@ -128,13 +128,20 @@ function get_all_events_id()
     $event_query->execute();
     return $event_query->fetchAll();
 }
-function get_options($event_id)
+function get_current_options($event_id)
 {
     global $db;
     $option_query = $db->prepare('SELECT * FROM options WHERE event_id=:event_id and is_removed=0');
     $option_query->execute(array('event_id'=>$event_id));
-    $options = $option_query->fetchAll();
-    return $options;
+    return $option_query->fetchAll();
+}
+
+function get_promo_options($ids)
+{
+    global $db;
+    $option_query = $db->prepare('SELECT * FROM options o LEFT JOIN promo_site_has_options psho ON o.option_id=psho.option_id WHERE o.event_id=:event_id and is_removed=0 and is_active=1 and promo_id=:promo_id and site_id=:site_id');
+    $option_query->execute($ids);
+    return $option_query->fetchAll();
 }
 
 function get_promos_events($ids)

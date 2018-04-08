@@ -23,7 +23,7 @@ if(isset($_GET['event_id']))
         $promos_specifications = get_specification_details($event_id);
         $removed_promos_specifications = get_removed_specification_details($event_id);
         $event_radios = get_event_radio_values($promos_specifications);
-        $options = get_options($event_id);
+        $options = get_current_options($event_id);
 
         if(count($options)>0)
         {

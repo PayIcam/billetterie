@@ -60,7 +60,7 @@ if(!empty($_POST))
 
                     $guests_specifications = get_promo_specification_details(array("event_id" => $event_id, "promo_id" => get_promo_id('Invités'), "site_id" => $site_id));
 
-                    if(get_current_promo_site_quota(array("event_id" => $event_id, "promo_id" => get_promo_id('Invités'), "site_id" => $site_id)) + $participant_additions > $guests_specifications['quota'])
+                    if(get_current_promo_site_quota(array("event_id" => $event_id, "promo_id" => get_promo_id('Invités'), "site_id" => $site_id)) + $participant_additions > $guests_specifications['quota'] && $participant_additions>0)
                     {
                         add_error_to_ajax_response("Le quota pour les invités de " . get_site_name($site_id) . " est déjà plein. ");
                         echo json_encode($ajax_json_response);

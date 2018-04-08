@@ -75,6 +75,18 @@ $(document).ready(function()
                 $("#submit_form").prop('disabled', 'disabled');
                 action_url = $('form').prop('action');
 
+                function error_ajax(jqXHR, textStatus,errorThrown)
+                {
+                    console.log(jqXHR);
+                    console.log();
+                    console.log(textStatus);
+                    console.log();
+                    console.log(errorThrown);
+                    add_error('La requête Ajax permettant de submit les informations et ajouter le participant a échoué');
+                    $("#submit_form").prop('disabled', '');
+                    $('.waiting').hide();
+                }
+
                 function ajax_success(data)
                 {
                     if(data.message=="L'ajout a bien été effectué")
@@ -92,21 +104,10 @@ $(document).ready(function()
                     }
                     else
                     {
-                        $("#alerts").append(data);
+                        $("#alerts").append(data.message);
                         $("#submit_form").prop('disabled', '');
                         $('.waiting').hide();
                     }
-                }
-                function error_ajax(jqXHR, textStatus,errorThrown)
-                {
-                    console.log(jqXHR);
-                    console.log();
-                    console.log(textStatus);
-                    console.log();
-                    console.log(errorThrown);
-                    add_error('La requête Ajax permettant de submit les informations et ajouter le participant a échoué');
-                    $("#submit_form").prop('disabled', '');
-                    $('.waiting').hide();
                 }
 
                 $.post(
@@ -138,11 +139,6 @@ $(document).ready(function()
                 //         $("#alerts").append(data);
                 //         $("#submit_form").prop('disabled', '');
                 //     }
-                // }
-                // function error_ajax()
-                // {
-                //     add_error('La requête Ajax permettant de submit les informations et ajouter la billetterie a échoué');
-                //     $("#submit_form").prop('disabled', '');
                 // }
 
                 // $.post(

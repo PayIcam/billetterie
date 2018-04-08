@@ -178,7 +178,14 @@ function count_status($data)
 function bracelet_identification_is_available($data)
 {
     global $db;
-    $count = $db->prepare('SELECT * FROM participants WHERE status="V" and event_id = :event_id and bracelet_identification=:bracelet_identification and participant_id != :participant_id');
+    if(isset($data['participant_id']))
+    {
+        $count = $db->prepare('SELECT * FROM participants WHERE status="V" and event_id = :event_id and bracelet_identification=:bracelet_identification and participant_id != :participant_id');
+    }
+    else
+    {
+        $count = $db->prepare('SELECT * FROM participants WHERE status="V" and event_id = :event_id and bracelet_identification=:bracelet_identification');
+    }
     $count->execute($data);
     return empty($count->fetch());
 }

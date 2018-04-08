@@ -143,6 +143,18 @@ function submit_inscriptions(submit)
     $('#message_submit').show();
     $("#button_submit_form").prop('disabled', 'disabled');
 
+    function error_ajax(jqXHR, textStatus, errorThrown)
+    {
+        console.log(jqXHR);
+        console.log();
+        console.log(textStatus);
+        console.log();
+        console.log(errorThrown);
+        $('#message_submit').hide();
+        $("#button_submit_form").prop('disabled', '');
+        add_error('La requête Ajax permettant de submit les informations et ajouter les participants a échoué');
+    }
+
     function ajax_success(data)
     {
         if(data.message=='Votre réservation a bien été prise en compte ! <br>Vous allez être redirigé pour payer !')
@@ -165,17 +177,6 @@ function submit_inscriptions(submit)
             $("#button_submit_form").prop('disabled', '');
             $("#alerts").append(data.message);
         }
-    }
-    function error_ajax(jqXHR, textStatus, errorThrown)
-    {
-        console.log(jqXHR);
-        console.log();
-        console.log(textStatus);
-        console.log();
-        console.log(errorThrown);
-        $('#message_submit').hide();
-        $("#button_submit_form").prop('disabled', '');
-        add_error('La requête Ajax permettant de submit les informations et ajouter les participants a échoué');
     }
 
     $.post(
@@ -211,12 +212,6 @@ function submit_inscriptions(submit)
     //         $("#button_submit_form").prop('disabled', '');
     //         $("#alerts").append(data);
     //     }
-    // }
-    // function error_ajax()
-    // {
-    //     $('#message_submit').hide();
-    //     $("#button_submit_form").prop('disabled', '');
-    //     add_error('La requête Ajax permettant de submit les informations et ajouter les participants a échoué');
     // }
 
     // $.post(

@@ -164,6 +164,18 @@ function prepare_edit_submit()
         $("#message_submit").show();
         $('#button_submit_form').prop('disabled', 'disabled');
 
+        function error_ajax(jqXHR, textStatus, errorThrown)
+        {
+            $('#message_submit').hide();
+            $('#button_submit_form').prop('disabled', '');
+            console.log(jqXHR);
+            console.log();
+            console.log(textStatus);
+            console.log();
+            console.log(errorThrown);
+            add_error('La requête Ajax permettant de submit les informations et ajouter les modifications a échoué');
+        }
+
         function ajax_success(data)
         {
             if(data.message=='Votre édition a bien été prise en compte !<br>Vous allez être redirigé pour le payement' || data.message== "Votre édition a bien été prise en compte !<br>Vous n'avez pas pris de nouvelles options payantes.<br>Vous allez être redirigé vers la page d'accueil.")
@@ -186,17 +198,6 @@ function prepare_edit_submit()
                 $('#button_submit_form').prop('disabled', '');
                 $("#alerts").append(data.message);
             }
-        }
-        function error_ajax(jqXHR, textStatus, errorThrown)
-        {
-            $('#message_submit').hide();
-            $('#button_submit_form').prop('disabled', '');
-            console.log(jqXHR);
-            console.log();
-            console.log(textStatus);
-            console.log();
-            console.log(errorThrown);
-            add_error('La requête Ajax permettant de submit les informations et ajouter les modifications a échoué');
         }
 
         $.post(
@@ -231,12 +232,6 @@ function prepare_edit_submit()
         //         $('#button_submit_form').prop('disabled', '');
         //         $("#alerts").append(data);
         //     }
-        // }
-        // function error_ajax()
-        // {
-        //     $('#message_submit').hide();
-        //     $('#button_submit_form').prop('disabled', '');
-        //     add_error('La requête Ajax permettant de submit les informations et ajouter les modifications a échoué');
         // }
 
         // $.post(

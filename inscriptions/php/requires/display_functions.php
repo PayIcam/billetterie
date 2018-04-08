@@ -48,6 +48,7 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
 
     </div>
 
+    <?php if(count($options)>0) { ?>
     <div id="icam_options">
         <h4>Choisissez les options que vous voulez :</h4>
         <?php
@@ -58,7 +59,7 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
         }
         ?>
     </div>
-    <?php
+    <?php }
 }
 
 function form_guest($event, $guest_specifications, $options, $i, $guest_reservation=null)
@@ -91,6 +92,7 @@ function form_guest($event, $guest_specifications, $options, $i, $guest_reservat
                 ?> <input type="hidden" name="guest_id" value="<?=$guest_id?>" > <?php
             }?>
         </div>
+        <?php if(count($options)>0) { ?>
         <div class="guest_options">
             <h4>Choisissez les options de votre invité :</h4>
             <?php
@@ -101,7 +103,7 @@ function form_guest($event, $guest_specifications, $options, $i, $guest_reservat
             }
             ?>
         </div>
-        <hr>
+        <?php } ?>
     </div>
     <?php
 }

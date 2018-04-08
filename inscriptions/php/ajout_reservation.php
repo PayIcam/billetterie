@@ -53,7 +53,7 @@ if(!empty($_POST))
             {
                 $guests_data = json_decode_particular($_POST['guests_informations']);
 
-                $participant_additions = 1 + count($guests_data);
+                $participant_additions = 1 + $guests_data == false ? 0 : count($guests_data);
 
                 if(get_current_participants_number($event_id) + $participant_additions > $event['total_quota'])
                 {
