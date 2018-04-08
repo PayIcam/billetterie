@@ -1,4 +1,4 @@
-<?php set_header_navbar("Définissez votre billetterie !")?>
+<?php set_header_navbar(isset($event) ? "Edition d'une billetterie" : "Création d'une billetterie")?>
     <div class="container">
         <div class="jumbotron text-center">
             <h1> Créez une billetterie </h1>

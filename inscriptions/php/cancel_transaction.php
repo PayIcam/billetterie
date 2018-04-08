@@ -18,4 +18,4 @@ if(isset($_SESSION['icam_informations']->mail))
         }
     }
 }
-header('Location: ../..');
+header('Location: ' . $_CONFIG['public_url']);
