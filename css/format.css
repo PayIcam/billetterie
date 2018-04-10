@@ -2,6 +2,15 @@ table tr
 {
     height: 20px;
 }
+table th, table td
+{
+    text-align: center;
+}
+#specification_table
+{
+    font-size: 1.5em;
+}
+
 #creation_button_icons
 {
     width: 20px;

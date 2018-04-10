@@ -257,8 +257,8 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
 {
     $event_id = $promo_specifications['event_id'];
     $email = $_SESSION['icam_informations']->mail;
-    $promo_id = $_SESSION['icam_informations']->promo_id;
-    $site_id = $_SESSION['icam_informations']->site_id;
+    $promo_id = $promo_specifications['promo_id'];
+    $site_id = $promo_specifications['site_id'];
     $prenom = $_SESSION['icam_informations']->prenom;
     $nom = $_SESSION['icam_informations']->nom;
 
@@ -342,7 +342,7 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
                     $error = true;
                 }
             }
-            elseif($participant_type=='icam')
+            elseif($participant_type=='guest')
             {
                 if(!is_string($participant_data->prenom))
                 {
@@ -400,8 +400,8 @@ function is_correct_participant_supplement_data($participant_data, $participant_
 {
     $event_id = $promo_specifications['event_id'];
     $email = $_SESSION['icam_informations']->mail;
-    $promo_id = $_SESSION['icam_informations']->promo_id;
-    $site_id = $_SESSION['icam_informations']->site_id;
+    $promo_id = $promo_specifications['promo_id'];
+    $site_id = $promo_specifications['site_id'];
     $prenom = $_SESSION['icam_informations']->prenom;
     $nom = $_SESSION['icam_informations']->nom;
 
@@ -453,7 +453,7 @@ function is_correct_participant_supplement_data($participant_data, $participant_
                     $error = true;
                 }
             }
-            elseif($participant_type=='guests')
+            elseif($participant_type=='guest')
             {
                 if(!is_string($participant_data->prenom))//Faire avec les variables de session
                 {

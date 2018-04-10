@@ -1,4 +1,4 @@
-<?php set_header_navbar(isset($icam_event_data) ? 'Edition de votre réservation' : 'Inscriptions' . ' : ' . $event['name'])?>
+<?php set_header_navbar(isset($icam_event_data) ? 'Edition de votre réservation : ' . $event['name'] : 'Inscriptions' . ' : ' . $event['name'])?>
     <div id="presentation" class="container">
         <div class="jumbotron">
             <h1 class="text-center"><?= htmlspecialchars($event['name']) ?></h1>

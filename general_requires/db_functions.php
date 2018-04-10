@@ -155,7 +155,7 @@ function get_promos_events($ids)
 function get_icam_event_data($identification_data)
 {
     global $db;
-    $icam_data = $db->prepare('SELECT participant_id, prenom, nom, is_icam, email, telephone, event_id, site_id, promo_id FROM participants WHERE email = :email and event_id = :event_id and promo_id = :promo_id and site_id = :site_id and status ="V" ');
+    $icam_data = $db->prepare('SELECT * FROM participants WHERE email = :email and event_id = :event_id and promo_id = :promo_id and site_id = :site_id and status ="V" ');
     $icam_data->execute($identification_data);
     $icam_data = $icam_data->fetchAll();
     $icam_data = count($icam_data)>1 ? 'several_emails' : current($icam_data);
