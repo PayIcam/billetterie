@@ -285,9 +285,7 @@ function is_correct_event_accessibility()
 
 function are_correct_options()
 {
-    global $event_id;
-    global $options;
-    global $event;
+    global $event_id, $options, $event;
     $error = false;
 
     foreach($options as &$option)
@@ -432,68 +430,95 @@ function are_correct_options()
                         }
                     }
                 }
-                if(count($option->type_specification)<=1)
+                if(isset($option->type_specification))
                 {
-                    add_error($option_name .  "Il n'y a qu'une seule option select, ce n'est pas normal. Autant utiliser une checkbox.");
-                    $error = true;
-                }
+                    if(count($option->type_specification)<=1)
+                    {
+                        add_error($option_name .  "Il n'y a qu'une seule option select, ce n'est pas normal. Autant utiliser une checkbox.");
+                        $error = true;
+                    }
 
-                foreach($option->type_specification as &$suboption)
-                {
-                    if(!is_object($suboption))
+                    foreach($option->type_specification as &$suboption)
                     {
-                        add_error($option_name .  "Les informations sur une des sous-options select sont mal passées. Ce n'est même pas un objet.");
-                        $error = true;
-                        continue;
-                    }
-                    if(!is_string($suboption->name))
-                    {
-                        add_error($option_name .  "Le nom d'une sous-option select n'est même pas une chaine de caractères");
-                        $error = true;
-                    }
-                    elseif(!strlen($suboption->name)>40)
-                    {
-                        add_error($option_name .  "Est-il nécessaire d'avoir une sous-option si longue ?");
-                        $error = true;
-                    }
-                    elseif(strlen($event->name . " Option " . $option->name . " Choix " . $suboption->name)>100)
-                    {
-                        add_error($option_name .  "Le nom combiné de votre évènement, de votre option, et de votre sous-option est trop grand... Enlevez quelques caractères là ou vous pouvez.");
-                        $error = true;
-                    }
-                    if(!is_numeric($suboption->price))
-                    {
-                        add_error($option_name .  "Le prix d'une sous-option select n'est même pas numérique");
-                        $error = true;
-                    }
-                    elseif(!is_an_integer(100*$suboption->price))
-                    {
-                        add_error($option_name .  "Le prix d'une sous-option select est défini avec une précision plus grande que le centime, ou n'est même pas positif");
-                        $error = true;
-                    }
-                    if(!is_numeric($suboption->quota))
-                    {
-                        if(in_array($suboption->quota, [null, '']))
+                        if(!is_object($suboption))
                         {
-                            $suboption->quota = null;
+                            add_error($option_name .  "Les informations sur une des sous-options select sont mal passées. Ce n'est même pas un objet.");
+                            $error = true;
+                            continue;
+                        }
+                        if(isset($suboption->name))
+                        {
+                            if(!is_string($suboption->name))
+                            {
+                                add_error($option_name .  "Le nom d'une sous-option select n'est même pas une chaine de caractères");
+                                $error = true;
+                            }
+                            elseif(!strlen($suboption->name)>40)
+                            {
+                                add_error($option_name .  "Est-il nécessaire d'avoir une sous-option si longue ?");
+                                $error = true;
+                            }
+                            elseif(strlen($event->name . " Option " . $option->name . " Choix " . $suboption->name)>100)
+                            {
+                                add_error($option_name .  "Le nom combiné de votre évènement, de votre option, et de votre sous-option est trop grand... Enlevez quelques caractères là ou vous pouvez.");
+                                $error = true;
+                            }
                         }
                         else
                         {
-                            add_error($option_name .  "Le quota d'une sous-option select n'est même pas numérique");
+                            add_error($option_name .  "le nom d'une sous-option n'est pas défini.");
+                            $error = true;
+                        }
+                        if(isset($suboption->price))
+                        {
+                            if(!is_numeric($suboption->price))
+                            {
+                                add_error($option_name .  "Le prix d'une sous-option select n'est même pas numérique");
+                                $error = true;
+                            }
+                            elseif(!is_an_integer(100*$suboption->price))
+                            {
+                                add_error($option_name .  "Le prix d'une sous-option select est défini avec une précision plus grande que le centime, ou n'est même pas positif");
+                                $error = true;
+                            }
+                        }
+                        else
+                        {
+                            add_error($option_name .  "le prix d'une sous-option n'est pas défini.");
+                            $error = true;
+                        }
+                        if(isset($suboption->quota))
+                        {
+                            if(!is_numeric($suboption->quota))
+                            {
+                                if(in_array($suboption->quota, [null, '']))
+                                {
+                                    $suboption->quota = null;
+                                }
+                                else
+                                {
+                                    add_error($option_name .  "Le quota d'une sous-option select n'est même pas numérique");
+                                    $error = true;
+                                }
+                            }
+                            elseif(!is_an_integer($suboption->quota))
+                            {
+                                add_error($option_name .  "Le quota d'une sous-option select n'est pas un entier");
+                                $error = true;
+                            }
+                        }
+                        else
+                        {
+                            add_error($option_name .  "le quota d'une sous-option n'est pas défini.");
                             $error = true;
                         }
                     }
-                    elseif(!is_an_integer(1*$suboption->quota))
-                    {
-                        add_error($option_name .  "Le quota d'une sous-option select n'est pas un entier");
-                        $error = true;
-                    }
                 }
-            }
-            else
-            {
-                add_error($option_name .  "Le type de l'option n'est pas bien défini.");
-                $error = true;
+                else
+                {
+                    add_error($option_name .  "Les sous-options ne sont pas définies.");
+                    $error = true;
+                }
             }
         }
         else

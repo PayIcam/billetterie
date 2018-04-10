@@ -7,13 +7,13 @@ function insert_event_accessibility_rows($promos_specifications, $class="")
     {
         ?>
         <tr class="<?=$class?>">
-            <th><?= $numero ?></th>
-            <td><?= htmlspecialchars(get_site_name($promo_specifications['site_id'])) ?></td>
-            <td><?= htmlspecialchars(get_promo_name($promo_specifications['promo_id'])) ?></td>
-            <td><?= htmlspecialchars($promo_specifications['price']) . '€'?></td>
-            <td><?= htmlspecialchars($promo_specifications['quota'])?></td>
-            <td><?= htmlspecialchars($promo_specifications['guest_number'])?></td>
-            <td><button type="button" class="btn btn-danger creation_button_icons"><span class="glyphicon glyphicon-trash"></span></button></td>
+            <th class="col-sm-1" scope="col"><?= $numero ?></th>
+            <td class="col-sm-1" scope="col"><?= htmlspecialchars(get_site_name($promo_specifications['site_id'])) ?></td>
+            <td class="col-sm-1" scope="col"><?= htmlspecialchars(get_promo_name($promo_specifications['promo_id'])) ?></td>
+            <td class="col-sm-2" scope="col"><?= htmlspecialchars($promo_specifications['price']) . '€'?></td>
+            <td class="col-sm-1" scope="col"><?= htmlspecialchars($promo_specifications['quota'])?></td>
+            <td class="col-sm-2" scope="col"><?= htmlspecialchars($promo_specifications['guest_number'])?></td>
+            <td class="col-sm-3" scope="col"><button type="button" class="btn btn-danger creation_button_icons"><span class="glyphicon glyphicon-trash"></span></button></td>
         </tr>
         <?php
         $numero+=1;

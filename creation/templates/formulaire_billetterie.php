@@ -145,13 +145,13 @@
                             <div id="table_row_example">
                             <table><!--A l'époque, j'étais nul en Jquery donc je savais que cloner, c'est vrai que c'est du foutage de gueule mais bon-->
                                 <tr><!--L'idée est de cloner une structure de base, et changer toutes les valeurs-->
-                                    <th>0</th>
-                                    <td>Lille</td>
-                                    <td>120</td>
-                                    <td>0€</td>
-                                    <td>500</td>
-                                    <td>3</td>
-                                    <td><button type="button" class="btn btn-danger creation_button_icons"><span class="glyphicon glyphicon-trash"></span></button></td>
+                                    <th class="col-sm-1" scope="col">0</th>
+                                    <td class="col-sm-1" scope="col">Lille</td>
+                                    <td class="col-sm-1" scope="col">120</td>
+                                    <td class="col-sm-2" scope="col">0€</td>
+                                    <td class="col-sm-1" scope="col">500</td>
+                                    <td class="col-sm-2" scope="col">3</td>
+                                    <td class="col-sm-3" scope="col"><button type="button" class="btn btn-danger creation_button_icons"><span class="glyphicon glyphicon-trash"></span></button></td>
                                 </tr>
                             </table>
                             </div>
@@ -159,13 +159,13 @@
                             <table id="specification_table" class="table">
                                 <thead><!--On définit quand même le format de la table-->
                                     <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Site</th>
-                                        <th scope="col">Promo</th>
-                                        <th scope="col">Prix</th>
-                                        <th scope="col">Quota</th>
-                                        <th scope="col">Nombre d'invités</th>
-                                        <th scope="col">Supprimer/Restaurer</th>
+                                        <th class="col-sm-1" scope="col">#</th>
+                                        <th class="col-sm-1" scope="col">Site</th>
+                                        <th class="col-sm-1" scope="col">Promo</th>
+                                        <th class="col-sm-2" scope="col">Prix</th>
+                                        <th class="col-sm-1" scope="col">Quota</th>
+                                        <th class="col-sm-2" scope="col">Nombre d'invités</th>
+                                        <th class="col-sm-3" scope="col">Supprimer/Restaurer</th>
                                     </tr>
                                 </thead>
                                 <tbody><!--Le tbody va se remplir dynamiquement grâce à Jquery, pas d'inquiétudes-->

@@ -35,6 +35,12 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
                 <label for="icam_phone_number">Numéro de téléphone : </label>
                 <input value="<?= isset($icam_reservation['telephone']) ? htmlspecialchars($icam_reservation['telephone']) : '' ?>" type="text" class="form-control" name="icam_phone_number" id="icam_phone_number" placeholder="Numéro de téléphone">
             </div>
+            <?php if(isset($icam_reservation['bracelet_identification'])) { ?>
+            <div class="col-sm-6 form-group">
+                <label for="icam_phone_number">Identifiant de bracelet : </label>
+                <input disabled value="<?= $icam_reservation['bracelet_identification']?>" type="text" class="form-control">
+            </div>
+            <?php } ?>
         </div>
         <input type="hidden" name="price" value="<?= htmlspecialchars($promo_specifications['price']) ?>">
         <input type="hidden" name="is_icam" value=1>
