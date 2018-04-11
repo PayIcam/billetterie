@@ -14,6 +14,7 @@ if(!empty($_POST))
         if(event_id_is_correct($event_id))
         {
             $ajax_json_response = array("message" => "");
+            check_user_fundations_rights(get_fundation_id($event_id), false);
 
             if(isset($_GET['participant_id']))
             {

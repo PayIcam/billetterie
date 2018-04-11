@@ -41,13 +41,15 @@ switch($_SERVER['REQUEST_URI'])
         if(isset($_SESSION['icam_informations']))
         {
             redirect_if_not_admin($payutcClient->isSuperAdmin());
+            $fundations = redirect_if_no_rights();
         }
         break;
+    case strpos($_SERVER['REQUEST_URI'], '/entrees/') !== false:
     case strpos($_SERVER['REQUEST_URI'], '/stats/') !== false:
         $payutcClient = getPayutcClient("STATS");
         if(isset($_SESSION['icam_informations']))
         {
-            redirect_if_not_admin($payutcClient->isAdmin());
+            $fundations = redirect_if_no_rights();
         }
         break;
     default:

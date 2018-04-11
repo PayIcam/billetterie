@@ -5,6 +5,7 @@ require dirname(__DIR__) . '/general_requires/_header.php';
 if(isset($_GET['fundation_id']))
 {
     $fundation_id = $_GET['fundation_id'];
+    check_user_fundations_rights($fundation_id);
 
     require 'php/requires/display_functions.php';
     require 'php/requires/db_functions.php';

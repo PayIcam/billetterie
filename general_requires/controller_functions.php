@@ -43,3 +43,62 @@ function redirect_if_not_admin($is_admin)
         die();
     }
 }
+
+function redirect_if_no_rights()
+{
+    global $payutcClient, $_CONFIG;
+    try
+    {
+        $fundations = $payutcClient->getFundations();
+        return $fundations;
+    }
+    catch(JsonClient\JsonException $e)
+    {
+        if($e->gettype() == 'Payutc\Exception\CheckRightException')
+        {
+            header('Location: '.$_CONFIG['public_url']);
+            die();
+        }
+        else
+        {
+            set_alert_style("Erreur PayutcJsonClient");
+            add_error("Vous n'avez vraisemblablement pas les droits, mais quelque chose d'innattendu s'est produit. Contactez Grégoire Giraud pour l'aider à résoudre ce bug svp");
+            die();
+        }
+    }
+}
+
+function check_user_fundations_rights($fundation_id, $death=true)
+{
+    global $fundations, $error, $ajax_json_response;
+    $fundation_ids = array_column($fundations, 'fun_id');
+    if(!in_array($fundation_id, $fundation_ids))
+    {
+        $error_message = "Vous n'avez pas les droits sur cette fondation";
+        if($death)
+        {
+            set_alert_style('Erreur droits de fondation');
+            if(isset($ajax_json_response))
+            {
+                add_error_to_ajax_response($error_message);
+            }
+            else
+            {
+                add_error($error_message);
+            }
+            die();
+        }
+        else
+        {
+            if(isset($ajax_json_response))
+            {
+                add_error_to_ajax_response($error_message);
+            }
+            else
+            {
+                add_error($error_message);
+            }
+            $error = true;
+        }
+    }
+}

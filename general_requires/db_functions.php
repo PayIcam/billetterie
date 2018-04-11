@@ -261,3 +261,10 @@ function get_current_option_quota($ids)
     $count_promo->execute($ids);
     return $count_promo->fetch()['current_option_quota'];
 }
+function get_fundation_id($event_id)
+{
+    global $db;
+    $fundation_id = $db->prepare('SELECT fundation_id FROM events WHERE event_id=:event_id');
+    $fundation_id->execute(array('event_id' => $event_id));
+    return $fundation_id->fetch()['fundation_id'];
+}

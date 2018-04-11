@@ -14,6 +14,7 @@ if(!empty($_POST))
         if(event_id_is_correct($event_id))
         {
             $ajax_json_response = array("message" => "" , "participant_id" => "");
+            check_user_fundations_rights(get_fundation_id($event_id), false);
 
             $event = get_event_details($event_id);
             $promos = array_column(get_event_promo_names($event_id), 'promo_name');

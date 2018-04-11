@@ -189,6 +189,28 @@ function is_correct_event_data()
             add_error("Les données traitant de l'activité ou non de l'évènement ont mal été transmises.");
             $error = true;
         }
+        if(isset($event->fundation_id))
+        {
+            if(!is_numeric($event->fundation_id))
+            {
+                add_error("L'id de la fondation n'est pas numérique.");
+                $error = true;
+            }
+            elseif(!is_an_integer($event->fundation_id))
+            {
+                add_error("L'id de la fondation n'est pas entière.");
+                $error = true;
+            }
+            else
+            {
+                check_user_fundations_rights($event->fundation_id, false);
+            }
+        }
+        else
+        {
+            add_error("L'id de la fondation sur laquelle ajouter l'évènement n'est pas transmis.");
+            $error = true;
+        }
     }
     return !$error;
 }

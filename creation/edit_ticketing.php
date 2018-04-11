@@ -6,6 +6,8 @@ if(isset($_GET['event_id']))
     $event_id = $_GET['event_id'];
     if(event_id_is_correct($event_id))
     {
+        check_user_fundations_rights(get_fundation_id($event_id));
+
         require 'php/requires/display_functions.php';
         require 'php/requires/db_functions.php';
         require 'php/requires/controller_functions.php';

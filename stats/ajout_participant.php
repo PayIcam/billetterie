@@ -11,6 +11,8 @@ if(isset($_GET['event_id']))
     $event_id = $_GET['event_id'];
     if(event_id_is_correct($event_id))
     {
+            check_user_fundations_rights(get_fundation_id($event_id));
+
         $event = get_event_details($event_id);
         $promos = array_column(get_event_promo_names($event_id), 'promo_name');
         $sites = array_column(get_event_site_names($event_id), 'site_name');
