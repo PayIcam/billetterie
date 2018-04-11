@@ -14,8 +14,8 @@
                         <input type="input-medium search-query" class="form-control" name ="recherche" id="recherche" placeholder="Nom, prénom, initiales..." value="<?= isset($_POST['recherche']) ? htmlspecialchars($_POST['recherche']) : '' ?>">
                     </div>
                     <div class="col-md-3">
-                        <button class=" inline btn btn-primary" type="submit">Rechercher</button>
-                        <!-- <a href="secured/ajouter_invite.php" class="btn btn-primary">Ajouter un invité</a> -->
+                        <button class="inline btn btn-primary" type="submit">Rechercher</button>
+                        <a type="button" class="btn btn-success" href="ajout_participant.php?event_id=<?=$event_id?>" class="btn btn-primary">Ajouter un invité</a>
                     </div>
                 </div>
             </form>
