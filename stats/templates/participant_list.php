@@ -1,4 +1,4 @@
-<?php set_header_navbar('Liste des participants')?>
+<?php set_header_navbar('Liste des participants : ' . $event['name'])?>
         <div class="container all_index">
 
             <div class="row">

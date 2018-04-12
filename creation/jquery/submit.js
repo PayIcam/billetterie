@@ -127,7 +127,7 @@ function check_then_submit_form(event)
         var ticketing_start_date = $('input[name=ticketing_start_date]').val();
         var ticketing_end_date = $('input[name=ticketing_end_date]').val();
         var is_active = $('.general_infos .toggle').hasClass('off') ? 0 : 1;
-        var fundation_id = $('input[name=fundation_id]').val()==undefined ? -50 : $('input[name=fundation_id]').val();
+        var fundation_id = $('input[name=fundation_id]').val();
 
         var event_json = {name: name, description: description, quota: quota, ticketing_start_date: ticketing_start_date, ticketing_end_date: ticketing_end_date, is_active: is_active, fundation_id: fundation_id};
         return event_json;

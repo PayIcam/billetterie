@@ -22,6 +22,31 @@ function change_number_rows($rows_per_page)
     <?php
 }
 
+function create_link_or_form($link, $sign)
+{
+    ?>
+    <span class="change_page_text">
+        <?php
+        if(isset($_POST['recherche']))
+        {
+            ?>
+            <form method="post" action="<?= $link ?>">
+                <input type="hidden" name="recherche" value="<?=$_POST['recherche']?>" >
+                <button type="submit" class="btn btn-primary"><?=$sign?></button>
+            </form>
+            <?php
+        }
+        else
+        {
+            ?>
+            <a href="<?=$link?>"><button class="btn btn-primary"><?=$sign?></button></a>
+            <?php
+        }
+        ?>
+    </span>
+    <?php
+}
+
 function change_pages($current_page, $rows_per_page, $total_number_pages)
 {
     if(!function_exists('next_page')) {
@@ -32,12 +57,7 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
         $row_text ='&rows=' . $rows_per_page;
         $event_text = '?event_id=' . $_GET['event_id'];
         $link = ($rows_per_page == 25) ? "participants.php" . $event_text.$page_text : "participants.php" . $event_text.$page_text.$row_text;
-    ?><span class="change_page_text">
-            <form method="post" action="<?= $link ?>">
-                <?= isset($_POST['recherche']) ? '<input type="hidden" name="recherche" value="' . $_POST['recherche'] . '" > ' : "" ?>
-                <input type="submit" value=">" />
-            </form>
-        </span><?php
+        create_link_or_form($link, ">");
     }}
     if(!function_exists('prev_page')) {
     function prev_page($current_page, $rows_per_page)
@@ -47,12 +67,7 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
         $row_text ='&rows=' . $rows_per_page;
         $event_text = '?event_id=' . $_GET['event_id'];
         $link = ($rows_per_page == 25) ? "participants.php" . $event_text.$page_text : "participants.php" . $event_text.$page_text.$row_text;
-    ?><span class="change_page_text">
-            <form method="post" action="<?= $link ?>">
-                <?= isset($_POST['recherche']) ? '<input type="hidden" name="recherche" value="' . $_POST['recherche'] . '" > ' : "" ?>
-                <input type="submit" value="<" />
-            </form>
-        </span><?php
+        create_link_or_form($link, "<");
     }}
     if(!function_exists('last_page')) {
     function last_page($current_page, $rows_per_page, $total_number_pages)
@@ -61,12 +76,7 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
         $row_text ='&rows=' . $rows_per_page;
         $event_text = '?event_id=' . $_GET['event_id'];
         $link = ($rows_per_page == 25) ? "participants.php" . $event_text.$page_text : "participants.php" . $event_text.$page_text.$row_text;
-    ?><span class="change_page_text">
-            <form method="post" action="<?= $link ?>">
-                <?= isset($_POST['recherche']) ? '<input type="hidden" name="recherche" value="' . $_POST['recherche'] . '" > ' : "" ?>
-                <input type="submit" value=">>>" />
-            </form>
-        </span><?php
+        create_link_or_form($link, ">>>");
     }}
     if(!function_exists('first_page')) {
     function first_page($current_page, $rows_per_page)
@@ -75,12 +85,7 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
         $row_text ='&rows=' . $rows_per_page;
         $event_text = '?event_id=' . $_GET['event_id'];
         $link = ($rows_per_page == 25) ? "participants.php" . $event_text.$page_text : "participants.php" . $event_text.$page_text.$row_text;
-    ?><span class="change_page_text">
-            <form method="post" action="<?= $link ?>">
-                <?= isset($_POST['recherche']) ? '<input type="hidden" name="recherche" value="' . $_POST['recherche'] . '" > ' : "" ?>
-                <input type="submit" value="<<<" />
-            </form>
-        </span><?php
+        create_link_or_form($link, "<<<");
     }}
     if($current_page>2)
     {
@@ -415,4 +420,28 @@ function insert_select_options_no_checking($option)
         </option>
         <?php
     }
+}
+
+function display_participants_admin($event)
+{
+    global $_CONFIG;
+    ?>
+        <a href="<?=$_CONFIG['public_url']?>stats/participants.php?event_id=<?=$event['event_id']?>" class="btn btn-primary"><h5><?=$event['name']?></h5></a><br><br>
+    <?php
+}
+function display_fundations_participants_admin($fundation)
+{
+    ?>
+    <div class="col-sm-4">
+        <a data-toggle="collapse" href="#button_links_<?=$fundation->fun_id?>" role="button" aria-expanded="false" aria-controls="#button_links_<?=$fundation->fun_id?>"><h2><?=htmlspecialchars($fundation->name)?></h2></a>
+        <div class="collapse" id="button_links_<?=$fundation->fun_id?>">
+            <?php
+            foreach(get_fundations_events($fundation->fun_id) as $event)
+            {
+                display_participants_admin($event);
+            }
+            ?>
+        </div>
+    </div>
+    <?php
 }

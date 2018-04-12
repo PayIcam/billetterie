@@ -357,6 +357,7 @@
 
             <div id="input_additions">
                 <?= isset($fundation_id) ? "<input type='hidden' value='". $fundation_id . "' name='fundation_id'>" : "" ?>
+                <?= isset($event_id) ? "<input type='hidden' value='". get_fundation_id($event_id) . "' name='fundation_id'>" : "" ?>
             </div><!--On va mettre ici des inputs hidden juste avant d'envoyer les données. Ils contiennent des données grâce au JSON.stringify(). -->
         </form>
     </div>
