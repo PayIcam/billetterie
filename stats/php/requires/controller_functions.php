@@ -350,7 +350,7 @@ function prepare_promo_stats($promo_stats, $current_participant_number)
     $promo_stats['promo_name'] = get_promo_name($promo_stats['promo_id']);
     $promo_stats['site_name'] = get_site_name($promo_stats['site_id']);
     $promo_stats['pourcentage_quota'] = round(100 * $promo_stats['promo_count'] / $promo_stats['quota'], 2) . '%';
-    $promo_stats['pourcentage_evenement'] = round(100 * $promo_stats['promo_count'] / $total_quota, 2) . '%';
+    $promo_stats['pourcentage_evenement'] = round(100 * $promo_stats['promo_count'] / $current_participant_number, 2) . '%';
     $promo_stats['pourcentage_bracelet'] = round(100 * $promo_stats['bracelet_count'] / $promo_stats['promo_count'], 2) . '%';
     return $promo_stats;
 }
