@@ -62,7 +62,7 @@
                     </thead>
                     <tbody>
                         <?php
-                        display_promo_stats($promo_specification_details_stats, $total_quota);
+                        display_promo_stats($promo_specification_details_stats, $current_participant_number);
                         ?>
                     </tbody>
                 </table>

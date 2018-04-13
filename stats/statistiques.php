@@ -15,6 +15,7 @@ if(isset($_GET['event_id']))
 
         $event_details_stats = get_event_details_stats($event_id);
         $total_quota = $event_details_stats['total_quota'];
+        $current_participant_number = $event_details_stats['total_count'];
         $event_details_stats['pourcentage_inscriptions'] = round(100 * $event_details_stats['total_count'] / $total_quota, 2) . '%';
         $event_details_stats['pourcentage_bracelets'] = round($event_details_stats['total_bracelet_count'] / $event_details_stats['total_count'], 2) . '%';
 
