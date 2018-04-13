@@ -1,4 +1,4 @@
-<?php set_header_navbar('Liste des participants : ' . htmlspecialchars($event_details_stats['name']))?>
+<?php set_header_navbar('Statistiques : ' . htmlspecialchars($event_details_stats['name']))?>
         <div class="container">
             <h1 class="text-center">Statistiques :  <?= htmlspecialchars($event_details_stats['name'])?></h1>
 
@@ -47,6 +47,27 @@
                         </tr>
                     </tbody>
                 </table>
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Promotion</th>
+                            <th>Nombre de participants</th>
+                            <th>Pourcentage quota</th>
+                            <th>Quota</th>
+                            <th>Pourcentage évènement</th>
+                            <th>Bracelets</th>
+                            <th>Pourcentage bracelets</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        display_promo_stats($promo_specification_details_stats, $total_quota);
+                        ?>
+                    </tbody>
+                </table>
+
+
             </section>
         </div>
     </body>

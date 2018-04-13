@@ -455,3 +455,21 @@ function display_back_to_list_button($event_id)
     </div>
     <?php
 }
+function display_promo_stats($promos_data, $total_quota)
+{
+    foreach($promos_data as $promo_data)
+    {
+        $promo_stats = prepare_promo_stats($promo_data, $total_quota);
+        ?>
+        <tr>
+            <th class="col-sm-2"><?= $promo_stats['promo_name'] . " " . $promo_stats['site_name'] ?></th>
+            <td class="col-sm-1"><?= $promo_stats['promo_count'] ?></td>
+            <td class="col-sm-1"><?= $promo_stats['pourcentage_quota'] ?></td>
+            <td class="col-sm-1"><?= $promo_stats['quota'] ?></td>
+            <td class="col-sm-1"><?= $promo_stats['pourcentage_evenement'] ?></td>
+            <td class="col-sm-1"><?= $promo_stats['bracelet_count'] ?></td>
+            <td class="col-sm-1"><?= $promo_stats['pourcentage_bracelet'] ?></td>
+        </tr>
+        <?php
+    }
+}

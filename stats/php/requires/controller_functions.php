@@ -344,3 +344,13 @@ function check_prepare_option_addition_data($options, $participant_id)
     }
     return !$error;
 }
+
+function prepare_promo_stats($promo_stats, $total_quota)
+{
+    $promo_stats['promo_name'] = get_promo_name($promo_stats['promo_id']);
+    $promo_stats['site_name'] = get_site_name($promo_stats['site_id']);
+    $promo_stats['pourcentage_quota'] = round($promo_stats['promo_count'] / $promo_stats['quota'], 2) . '%';
+    $promo_stats['pourcentage_evenement'] = round($promo_stats['promo_count'] / $total_quota, 2) . '%';
+    $promo_stats['pourcentage_bracelet'] = round($promo_stats['bracelet_count'] / $promo_stats['promo_count'], 2) . '%';
+    return $promo_stats;
+}
