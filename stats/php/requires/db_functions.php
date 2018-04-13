@@ -489,7 +489,7 @@ function get_event_details_stats($event_id)
 {
     global $db;
     $details_stats = $db->prepare('
-        SELECT e.*, COUNT(p.participant_id) total_count, SUM(IF(p.bracelet_identification IS NULL, 0, 1)) total_bracelet_count, SUM(IF(p.bracelet_identification IS NULL, 0, 1)) total_bracelet_count, SUM(IF(pr.still_student = 1, 1, 0)) student_count, SUM(IF(pr.still_student = 0, 1, 0)) graduated_count
+        SELECT e.*, SUM(IF(p.status IN ("V", "W"), 1, 0)) total_count, SUM(IF(p.bracelet_identification IS NULL or p.status="A", 0, 1)) total_bracelet_count, SUM(IF(pr.still_student = 1, 1, 0)) student_count, SUM(IF(pr.still_student = 0, 1, 0)) graduated_count
         FROM events e
         LEFT JOIN participants p on p.event_id=e.event_id LEFT JOIN promos pr ON pr.promo_id=p.promo_id
         WHERE e.event_id=:event_id');
@@ -500,7 +500,7 @@ function get_promo_specification_details_stats($event_id)
 {
     global $db;
     $details_stats = $db->prepare('
-        SELECT pss.promo_id, pss.site_id, pss.quota, pss.guest_number, COUNT(p.participant_id) promo_count, SUM(IF(p.bracelet_identification IS NULL, 0, 1)) bracelet_count
+        SELECT pss.promo_id, pss.site_id, pss.quota, pss.guest_number, SUM(IF(p.status IN ("V", "W"), 1, 0)) promo_count, SUM(IF(p.bracelet_identification IS NULL or p.status="A", 0, 1)) bracelet_count
         FROM promos_site_specifications pss
         LEFT JOIN participants p ON p.promo_id = pss.promo_id and p.site_id = pss.site_id LEFT JOIN promos pr ON pr.promo_id=pss.promo_id
         WHERE p.event_id=:event_id
