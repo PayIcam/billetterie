@@ -503,7 +503,7 @@ function get_promo_specification_details_stats($event_id)
         SELECT pss.promo_id, pss.site_id, pss.quota, pss.guest_number, SUM(IF(p.status IN ("V", "W"), 1, 0)) promo_count, SUM(IF(p.bracelet_identification IS NULL or p.status="A", 0, 1)) bracelet_count
         FROM promos_site_specifications pss
         LEFT JOIN participants p ON p.promo_id = pss.promo_id and p.site_id = pss.site_id LEFT JOIN promos pr ON pr.promo_id=pss.promo_id
-        WHERE p.event_id=:event_id
+        WHERE p.event_id=:event_id and status != "A"
         GROUP BY pss.promo_id, pss.site_id, pss.quota, pss.guest_number ');
     $details_stats->execute(array('event_id' => $event_id));
     return $details_stats->fetchAll();
