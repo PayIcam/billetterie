@@ -49,13 +49,6 @@ function get_scoobydoo_event_infos($event_id)
     $scoobydoo_ids->execute($event_id);
     return $scoobydoo_ids->fetch();
 }
-function get_fundations_events($fundation_id)
-{
-    global $db;
-    $fundation_events = $db->prepare('SELECT * FROM events WHERE fundation_id = :fundation_id');
-    $fundation_events->execute(array("fundation_id" => $fundation_id));
-    return $fundation_events->fetchAll();
-}
 function insert_specification_details($table_specification_data)
 {
     global $db;

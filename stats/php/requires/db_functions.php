@@ -114,7 +114,7 @@ function get_promo_status($promo_name)
 function get_icams_guests_info($ids)
 {
     global $db;
-    $guests_ids = $db->prepare('SELECT * FROM participants WHERE participant_id in (SELECT guest_id FROM icam_has_guests WHERE event_id=:event_id and icam_id=:icam_id)');
+    $guests_ids = $db->prepare('SELECT * FROM participants WHERE participant_id in (SELECT guest_id FROM icam_has_guests WHERE event_id=:event_id and icam_id=:icam_id) and status="V"');
     $guests_ids->execute($ids);
     return $guests_ids->fetchAll();
 }
@@ -484,4 +484,34 @@ function participant_has_option($ids)
     $optional_options = $db->prepare('SELECT COUNT(*) matches FROM participant_has_options WHERE participant_id=:participant_id and option_id=:option_id and event_id=:event_id');
     $optional_options->execute($ids);
     return $optional_options->fetch()['matches'] == 1 ? true : false;
+}
+function get_event_details_stats($event_id)
+{
+    global $db;
+    $details_stats = $db->prepare('
+        SELECT e.*, COUNT(p.participant_id) total_count, SUM(IF(p.bracelet_identification IS NULL, 0, 1)) total_bracelet_count, SUM(IF(p.bracelet_identification IS NULL, 0, 1)) total_bracelet_count, SUM(IF(pr.still_student = 1, 1, 0)) student_count, SUM(IF(pr.still_student = 0, 1, 0)) graduated_count
+        FROM events e
+        LEFT JOIN participants p on p.event_id=e.event_id LEFT JOIN promos pr ON pr.promo_id=p.promo_id
+        WHERE e.event_id=:event_id');
+    $details_stats->execute(array('event_id' => $event_id));
+    return $details_stats->fetch();
+}
+function get_promo_specification_details_stats($event_id)
+{
+    global $db;
+    $details_stats = $db->prepare('
+        SELECT pss.promo_id, pss.site_id, pss.quota, pss.guest_number, COUNT(p.participant_id) promo_count, SUM(IF(p.bracelet_identification IS NULL, 0, 1)) bracelet_count
+        FROM promos_site_specifications pss
+        LEFT JOIN participants p ON p.promo_id = pss.promo_id and p.site_id = pss.site_id LEFT JOIN promos pr ON pr.promo_id=pss.promo_id
+        WHERE p.event_id=:event_id
+        GROUP BY pss.promo_id, pss.site_id, pss.quota, pss.guest_number ');
+    $details_stats->execute(array('event_id' => $event_id));
+    return $details_stats->fetchAll();
+}
+function get_event_days_stats($event_id)
+{
+    global $db;
+    $details_stats = $db->prepare('SELECT DATE(p.inscription_date) jour, COUNT(p.participant_id) FROM events e LEFT JOIN participants p ON p.event_id = e.event_id WHERE e.event_id=:event_id GROUP BY DATE(p.inscription_date)');
+    $details_stats->execute(array('event_id' => $event_id));
+    return $details_stats->fetchAll();
 }

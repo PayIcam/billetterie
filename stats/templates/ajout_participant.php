@@ -2,6 +2,8 @@
 
         <h1 style="text-align: center">Ajouter un participant <?=isset($icam) ? "à " . htmlspecialchars($icam['prenom']) . ' ' . htmlspecialchars($icam['nom']) : '' . '(' . htmlspecialchars($event['name']) . ')' ?></h1><hr><br>
 
+        <?php display_back_to_list_button($event_id); ?>
+
         <?php isset($icam) ? $icam['is_icam']==1 ? one_row_participant_table($icam, 'info_icam') : one_row_participant_table($icam, 'info_invite') : "" ?>
 
         <form method="POST" action="php/ajout_participant.php?event_id=<?=isset($icam) ? $event_id.'&icam_id='.$icam['participant_id'] : $event_id?>">

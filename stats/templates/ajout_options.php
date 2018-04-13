@@ -2,6 +2,8 @@
 
         <h1 class="text-center">Ajouter des options à <?=isset($icam) ? htmlspecialchars($icam['prenom']) . ' ' . htmlspecialchars($icam['nom']) : '' . '(' . htmlspecialchars($event['name']) . ')' ?></h1><hr><br>
 
+        <?php display_back_to_list_button($event_id); ?>
+
         <?php isset($icam) ? $icam['is_icam']==1 ? one_row_participant_table($icam, 'info_icam') : one_row_participant_table($icam, 'info_invite') : "" ?>
 
         <form method="POST" action="php/ajout_options.php?event_id=<?=isset($icam) ? $event_id.'&participant_id='.$icam['participant_id'] : $event_id?>">

@@ -268,3 +268,10 @@ function get_fundation_id($event_id)
     $fundation_id->execute(array('event_id' => $event_id));
     return $fundation_id->fetch()['fundation_id'];
 }
+function get_fundations_events($fundation_id)
+{
+    global $db;
+    $fundation_events = $db->prepare('SELECT * FROM events WHERE fundation_id = :fundation_id');
+    $fundation_events->execute(array("fundation_id" => $fundation_id));
+    return $fundation_events->fetchAll();
+}
