@@ -501,7 +501,6 @@ function display_days_stats($days_stats, $total_number)
             <th class="col-sm-3"><?= $day_stats['day']?></th>
             <td class="col-sm-1"><?= $day_stats['nombre'] ?></td>
             <td class="col-sm-1 <?=display_pourcentage_style($pourcentage_day, count($days_stats))?>"><?= $pourcentage_day ?></td>
-            <td><?php display_pourcentage_style($pourcentage_day, count($days_stats)) ?></td>
         </tr>
         <?php
     }
