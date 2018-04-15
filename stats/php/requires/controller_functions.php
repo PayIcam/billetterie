@@ -345,12 +345,12 @@ function check_prepare_option_addition_data($options, $participant_id)
     return !$error;
 }
 
-function prepare_promo_stats($promo_stats, $current_participant_number)
+function prepare_promo_stats($promo_stats)
 {
-    $promo_stats['promo_name'] = get_promo_name($promo_stats['promo_id']);
-    $promo_stats['site_name'] = get_site_name($promo_stats['site_id']);
-    $promo_stats['pourcentage_quota'] = round(100 * $promo_stats['promo_count'] / $promo_stats['quota'], 2) . '%';
-    $promo_stats['pourcentage_evenement'] = round(100 * $promo_stats['promo_count'] / $current_participant_number, 2) . '%';
-    $promo_stats['pourcentage_bracelet'] = round(100 * $promo_stats['bracelet_count'] / $promo_stats['promo_count'], 2) . '%';
+    global $event_details_stats;
+    $promo_stats['pourcentage_quota'] = $promo_stats['quota']!=0 ? round(100 * $promo_stats['promo_count'] / $promo_stats['quota'], 2) . '%' : "undefined";
+    $promo_stats['pourcentage_evenement'] = $event_details_stats['total_count']!=0 ? round(100 * $promo_stats['promo_count'] / $event_details_stats['total_count'], 2) . '%' : "undefined";
+    $promo_stats['pourcentage_bracelet'] = $promo_stats['promo_count']!=0 ? round(100 * $promo_stats['bracelet_count'] / $promo_stats['promo_count'], 2) . '%' : "undefined";
+    $promo_stats['pourcentage_invites'] = $event_details_stats['guests_count']!=0 ? round(100 * $promo_stats['invited_guests'] / $event_details_stats['guests_count'], 2) . '%' : "undefined";
     return $promo_stats;
 }

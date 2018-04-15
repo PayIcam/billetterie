@@ -489,20 +489,23 @@ function get_event_details_stats($event_id)
 {
     global $db;
     $details_stats = $db->prepare('
-        SELECT e.*, SUM(IF(p.status IN ("V", "W"), 1, 0)) total_count, SUM(IF(p.bracelet_identification IS NULL or p.status="A", 0, 1)) total_bracelet_count, SUM(IF(pr.still_student = 1, 1, 0)) student_count, SUM(IF(pr.still_student = 0, 1, 0)) graduated_count
+        SELECT e.*, SUM(IF(p.status IN ("V", "W"), 1, 0)) total_count, SUM(IF(p.bracelet_identification IS NULL or p.status="A", 0, 1)) total_bracelet_count, SUM(IF(pr.still_student = 1 and p.status!="A", 1, 0)) student_count, SUM(IF(pr.still_student = 0 and p.status!="A", 1, 0)) graduated_count, SUM(IF(pr.promo_name="Invités" and p.status!="A", 1, 0)) guests_count
         FROM events e
-        LEFT JOIN participants p on p.event_id=e.event_id LEFT JOIN promos pr ON pr.promo_id=p.promo_id
+        LEFT JOIN participants p on p.event_id=e.event_id LEFT JOIN promos pr ON pr.promo_id=p.promo_id LEFT JOIN promos_site_specifications pss ON p.promo_id = pss.promo_id and p.site_id = pss.site_id
         WHERE e.event_id=:event_id');
     $details_stats->execute(array('event_id' => $event_id));
-    return $details_stats->fetch();
+
+    $type_quotas = $db->prepare('SELECT SUM(IF(pr.still_student=0, quota, 0)) graduated_quota, SUM(IF(pr.still_student=1, quota, 0)) student_quota, SUM(IF(pr.promo_name="Invités", quota, 0)) guest_quota FROM promos_site_specifications pss LEFT JOIN promos pr ON pr.promo_id=pss.promo_id WHERE pss.event_id=:event_id and (pr.still_student!=2 or pr.promo_name="Invités")');
+    $type_quotas->execute(array('event_id' => $event_id));
+    return array_merge($details_stats->fetch(), $type_quotas->fetch());
 }
 function get_promo_specification_details_stats($event_id)
 {
     global $db;
     $details_stats = $db->prepare('
-        SELECT pss.promo_id, pss.site_id, pss.quota, pss.guest_number, SUM(IF(p.status IN ("V", "W"), 1, 0)) promo_count, SUM(IF(p.bracelet_identification IS NULL or p.status="A", 0, 1)) bracelet_count
+        SELECT pr.promo_name, s.site_name, pss.quota, pss.guest_number, SUM(IF(p.status IN ("V", "W"), 1, 0)) promo_count, SUM(IF(p.bracelet_identification IS NULL or p.status="A", 0, 1)) bracelet_count, COUNT(ihg.icam_id) invited_guests
         FROM promos_site_specifications pss
-        LEFT JOIN participants p ON p.promo_id = pss.promo_id and p.site_id = pss.site_id LEFT JOIN promos pr ON pr.promo_id=pss.promo_id
+        LEFT JOIN participants p ON p.promo_id = pss.promo_id and p.site_id = pss.site_id LEFT JOIN promos pr ON pr.promo_id=pss.promo_id LEFT JOIN sites s ON s.site_id=pss.site_id LEFT JOIN icam_has_guests ihg ON ihg.icam_id=p.participant_id
         WHERE p.event_id=:event_id and status != "A"
         GROUP BY pss.promo_id, pss.site_id, pss.quota, pss.guest_number ');
     $details_stats->execute(array('event_id' => $event_id));

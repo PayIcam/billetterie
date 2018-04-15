@@ -455,11 +455,11 @@ function display_back_to_list_button($event_id)
     </div>
     <?php
 }
-function display_promo_stats($promos_data, $current_participant_number)
+function display_promo_stats($promos_data)
 {
     foreach($promos_data as $promo_data)
     {
-        $promo_stats = prepare_promo_stats($promo_data, $current_participant_number);
+        $promo_stats = prepare_promo_stats($promo_data);
         ?>
         <tr>
             <th class="col-sm-2"><?= $promo_stats['promo_name'] . " " . $promo_stats['site_name'] ?></th>
@@ -467,6 +467,8 @@ function display_promo_stats($promos_data, $current_participant_number)
             <td class="col-sm-1"><?= $promo_stats['pourcentage_quota'] ?></td>
             <td class="col-sm-1"><?= $promo_stats['quota'] ?></td>
             <td class="col-sm-1"><?= $promo_stats['pourcentage_evenement'] ?></td>
+            <td class="col-sm-1"><?= $promo_stats['invited_guests'] ?></td>
+            <td class="col-sm-1"><?= $promo_stats['pourcentage_invites'] ?></td>
             <td class="col-sm-1"><?= $promo_stats['bracelet_count'] ?></td>
             <td class="col-sm-1"><?= $promo_stats['pourcentage_bracelet'] ?></td>
         </tr>

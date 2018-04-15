@@ -7,6 +7,9 @@ class Auth{
 
     private $roles;
 
+    /**
+     * Il s'agit juste d'écrire les différents roles dès l'appel de la fonction
+     */
     function __construct() {
         global $DB;
         $this->roles = array(
@@ -17,18 +20,22 @@ class Auth{
         );
     }
 
+    /**
+     * La fonction va permettre de se connecter au Cas.
+     * Elle va aussi mettre dans la session des petites choses intéressantes, comme le cokie payUtc, et les infos de l'Icam
+     * @param  $ticket  C'ets le ticket de connection que l'on reçoit
+     * @param  $service C'est l'url de la page à appeler qui va permettre de se connecter.
+     */
     function loginUsingCas($ticket, $service) {
-        global $DB;
-        global $payutcClient;
-        require 'class/Cas.class.php';
+        global $DB, $payutcClient, $_CONFIG;
 
         try {
             $result = $payutcClient->loginCas(array("ticket" => $ticket, "service" => $service));
-            $status = $payutcClient->getStatus();
-            $_SESSION['payutc_cookie'] = $payutcClient->cookie;
 
+            $status = $payutcClient->getStatus();
             $userRank = $payutcClient->getUserLevel();
 
+            $_SESSION['payutc_cookie'] = $payutcClient->cookie;
             $_SESSION['Auth'] = array(
                 'email' => $status->user,
                 'firstname' => $status->user_data->firstname,
@@ -40,12 +47,14 @@ class Auth{
             return true;
         } catch (Exception $e) {
             if (strpos($e, 'UserNotFound') !== false ) {
-                header('Location:../casper');exit;
+                header('Location: '. basename(basename($_CONFIG['payicam']['url'])).'/casper', true, 303);
+                die();
             }
-            Functions::setFlash($e->getMessage(),'danger');
+            // Functions::setFlash($e->getMessage(),'danger');
             return false;
         }
     }
+
 
     public function logOut() {
         global $payutcClient;
@@ -77,6 +86,11 @@ class Auth{
         }
     }
 
+    /**
+     * Permet de savoir si un utilisateur a un role ou non.
+     * @param  $rang c'est le slug, il faut donc donner ('member', 'member++', 'admin' ou 'super-admin')
+     * @return boolean renvoie true si l'utilisateur a le role, false sinon
+     */
     function hasRole($rang) {
         $roles = $this->getLevels();
         if(!$this->getUserField('slug')) {
@@ -91,8 +105,10 @@ class Auth{
     }
 
     /**
-     * Récupère une info utilisateur
-     ***/
+     * Récupère un champ de la variable de session
+     * @param  $field IN('id', 'name', 'role', 'slug' ou 'level')
+     * @return ce qu'on demande si définit, false sinon
+     */
     function getUserField($field) {
         if($field == 'role') $field = 'slug';
         if(isset($_SESSION['Auth'][$field])) {
@@ -103,8 +119,8 @@ class Auth{
     }
 
     /**
-     * Récupère une info utilisateur
-     ***/
+     * Récupère toutes les infos de Auth dans la variable de session
+     */
     function getUser() {
         return $_SESSION['Auth'];
     }
@@ -114,40 +130,25 @@ class Auth{
      * */
     function forbidden() {
         Functions::setFlash('<strong>Identification requise</strong> Vous ne pouvez accéder à cette page.','danger');
-        header('Location:connection.php'.((!empty($_GET['ticket']))?'?ticket='.$_GET['ticket']:''));exit;
+        header('Location: connection.php'.((!empty($_GET['ticket']))?'?ticket='.$_GET['ticket']:''));exit;
     }
 
-    // -------------------- Security & Token functions -------------------- //
-    // public static function generateToken($nom = '') {
-    //     $token = md5(uniqid(rand(147,1753), true));
-    //     $_SESSION['tokens'][$nom.'_token'] = $token;
-    //     $_SESSION['tokens'][$nom.'_token_time'] = time();
-    //     return $token;
-    // }
-
-    // public static function validateToken($token, $nom = '', $temps = 600, $referer = '') {
-    //     if (empty($referer)) {
-    //         $referer = Config::get('accueil-payicam').basename($_SERVER['REQUEST_URI']);
-    //     }
-    //     if(isset($_SESSION['tokens'][$nom.'_token']) && isset($_SESSION['tokens'][$nom.'_token_time']) && !empty($token))
-    //         if($_SESSION['tokens'][$nom.'_token'] == $token)
-    //             if($_SESSION['tokens'][$nom.'_token_time'] >= (time() - $temps)) {
-    //                 if(!empty($_SERVER['HTTP_REFERER']) && dirname($_SERVER['HTTP_REFERER']) == dirname($referer))
-    //                     return true;
-    //                 elseif(empty($_SERVER['HTTP_REFERER']))
-    //                     return true;
-    //             }
-    //     return false;
-    // }
 
     // -------------------- isXXX functions -------------------- //
-    function isLogged() { // vérification de de l'existence d'une session "Auth", d'une session ouverte
+    /**
+     * Renvoie true si la connection a l'air bonne, false sinon
+     */
+    function isLogged() {
         if ($this->getUserField('level') !== false && $this->getUserField('level') >= 0)
             return true;
         else
             return false;
     }
-    function isAdmin() { //vérification que l'utilisateur loggué est administrateur
+    /**
+     * Renvoie true si on est admin ou super-admin
+     * @return boolean [description]
+     */
+    function isAdmin() {
         if ($this->getUserField('role') == 'admin')
             return true;
         else

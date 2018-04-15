@@ -19,6 +19,11 @@ $db = $DB->db;
 // Autre initialisations //
 ///////////////////////////
 
+/**
+ * Cette fonction permet de se connecter au JSON client
+ * @param  [string] $service c'est le nom du service permettant de se connecter.
+ * @return objet json client
+ */
 function getPayutcClient($service)
 {
     global $_CONFIG;
@@ -27,7 +32,7 @@ function getPayutcClient($service)
         $service,
         array(),
         "PayIcam Json PHP Client",
-        isset($_SESSION['payutc_cookie']) ? $_SESSION['payutc_cookie'] : "");
+        $_SESSION['payutc_cookie'] ?? "");
 }
 // routes //
 
