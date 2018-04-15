@@ -475,3 +475,33 @@ function display_promo_stats($promos_data)
         <?php
     }
 }
+
+function display_payments_stats($payments_stats, $total_number)
+{
+    foreach($payments_stats as $payment_stats)
+    {
+        $pourcentage_payment = round(100 * $payment_stats['nombre'] / $total_number, 2) .'%';
+        ?>
+        <tr>
+            <th class="col-sm-3"><?= $payment_stats['payement']?></th>
+            <td class="col-sm-1"><?= $payment_stats['nombre'] ?></td>
+            <td class="col-sm-1"><?= $pourcentage_payment ?></td>
+        </tr>
+        <?php
+    }
+}
+
+function display_days_stats($days_stats, $total_number)
+{
+    foreach($days_stats as $day_stats)
+    {
+        $pourcentage_day = round(100 * $day_stats['nombre'] / $total_number, 2) .'%';
+        ?>
+        <tr>
+            <th class="col-sm-3"><?= $day_stats['day']?></th>
+            <td class="col-sm-1"><?= $day_stats['nombre'] ?></td>
+            <td class="col-sm-1"><?= $pourcentage_day ?></td>
+        </tr>
+        <?php
+    }
+}

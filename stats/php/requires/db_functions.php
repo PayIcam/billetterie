@@ -503,18 +503,37 @@ function get_promo_specification_details_stats($event_id)
 {
     global $db;
     $details_stats = $db->prepare('
-        SELECT pr.promo_name, s.site_name, pss.quota, pss.guest_number, SUM(IF(p.status IN ("V", "W"), 1, 0)) promo_count, SUM(IF(p.bracelet_identification IS NULL or p.status="A", 0, 1)) bracelet_count, COUNT(ihg.icam_id) invited_guests
+        SELECT pr.promo_name, s.site_name, pss.quota, pss.guest_number, SUM(IF(p.status IN ("V", "W"), 1, 0)) promo_count, SUM(IF(p.bracelet_identification IS NULL or p.status="A", 0, 1)) bracelet_count
         FROM promos_site_specifications pss
-        LEFT JOIN participants p ON p.promo_id = pss.promo_id and p.site_id = pss.site_id LEFT JOIN promos pr ON pr.promo_id=pss.promo_id LEFT JOIN sites s ON s.site_id=pss.site_id LEFT JOIN icam_has_guests ihg ON ihg.icam_id=p.participant_id
+        LEFT JOIN participants p ON p.promo_id = pss.promo_id and p.site_id = pss.site_id LEFT JOIN promos pr ON pr.promo_id=pss.promo_id LEFT JOIN sites s ON s.site_id=pss.site_id
         WHERE p.event_id=:event_id and status != "A"
-        GROUP BY pss.promo_id, pss.site_id, pss.quota, pss.guest_number ');
+        GROUP BY pss.promo_id, pss.site_id, pss.quota, pss.guest_number');
     $details_stats->execute(array('event_id' => $event_id));
-    return $details_stats->fetchAll();
+    $details_stats = $details_stats->fetchAll();
+    $guest_promo_count = $db->prepare('SELECT COUNT(ihg.icam_id) invited_guests
+        FROM promos_site_specifications pss
+        LEFT JOIN participants p ON p.promo_id = pss.promo_id and p.site_id = pss.site_id LEFT JOIN icam_has_guests ihg on ihg.icam_id=p.participant_id
+        WHERE p.event_id=:event_id and status != "A"
+        GROUP BY p.promo_id, p.site_id');
+    $guest_promo_count->execute(array('event_id' => $event_id));
+    $guest_promo_count = $guest_promo_count->fetchAll();
+    for($i=0; $i<count($guest_promo_count); $i++)
+    {
+        $combined_array[] = array_merge($details_stats[$i], $guest_promo_count[$i]);
+    }
+    return $combined_array;
 }
 function get_event_days_stats($event_id)
 {
     global $db;
-    $details_stats = $db->prepare('SELECT DATE(p.inscription_date) jour, COUNT(p.participant_id) FROM events e LEFT JOIN participants p ON p.event_id = e.event_id WHERE e.event_id=:event_id GROUP BY DATE(p.inscription_date)');
+    $details_stats = $db->prepare('SELECT DATE(p.inscription_date) day, COUNT(p.participant_id) nombre FROM events e LEFT JOIN participants p ON p.event_id = e.event_id WHERE e.event_id=:event_id GROUP BY DATE(p.inscription_date) ORDER BY day DESC LIMIT 0,15');
     $details_stats->execute(array('event_id' => $event_id));
     return $details_stats->fetchAll();
+}
+function get_event_payments_stats($event_id)
+{
+    global $db;
+    $payment_stats = $db->prepare('SELECT payement, COUNT(*) nombre FROM participants p WHERE event_id=:event_id GROUP BY payement');
+    $payment_stats->execute(array('event_id' => $event_id));
+    return $payment_stats->fetchAll();
 }

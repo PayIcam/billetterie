@@ -60,6 +60,33 @@
                     </tbody>
                 </table>
 
+                <div class="row">
+                    <div class="col-sm-6">
+                        <table class="table table-bordered">
+                            <thead>
+                                <th>Payement</th>
+                                <th>Nombre</th>
+                                <th>Pourcentage</th>
+                            </thead>
+                            <tbody>
+                                <?php display_payments_stats($event_payment_stats, $total_count) ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-sm-6">
+                        <table class="table table-bordered">
+                            <thead>
+                                <th>Jour</th>
+                                <th>Nombre</th>
+                                <th>Pourcentage</th>
+                            </thead>
+                            <tbody>
+                                <?php display_days_stats($event_days_stats, $total_count) ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <table class="table table-bordered">
                     <thead>
                         <tr>
