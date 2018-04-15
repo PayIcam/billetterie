@@ -526,14 +526,14 @@ function get_promo_specification_details_stats($event_id)
 function get_event_days_stats($event_id)
 {
     global $db;
-    $details_stats = $db->prepare('SELECT DATE(p.inscription_date) day, COUNT(p.participant_id) nombre FROM events e LEFT JOIN participants p ON p.event_id = e.event_id WHERE e.event_id=:event_id GROUP BY DATE(p.inscription_date) ORDER BY day DESC LIMIT 0,15');
+    $details_stats = $db->prepare('SELECT DATE(p.inscription_date) day, COUNT(p.participant_id) nombre FROM events e LEFT JOIN participants p ON p.event_id = e.event_id WHERE e.event_id=:event_id and status != "A" GROUP BY DATE(p.inscription_date) ORDER BY day DESC LIMIT 0,15');
     $details_stats->execute(array('event_id' => $event_id));
     return $details_stats->fetchAll();
 }
 function get_event_payments_stats($event_id)
 {
     global $db;
-    $payment_stats = $db->prepare('SELECT payement, COUNT(*) nombre FROM participants p WHERE event_id=:event_id GROUP BY payement');
+    $payment_stats = $db->prepare('SELECT payement, COUNT(*) nombre FROM participants p WHERE event_id=:event_id and status != "A" GROUP BY payement');
     $payment_stats->execute(array('event_id' => $event_id));
     return $payment_stats->fetchAll();
 }
