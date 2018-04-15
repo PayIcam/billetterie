@@ -16,11 +16,12 @@ if(isset($_GET['event_id']))
         $event_details_stats = get_event_details_stats($event_id);
 
         $total_quota = $event_details_stats['total_quota'];
-        $event_details_stats['pourcentage_inscriptions'] = $total_quota !=0 ? round(100 * $event_details_stats['total_count'] / $total_quota, 2) . '%' : "undefined";
-        $event_details_stats['pourcentage_student'] = $total_quota !=0 ? round(100 * $event_details_stats['student_count'] / $total_quota, 2) . '%' : "undefined";
-        $event_details_stats['pourcentage_graduated'] = $total_quota !=0 ? round($event_details_stats['graduated_count'] / $total_quota, 2) . '%' : "undefined";
-        $event_details_stats['pourcentage_guests'] = $total_quota !=0 ? round(100 * $event_details_stats['guests_count'] / $total_quota, 2) . '%' : "undefined";
-        $event_details_stats['pourcentage_bracelets'] = $event_details_stats['total_count'] !=0 ? round(100 * $event_details_stats['total_bracelet_count'] / $event_details_stats['total_count'], 2) . '%' : "undefined";
+        $total_count = $event_details_stats['total_count'];
+        $event_details_stats['pourcentage_inscriptions'] = $total_quota !=0 ? round(100 * $total_count / $total_quota, 2) . '%' : "undefined";
+        $event_details_stats['pourcentage_student'] = $total_count !=0 ? round(100 * $event_details_stats['student_count'] / $total_count, 2) . '%' : "undefined";
+        $event_details_stats['pourcentage_graduated'] = $total_count !=0 ? round($event_details_stats['graduated_count'] / $total_count, 2) . '%' : "undefined";
+        $event_details_stats['pourcentage_guests'] = $total_count !=0 ? round(100 * $event_details_stats['guests_count'] / $total_count, 2) . '%' : "undefined";
+        $event_details_stats['pourcentage_bracelets'] = $total_count !=0 ? round(100 * $event_details_stats['total_bracelet_count'] / $total_count, 2) . '%' : "undefined";
 
         $event_days_stats = get_event_days_stats($event_id);
         $promo_specification_details_stats = get_promo_specification_details_stats($event_id);
