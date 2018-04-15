@@ -464,13 +464,13 @@ function display_promo_stats($promos_data)
         <tr>
             <th class="col-sm-2"><?= $promo_stats['promo_name'] . " " . $promo_stats['site_name'] ?></th>
             <td class="col-sm-1"><?= $promo_stats['promo_count'] ?></td>
-            <td class="col-sm-1"><?= $promo_stats['pourcentage_quota'] ?></td>
+            <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_quota'], count($promos_data))?>"><?= $promo_stats['pourcentage_quota'] ?></td>
             <td class="col-sm-1"><?= $promo_stats['quota'] ?></td>
-            <td class="col-sm-1"><?= $promo_stats['pourcentage_evenement'] ?></td>
+            <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_evenement'], count($promos_data))?>"><?= $promo_stats['pourcentage_evenement'] ?></td>
             <td class="col-sm-1"><?= $promo_stats['invited_guests'] ?></td>
-            <td class="col-sm-1"><?= $promo_stats['pourcentage_invites'] ?></td>
+            <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_invites'], count($promos_data))?>"><?= $promo_stats['pourcentage_invites'] ?></td>
             <td class="col-sm-1"><?= $promo_stats['bracelet_count'] ?></td>
-            <td class="col-sm-1"><?= $promo_stats['pourcentage_bracelet'] ?></td>
+            <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_bracelet'], count($promos_data))?>"><?= $promo_stats['pourcentage_bracelet'] ?></td>
         </tr>
         <?php
     }
@@ -485,7 +485,7 @@ function display_payments_stats($payments_stats, $total_number)
         <tr>
             <th class="col-sm-3"><?= $payment_stats['payement']?></th>
             <td class="col-sm-1"><?= $payment_stats['nombre'] ?></td>
-            <td class="col-sm-1"><?= $pourcentage_payment ?></td>
+            <td class="col-sm-1 <?=display_pourcentage_style($pourcentage_payment, count($payments_stats))?>"><?= $pourcentage_payment ?></td>
         </tr>
         <?php
     }
@@ -500,8 +500,31 @@ function display_days_stats($days_stats, $total_number)
         <tr>
             <th class="col-sm-3"><?= $day_stats['day']?></th>
             <td class="col-sm-1"><?= $day_stats['nombre'] ?></td>
-            <td class="col-sm-1"><?= $pourcentage_day ?></td>
+            <td class="col-sm-1 <?=display_pourcentage_style($pourcentage_day, count($days_stats))?>"><?= $pourcentage_day ?></td>
+            <td><?php display_pourcentage_style($pourcentage_day, count($days_stats)) ?></td>
         </tr>
         <?php
+    }
+}
+
+function display_pourcentage_style($pourcentage, $number_rows)
+{
+    switch ($pourcentage)
+    {
+        case ($pourcentage<40/$number_rows):
+            echo 'danger';
+            break;
+        case ($pourcentage<70/$number_rows):
+            echo 'warning';
+            break;
+        case ($pourcentage<100/$number_rows):
+            echo 'active';
+            break;
+        case ($pourcentage<175/$number_rows):
+            echo 'info';
+            break;
+        case ($pourcentage>175/$number_rows):
+            echo 'success';
+            break;
     }
 }
