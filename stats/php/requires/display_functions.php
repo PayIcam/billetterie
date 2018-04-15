@@ -464,13 +464,13 @@ function display_promo_stats($promos_data)
         <tr>
             <th class="col-sm-2"><?= $promo_stats['promo_name'] . " " . $promo_stats['site_name'] ?></th>
             <td class="col-sm-1"><?= $promo_stats['promo_count'] ?></td>
-            <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_quota'], count($promos_data))?>"><?= $promo_stats['pourcentage_quota'] ?></td>
+            <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_quota'], 1.8)?>"><?= $promo_stats['pourcentage_quota'] ?></td>
             <td class="col-sm-1"><?= $promo_stats['quota'] ?></td>
             <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_evenement'], count($promos_data))?>"><?= $promo_stats['pourcentage_evenement'] ?></td>
             <td class="col-sm-1"><?= $promo_stats['invited_guests'] ?></td>
             <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_invites'], count($promos_data))?>"><?= $promo_stats['pourcentage_invites'] ?></td>
             <td class="col-sm-1"><?= $promo_stats['bracelet_count'] ?></td>
-            <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_bracelet'], count($promos_data))?>"><?= $promo_stats['pourcentage_bracelet'] ?></td>
+            <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_bracelet'], 1.8)?>"><?= $promo_stats['pourcentage_bracelet'] ?></td>
         </tr>
         <?php
     }
