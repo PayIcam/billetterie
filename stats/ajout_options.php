@@ -19,8 +19,8 @@ if($Auth->hasRole('admin'))
             if(!empty($icam))
             {
                 $icam = prepare_participant_displaying($icam);
-                $promo_id = $_SESSION['icam_informations']->promo_id;
-                $site_id = $_SESSION['icam_informations']->site_id;
+                $promo_id = $icam['promo_id'];
+                $site_id = $icam['site_id'];
                 $options = get_optional_options(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id, 'participant_id' => $_GET['participant_id']));
                 require 'templates/ajout_options.php';
             }
