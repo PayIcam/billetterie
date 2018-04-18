@@ -30,7 +30,6 @@ if(!empty($_POST))
                 }
                 else
                 {
-                    var_dump($_GET);
                     add_error_to_ajax_response("Il manque des paramètres.");
                     echo json_encode($ajax_json_response);
                     die();

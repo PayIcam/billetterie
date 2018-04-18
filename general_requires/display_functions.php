@@ -158,7 +158,6 @@ function insert_as_select_option($array_to_insert)
 
 function display_options($participant)
 {
-    var_dump($participant);
     ?>
         <td>
             <?php if(!empty($participant['validated_options'])) { ?>
