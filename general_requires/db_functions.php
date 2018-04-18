@@ -571,3 +571,11 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
     }
     return $recherche_bdd->fetchAll();
 }
+
+function get_icam_inviter_data($guest_id)
+{
+    global $db;
+    $participant_data = $db->prepare('SELECT participants.* FROM participants WHERE participant_id IN (SELECT icam_id from icam_has_guests WHERE guest_id=:guest_id)');
+    $participant_data->execute(array("guest_id" => $guest_id));
+    return $participant_data->fetch();
+}
