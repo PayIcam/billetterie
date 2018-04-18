@@ -611,3 +611,12 @@ function get_pending_options($ids)
     $option_query->execute($ids);
     return $option_query->fetchAll();
 }
+
+
+function get_option_name($option_id)
+{
+    global $db;
+    $option_name = $db->prepare('SELECT name FROM options WHERE option_id=:option_id');
+    $option_name->execute(array("option_id" => $option_id));
+    return $option_name->fetch()['name'];
+}
