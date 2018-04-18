@@ -12,11 +12,11 @@ function set_header_navbar($title)
 
                 <title><?=htmlspecialchars($title)?></title>
 
-                <link rel="stylesheet" type="text/css" href="<?=$_CONFIG['public_url']?>css/format.css">
                 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
                 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
                 <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+                <link rel="stylesheet" type="text/css" href="<?=$_CONFIG['public_url']?>css/format.css">
 
                 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
                 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
@@ -107,9 +107,9 @@ function set_alert_style($title)
     <html>
     <head>
         <title><?=$title?></title>
-        <link rel="stylesheet" href="../../css/format.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="../../css/format.css">
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
@@ -154,4 +154,107 @@ function insert_as_select_option($array_to_insert)
     {
         echo '<option>'. htmlspecialchars($element) .'</option>';
     }
+}
+
+function display_options($participant)
+{
+    ?>
+        <td>
+            <?php if(!empty($participant['validated_options'])) { ?>
+            <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Options du participant : " data-content="<?= create_option_text($participant['validated_options']) ?>" type="button">
+                <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
+            </button>
+            <?php } ?>
+        </td>
+    <?php
+}
+
+function display_guest_infos($participant)
+{
+    global $event_id;
+    ?> <td> <?php
+        if($participant['is_icam'] == 1)
+        {
+            $guests = get_icams_guests(array('event_id' => $_GET['event_id'], 'icam_id' => $participant['participant_id']));
+            if(!empty($guests)) { ?>
+                <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Invités :" data-content="<?= create_guests_text($guests) ?>" type="button">
+                    <?=$participant['current_promo_guest_number']?>
+                </button>
+            <?php }
+        }
+        else
+        {
+            $icam_data = get_icam_inviter_data($participant['participant_id']);
+            if(!empty($icam_data)) { ?>
+                <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-content="Invité par <?=$icam_data['prenom'] . " " . $icam_data['nom'] ?>" type="button">
+                    <span class="glyphicon glyphicon-user option_tooltip_glyph"></span>
+                </button>
+            <?php }
+        }
+    ?> </td> <?php
+}
+
+function display_pending_reservations_entrees($participant)
+{
+    if($participant['is_icam']==1)
+    {
+        if(count(get_pending_reservations($participant['event_id'], $participant['email'])) >=1)
+        {
+            ?>
+            <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="" data-content="" type="button">
+                <span style="color: red" class="glyphicon glyphicon-usd option_tooltip_glyph"></span>
+            </button>
+            <?php
+        }
+        else
+        {
+            ?>
+            <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="" data-content="" type="button">
+                <span style="color: green" class="glyphicon glyphicon-usd option_tooltip_glyph"></span>
+            </button>
+            <?php
+        }
+    }
+}
+
+function create_guests_text($guests)
+{
+    foreach($guests as $guest)
+    {
+        echo $guest['prenom'] . ' ' . $guest['nom'] . '<br>';
+    }
+}
+
+function create_personal_informations_text($participant)
+{
+    ?>
+    <strong>Site :</strong> <span class='badge badge-pill badge-inverse'><?=$participant['site']?></span> <br>
+    <strong>Prix :</strong> <span class='badge badge-pill badge-info'><?=$participant['price']?>€</span> <br>
+    <strong>Payement :</strong> <span class='badge badge-pill badge-success'><?=$participant['payement']?></span> <br>
+    <?= isset($participant['telephone']) ? "<strong>Telephone :</strong> <span class='badge badge-pill badge-warning'>" . $participant['telephone'] . "</span><br>" : "" ?>
+    <strong>Inscription :</strong> <span class='badge badge-pill badge-error'><?=date('d/m/Y à H:i:s', date_create_from_format('Y-m-d H:i:s', $participant['inscription_date'])->getTimestamp())?></span> <br>
+    <?= isset($participant['email']) ? "<strong>Email :</strong> <span class='badge badge-pill badge-inverse'>" . $participant['email'] . "</span><br>" : "" ?>
+    <?php
+}
+
+function display_personnal_informations($participant)
+{
+    ?>
+    <td>
+        <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Informations supplémentaires" data-content="<?= create_personal_informations_text($participant) ?>" type="button">
+            <span class="glyphicon glyphicon-eye-open option_tooltip_glyph"></span>
+        </button>
+    </td>
+    <?php
+}
+
+function display_validate_button($participant)
+{
+    ?>
+    <th>
+        <?= $participant['is_in'] ?
+        '<button class="is_in option_tooltip btn btn-danger" data-container="body" type="button">✘</button>' :
+        '<button class="is_out option_tooltip btn btn-success" data-container="body" type="button">✔</button>' ?>
+    </th>
+    <?php
 }

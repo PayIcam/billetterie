@@ -9,8 +9,6 @@ if(!empty($_POST))
     require 'requires/db_functions.php';
     require 'requires/controller_functions.php';
 
-    $db = connect_to_db($_CONFIG['ticketing']);
-
     $email = $_SESSION['icam_informations']->mail;
     $promo_id = $_SESSION['icam_informations']->promo_id;
     $site_id = $_SESSION['icam_informations']->site_id;

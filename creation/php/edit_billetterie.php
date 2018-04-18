@@ -7,7 +7,6 @@ if(!empty($_POST))
     require 'requires/db_functions.php';
     require 'requires/controller_functions.php';
 
-    $db = connect_to_db($_CONFIG['ticketing']);
     $event_id=$_GET['event_id'];
 
     check_and_prepare_data();

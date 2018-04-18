@@ -105,7 +105,7 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
     }
 }
 
-function display_liste_head($specification="", $id=true, $status=false, $price=true, $email=false, $telephone=true, $guest_number=false, $options=true, $edit=true, $additions=true, $bracelet=true, $date_inscription=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
+function display_liste_head($specification="", $id=true, $status=false, $personnal_infos=true, $options=true, $edit=true, $additions=true, $bracelet=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
 {
 /**
  *
@@ -158,16 +158,11 @@ function display_liste_head($specification="", $id=true, $status=false, $price=t
         <?php if($status) { ?> <th scope="col">Status</th> <?php } ?>
         <th scope="col">Prénom</th>
         <th scope="col">Nom</th>
-        <?php if($price) { ?> <th scope="col">Prix</th> <?php } ?>
         <th scope="col">Promo</th>
         <?php if($bracelet) { ?> <th scope="col">Bracelet</th> <?php } ?>
         <!-- <th scope="col">Créneau</th> -->
         <!-- <th scope="col">Tickets Boissons</th> -->
-        <?php if($email) { ?> <th scope="col">Email</th> <?php } ?>
-        <?php if($telephone) { ?> <th scope="col">Telephone</th> <?php } ?>
-        <?php if($date_inscription) { ?> <th scope="col">Date Inscription</th> <?php } ?>
-        <?php if($date_payement) { ?> <th scope="col">Date Payement</th> <?php } ?>
-        <?php if($guest_number) { ?> <th scope="col">Nombre d'invités</th> <?php } ?>
+        <?php if($personnal_infos) { ?> <th scope="col">Informations</th> <?php } ?>
         <?php if($options) { ?> <th scope="col">Options</th> <?php } ?>
         <?php if($guest_info) { ?> <th scope="col">Invités</th> <?php } ?>
         <?php if($pending_indicator) { ?> <th scope="col">Attente</th> <?php } ?>
@@ -184,80 +179,6 @@ function create_option_text($options)
         $select_message = $select_message != "" ? " Choix " . $select_message : "";
         echo get_option_name($option['option_id']) . $select_message . '<br>';
     }
-}
-function display_options($participant)
-{
-    ?>
-        <td>
-            <?php if(!empty($participant['validated_options'])) { ?>
-            <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Options du participant : " data-content="<?= create_option_text($participant['validated_options']) ?>" type="button">
-                <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
-            </button>
-            <?php } ?>
-        </td>
-    <?php
-}
-
-function display_pending_reservations($participant)
-{
-    ?>
-    <td>
-    <?php
-    if($participant['is_icam']==1)
-    {
-        if(count(get_pending_reservations($participant['event_id'], $participant['email'])) >=1 )
-        {
-            ?>
-            <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="" data-content="" type="button">
-                <span style="color: red" class="glyphicon glyphicon-usd option_tooltip_glyph"></span>
-            </button>
-            <?php
-        }
-        else
-        {
-            ?>
-            <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="" data-content="" type="button">
-                <span style="color: green" class="glyphicon glyphicon-usd option_tooltip_glyph"></span>
-            </button>
-            <?php
-        }
-    }
-    ?>
-    </td>
-    <?php
-}
-
-function create_guests_text($guests)
-{
-    foreach($guests as $guest)
-    {
-        echo $guest['prenom'] . ' ' . $guest['nom'] . '<br>';
-    }
-}
-
-function display_guest_infos($participant)
-{
-    global $event_id;
-    ?> <td> <?php
-        if($participant['is_icam'] == 1)
-        {
-            $guests = get_icams_guests(array('event_id' => $_GET['event_id'], 'icam_id' => $participant['participant_id']));
-            if(!empty($guests)) { ?>
-                <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Invités :" data-content="<?= create_guests_text($guests) ?>" type="button">
-                    <?=$participant['current_promo_guest_number']?>
-                </button>
-            <?php }
-        }
-        else
-        {
-            $icam_data = get_icam_inviter_data($participant['participant_id']);
-            if(!empty($icam_data)) { ?>
-                <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-content="Invité par <?=$icam_data['prenom'] . " " . $icam_data['nom'] ?>" type="button">
-                    <span class="glyphicon glyphicon-user option_tooltip_glyph"></span>
-                </button>
-            <?php }
-        }
-    ?> </td> <?php
 }
 
 function link_to_edit_reservation($participant)
@@ -297,7 +218,7 @@ function display_promo($promo)
     <?php
 }
 
-function display_participant_info($participant, $specification="", $id=true, $status=false, $price=true, $email=false, $telephone=true, $guest_number=false, $options=true, $edit=true, $additions=true, $bracelet=true, $date_inscription=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
+function display_participant_info($participant, $specification="", $id=true, $status=false, $options=true, $edit=true, $additions=true, $bracelet=true, $personnal_infos=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
 {
     global $Auth;
     if(!$Auth->hasRole('super-admin'))
@@ -318,7 +239,6 @@ function display_participant_info($participant, $specification="", $id=true, $st
     {
         $email = false;
         $telephone = false;
-        $guest_number = false;
         $pending_indicator = false;
         $edit = false;
         $additions = false;
@@ -331,7 +251,6 @@ function display_participant_info($participant, $specification="", $id=true, $st
     {
         $email = false;
         $telephone = false;
-        $guest_number = false;
         $additions = false;
         $pending_indicator = false;
     }
@@ -341,13 +260,9 @@ function display_participant_info($participant, $specification="", $id=true, $st
         <?= $status ? "<td>" . $participant['status'] . "</td>" : "" ?>
         <td class="prenom"><?= htmlspecialchars($participant['prenom']) ?></td>
         <td class="nom"><?= htmlspecialchars($participant['nom']) ?></td>
-        <?= $price ? "<td><span style='background-color: #3a87ad' class='badge badge-pill badge-info'>" . $participant['price'] . "€</span></td>" : "" ?>
         <?= display_promo($participant['promo']); ?>
-        <?= $bracelet ? "<td class='bracelet_identification'>" . $participant['bracelet_identification'] . "</td>" : "" ?>
-        <?= $email ? "<td>" . $participant['email'] . "</td>" : "" ?>
-        <?= $telephone ? "<td>" . htmlspecialchars($participant['telephone']) . "</td>" : "" ?>
-        <?= $date_inscription ? "<td>" . $participant['inscription_date'] . "</td>" : "" ?>
-        <?= $guest_number ? "<td>" . $participant['current_promo_guest_number'] . "</td>" : "" ?>
+        <?= $bracelet ? "<td class='bracelet_identification'><span class='badge badge-pill badge-info'>" . $participant['bracelet_identification'] . "</span></td>" : "" ?>
+        <?= $personnal_infos ? display_personnal_informations($participant) : "" ?>
         <?= $options ? display_options($participant) : "" ?>
         <?= $guest_info ? display_guest_infos($participant) : "" ?>
         <?= $pending_indicator ? display_pending_reservations($participant) : "" ?>
@@ -464,13 +379,13 @@ function display_promo_stats($promos_data)
         <tr>
             <th class="col-sm-2"><?= $promo_stats['promo_name'] . " " . $promo_stats['site_name'] ?></th>
             <td class="col-sm-1"><?= $promo_stats['promo_count'] ?></td>
-            <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_quota'], 1.8)?>"><?= $promo_stats['pourcentage_quota'] ?></td>
+            <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_quota'], 2)?>"><?= $promo_stats['pourcentage_quota'] ?></td>
             <td class="col-sm-1"><?= $promo_stats['quota'] ?></td>
             <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_evenement'], count($promos_data))?>"><?= $promo_stats['pourcentage_evenement'] ?></td>
             <td class="col-sm-1"><?= $promo_stats['invited_guests'] ?></td>
             <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_invites'], count($promos_data))?>"><?= $promo_stats['pourcentage_invites'] ?></td>
             <td class="col-sm-1"><?= $promo_stats['bracelet_count'] ?></td>
-            <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_bracelet'], 1.8)?>"><?= $promo_stats['pourcentage_bracelet'] ?></td>
+            <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_bracelet'], 2)?>"><?= $promo_stats['pourcentage_bracelet'] ?></td>
         </tr>
         <?php
     }
@@ -526,4 +441,33 @@ function display_pourcentage_style($pourcentage, $number_rows)
             echo 'success';
             break;
     }
+}
+
+function display_pending_reservations($participant)
+{
+    ?>
+    <td>
+    <?php
+    if($participant['is_icam']==1)
+    {
+        if(count(get_pending_reservations($participant['event_id'], $participant['email'])) >=1 )
+        {
+            ?>
+            <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="" data-content="" type="button">
+                <span style="color: red" class="glyphicon glyphicon-usd option_tooltip_glyph"></span>
+            </button>
+            <?php
+        }
+        else
+        {
+            ?>
+            <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="" data-content="" type="button">
+                <span style="color: green" class="glyphicon glyphicon-usd option_tooltip_glyph"></span>
+            </button>
+            <?php
+        }
+    }
+    ?>
+    </td>
+    <?php
 }

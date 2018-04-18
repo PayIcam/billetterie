@@ -275,3 +275,299 @@ function get_fundations_events($fundation_id)
     $fundation_events->execute(array("fundation_id" => $fundation_id));
     return $fundation_events->fetchAll();
 }
+
+function count_current_icam($event_id, $condition=true)
+{
+    global $db;
+    $is_icam = $condition ? 1 : 0;
+    $count = $db->prepare('SELECT COUNT(*) FROM participants WHERE is_icam = :is_icam and event_id = :event_id and status="V" ');
+    $count->execute(array('event_id' => $event_id, 'is_icam' => $is_icam));
+    return $count->fetch()['COUNT(*)'];
+}
+
+function count_current_icam_student($event_id, $condition=true)
+{
+    global $db;
+    if($condition)
+    {
+        $count = $db->prepare('SELECT COUNT(*) FROM participants INNER JOIN promos ON participants.promo_id = promos.promo_id WHERE event_id = :event_id and still_student = 1 and status="V"');
+    }
+    else
+    {
+        $count = $db->prepare('SELECT COUNT(*) FROM participants INNER JOIN promos ON participants.promo_id = promos.promo_id WHERE event_id = :event_id and still_student = 0 and status="V"');
+    }
+    $count->execute(array('event_id' => $event_id));
+    return $count->fetch()['COUNT(*)'];
+}
+
+function count_current_telephone($event_id, $condition=true)
+{
+    global $db;
+    $count = $condition ? $db->prepare('SELECT COUNT(*) FROM participants WHERE telephone IS NOT NULL and event_id = :event_id and is_icam=1 and status="V"') : $db->prepare('SELECT COUNT(*) FROM participants WHERE telephone IS NULL and event_id = :event_id and is_icam=1 and status="V"');
+    $count->execute(array('event_id' => $event_id));
+    return $count->fetch()['COUNT(*)'];
+}
+function count_current_bracelet($event_id, $condition=true)
+{
+    global $db;
+    $count = $condition ? $db->prepare('SELECT COUNT(*) FROM participants WHERE bracelet_identification IS NOT NULL and event_id = :event_id and status="V"') : $db->prepare('SELECT COUNT(*) FROM participants WHERE bracelet_identification IS NULL and event_id = :event_id and status="V"');
+    $count->execute(array('event_id' => $event_id));
+    return $count->fetch()['COUNT(*)'];
+}
+function count_payed($event_id, $condition=true)
+{
+    global $db;
+    $count = $condition ? $db->prepare('SELECT COUNT(*) FROM participants WHERE price != 0 and event_id = :event_id and status="V"') : $db->prepare('SELECT COUNT(*) FROM participants WHERE price =0 and event_id = :event_id and status="V"');
+    $count->execute(array('event_id' => $event_id));
+    return $count->fetch()['COUNT(*)'];
+}
+
+function count_payement($data)
+{
+    global $db;
+    $count = $db->prepare('SELECT COUNT(*) FROM participants WHERE payement=:payement and event_id = :event_id and status="V"');
+    $count->execute($data);
+    return $count->fetch()['COUNT(*)'];
+}
+function count_status($data)
+{
+    global $db;
+    $count = $db->prepare('SELECT COUNT(*) FROM participants WHERE status=:status and event_id = :event_id');
+    $count->execute($data);
+    return $count->fetch()['COUNT(*)'];
+}
+
+function count_participants_with_option($event_id, $condition=true)
+{
+    global $db;
+    $count = $condition ? $db->prepare('SELECT COUNT(*) FROM participants WHERE event_id = :event_id and status="V" and participant_id IN(SELECT participant_id FROM participant_has_options)') : $db->prepare('SELECT COUNT(*) FROM participants WHERE event_id = :event_id and status="V" and participant_id NOT IN(SELECT participant_id FROM participant_has_options)');
+    $count->execute(array('event_id' => $event_id));
+    return $count->fetch()['COUNT(*)'];
+}
+function get_option_names($event_id)
+{
+    global $db;
+    $option_name = $db->prepare('SELECT name FROM options WHERE event_id=:event_id');
+    $option_name->execute(array("event_id" => $event_id));
+    return array_column($option_name->fetchAll(), 'name');
+}
+function get_event_promo_names($event_id)
+{
+    global $db;
+    $promos = $db->prepare('SELECT promo_name FROM promos WHERE promo_id IN (SELECT DISTINCT promo_id FROM promos_site_specifications WHERE event_id = :event_id and is_removed=0)');
+    $promos->execute(array('event_id' => $event_id));
+    return $promos->fetchAll();
+}
+function get_event_site_names($event_id)
+{
+    global $db;
+    $promos = $db->prepare('SELECT site_name FROM sites WHERE site_id IN (SELECT DISTINCT site_id FROM promos_site_specifications WHERE event_id = :event_id and is_removed=0)');
+    $promos->execute(array('event_id' => $event_id));
+    return $promos->fetchAll();
+}
+
+function determination_recherche($recherche, $start_lign, $rows_per_page)
+{
+    global $db, $recherche_bdd;
+    $event_id = $_GET['event_id'];
+
+    $promo_names = array_column(get_event_promo_names($event_id), 'promo_name');
+    $promo_search_regex = '#(';
+    foreach($promo_names as $promo_name)
+    {
+        $promo_search_regex .= $promo_name . '|';
+    }
+    $promo_search_regex = substr($promo_search_regex, 0, count($promo_search_regex)-2).'){1}#i';
+
+    $site_names = array_column(get_event_site_names($event_id), 'site_name');
+    $site_search_regex = '#(';
+    foreach($site_names as $site_name)
+    {
+        $site_search_regex .= $site_name . '|';
+    }
+    $site_search_regex = substr($site_search_regex, 0, count($site_search_regex)-2).'){1}#i';
+
+    $promos = get_specification_details($event_id);
+    $promo_site_search_regex = '#(';
+    foreach($promos as $promo)
+    {
+        $promo_site_search_regex .= get_promo_name($promo['promo_id']) . ' ' . get_site_name($promo['site_id']) . '|';
+    }
+    $promo_site_search_regex = substr($promo_site_search_regex, 0, count($promo_site_search_regex)-2).'){1}#i';
+
+    $payements = $db->prepare('SELECT DISTINCT payement FROM participants WHERE event_id=:event_id');
+    $payements->execute(array('event_id' => $event_id));
+    $payements = array_column($payements->fetchAll(), 'payement');
+    $payement_search_regex = '#(';
+    foreach($payements as $payement)
+    {
+        $payement_search_regex .= $payement . '|';
+    }
+    $payement_search_regex = substr($payement_search_regex, 0, count($payement_search_regex)-2).'){1}#i';
+
+    $options = get_option_names($event_id);
+    $option_search_regex = '#(';
+    foreach($options as $option)
+    {
+        $option_search_regex .= $option . '|';
+    }
+    $option_search_regex = substr($option_search_regex, 0, count($option_search_regex)-2).'){1}#i';
+
+    switch ($recherche)
+    {
+        case (preg_match("#^0[1-68]([-. ]?[0-9]{2}){4}$#", $recherche)==1):
+            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and telephone = :telephone and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $recherche_bdd->bindParam('telephone', $recherche);
+            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE status="V" and telephone = :telephone and event_id=:event_id');
+            $count_recherche->execute(array('telephone' => $recherche, 'event_id' => $event_id));
+            $count_recherche = $count_recherche->fetch()['COUNT(*)'];
+            break;
+
+        case (preg_match($promo_site_search_regex, $recherche) == 1):
+            $recherche = explode(' ', $recherche);
+            $promo_id = get_promo_id($recherche[0]);
+            $site_id = get_site_id($recherche[1]);
+
+            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and promo_id=:promo_id and site_id=:site_id and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $recherche_bdd->bindParam('promo_id', $promo_id);
+            $recherche_bdd->bindParam('site_id', $site_id);
+            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE status="V" and promo_id = :promo_id and site_id=:site_id and event_id=:event_id');
+            $count_recherche->execute(array('site_id' => $site_id, 'promo_id' => $promo_id, 'event_id' => $event_id));
+            $count_recherche = $count_recherche->fetch()['COUNT(*)'];
+            break;
+
+        case (preg_match($promo_search_regex, $recherche) == 1):
+            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and promo_id = :promo_id and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $promo_id = get_promo_id($recherche);
+            $recherche_bdd->bindParam('promo_id', $promo_id);
+            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE status="V" and promo_id = :promo_id and event_id=:event_id');
+            $count_recherche->execute(array('promo_id' => $promo_id, 'event_id' => $event_id));
+            $count_recherche = $count_recherche->fetch()['COUNT(*)'];
+            break;
+
+        case (preg_match($site_search_regex, $recherche) == 1):
+            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and site_id = :site_id and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $site_id = get_site_id($recherche);
+            $recherche_bdd->bindParam('site_id', $site_id);
+            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE status="V" and site_id = :site_id and event_id=:event_id');
+            $count_recherche->execute(array('site_id' => $site_id, 'event_id' => $event_id));
+            $count_recherche = $count_recherche->fetch()['COUNT(*)'];
+            break;
+
+        case(preg_match($option_search_regex, $recherche) ==1):
+            $recherche_bdd = $db->prepare('SELECT * FROM participants p WHERE event_id = :event_id and status="V" and participant_id IN(SELECT DISTINCT participant_id FROM participant_has_options WHERE option_id=:option_id) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $option_id = get_option_id($recherche);
+            $recherche_bdd->bindParam('option_id', $option_id);
+            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE event_id = :event_id and status="V" and participant_id IN(SELECT DISTINCT participant_id FROM participant_has_options WHERE option_id=:option_id)');
+            $count_recherche->execute(array('event_id' => $event_id, 'option_id' => $option_id));
+            $count_recherche = $count_recherche->fetch()['COUNT(*)'];
+            break;
+
+        case(preg_match("#^[0-9]{1,4}$#", $recherche)==1):
+            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and bracelet_identification = :bracelet_identification and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $recherche_bdd->bindParam('bracelet_identification', $recherche);
+            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE status="V" and bracelet_identification = :bracelet_identification and event_id=:event_id');
+            $count_recherche -> execute(array('bracelet_identification' => $recherche, 'event_id' => $event_id));
+            $count_recherche = $count_recherche->fetch()['COUNT(*)'];
+            break;
+
+        case (preg_match("#^icam[s]?$#i", $recherche)==1):
+            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and is_icam = 1 and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $count_recherche = count_current_icam($event_id);
+            break;
+
+        case (preg_match("#^icam[s]? student[s]?$#i", $recherche)==1):
+            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and is_icam = 1 and event_id = :event_id and promo_id IN (SELECT promo_id FROM promos WHERE status="V" and still_student=1) ORDER BY participant_id LIMIT :start_lign, :rows_per_page ');
+            $count_recherche = count_current_icam_student($event_id);
+            break;
+
+        case (preg_match("#^icam[s]? (graduated|diplom[eé][s]?){1}$#i", $recherche)==1):
+            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and is_icam = 1 and event_id = :event_id and promo_id IN (SELECT promo_id FROM promos WHERE status="V" and still_student=0) ORDER BY participant_id LIMIT :start_lign, :rows_per_page ');
+            $count_recherche = count_current_icam_student($event_id, false);
+            break;
+
+        case (preg_match("#^exterieur|extérieur$#i", $recherche)==1):
+            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and is_icam = 0 and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $count_recherche = count_current_icam($event_id, false);
+            break;
+
+        case (preg_match("#^telephone$|^téléphone$#i", $recherche)==1):
+            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and telephone IS NOT NULL and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $count_recherche = count_current_telephone($event_id);
+            break;
+
+        case (preg_match("#^no[t]? telephone|no[t]? téléphone$#i", $recherche)==1):
+            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and is_icam = 1 and telephone IS NULL and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $count_recherche = count_current_telephone($event_id, false);
+            break;
+
+        case (preg_match("#^bracelet$#i", $recherche)==1):
+            $recherche_bdd =$db->prepare('SELECT * FROM participants WHERE status="V" and bracelet_identification IS NOT NULL and event_id = :event_id or bracelet_identification !="" ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $count_recherche = count_current_bracelet($event_id);
+            break;
+
+        case (preg_match("#^no[t]? bracelet$#i", $recherche)==1):
+            $recherche_bdd =$db->prepare('SELECT * FROM participants WHERE status="V" and bracelet_identification IS NULL and event_id = :event_id or bracelet_identification="" ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $count_recherche = count_current_bracelet($event_id, false);
+            break;
+
+        case (preg_match("#^payed$#i", $recherche)==1):
+            $recherche_bdd =$db->prepare('SELECT * FROM participants WHERE status="V" and price !=0 and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $count_recherche = count_payed($event_id);
+            break;
+
+        case (preg_match("#^no[t]? payed$#i", $recherche)==1):
+            $recherche_bdd =$db->prepare('SELECT * FROM participants WHERE status="V" and price=0 and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $count_recherche = count_payed($event_id, false);
+            break;
+
+        case (preg_match($payement_search_regex, $recherche)==1):
+            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and payement=:payement and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $recherche_bdd->bindParam('payement', $recherche);
+            $count_recherche = count_payement(array('event_id' => $event_id, 'payement' => $recherche));
+            break;
+
+        case ('W'):
+        case ('A'):
+            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status=:status and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $recherche_bdd->bindParam('status', $recherche);
+            $count_recherche = count_status(array('event_id' => $event_id, 'status' => $recherche));
+            break;
+
+        case (preg_match('#^option$#i', $recherche)==1):
+            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE event_id = :event_id and participant_id IN (SELECT participant_id FROM participant_has_options) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $count_recherche = count_participants_with_option($event_id);
+            break;
+
+        case (preg_match("#^[a-zéèçôîûâ]+ [a-zçôîûâ]+$#i", $recherche)==1):
+            $recherche = explode(" " , $recherche);
+            $prenom = '^'.$recherche[0];
+            $nom = '^'.$recherche[1];
+
+            $recherche_bdd = $db-> prepare('SELECT * FROM participants WHERE status="V" and nom REGEXP :nom AND prenom REGEXP :prenom and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $recherche_bdd->bindParam('prenom', $prenom);
+            $recherche_bdd->bindParam('nom', $nom);
+            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE status="V" and nom REGEXP :nom AND prenom REGEXP :prenom and event_id = :event_id');
+            $count_recherche->execute(array('prenom' => $prenom, 'nom' => $nom, 'event_id' => $event_id));
+            $count_recherche = $count_recherche->fetch()['COUNT(*)'];
+            break;
+
+        default:
+            $recherche_bdd =$db-> prepare('SELECT * FROM participants WHERE status="V" and event_id = :event_id and (nom REGEXP :recherche OR prenom REGEXP :recherche) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $recherche_bdd->bindParam('recherche', $recherche);
+            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE status="V" and event_id = :event_id and(nom REGEXP :recherche OR prenom REGEXP :recherche)');
+            $count_recherche->execute(array('recherche' => $recherche, 'event_id' => $event_id));
+            $count_recherche = $count_recherche->fetch()['COUNT(*)'];
+    }
+    $_SESSION['count_recherche'] = $count_recherche;
+    $_SESSION['search_match'] = $count_recherche .' entrées correspondent à la recherche';
+    $recherche_bdd->bindParam('start_lign', $start_lign, PDO::PARAM_INT);
+    $recherche_bdd->bindParam('rows_per_page', $rows_per_page, PDO::PARAM_INT);
+    $recherche_bdd->bindParam('event_id', $event_id);
+    $recherche_bdd->execute();
+    if(!$recherche_bdd)
+    {
+        print_r($db->errorInfo());
+    }
+    return $recherche_bdd->fetchAll();
+}

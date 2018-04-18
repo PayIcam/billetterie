@@ -7,8 +7,6 @@ if(!empty($_POST))
     require 'requires/db_functions.php';
     require 'requires/controller_functions.php';
 
-    $db = connect_to_db($_CONFIG['ticketing']);
-
     check_and_prepare_data();
 
     //Table events

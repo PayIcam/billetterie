@@ -18,14 +18,14 @@
                         <tr>
                             <th class="col-sm-4">Tous les participants</th>
                             <td class="col-sm-4"><?=$event_details_stats['total_count']?></td>
-                            <td class="col-sm-4 <?=display_pourcentage_style($event_details_stats['pourcentage_inscriptions'], 1.8)?>"><?=$event_details_stats['pourcentage_inscriptions']?></td>
+                            <td class="col-sm-4 <?=display_pourcentage_style($event_details_stats['pourcentage_inscriptions'], 2)?>"><?=$event_details_stats['pourcentage_inscriptions']?></td>
                             <td class="col-sm-4"><?=$event_details_stats['total_quota']?></td>
                         </tr>
                         <?php if($event_details_stats['student_count'] !=0) { ?>
                         <tr>
                             <th class="col-sm-4">Etudiants Icam</th>
                             <td class="col-sm-4"><?=$event_details_stats['student_count']?></td>
-                            <td class="col-sm-4 <?=display_pourcentage_style($event_details_stats['pourcentage_student'], 1.5)?>"><?=$event_details_stats['pourcentage_student']?></td>
+                            <td class="col-sm-4 <?=display_pourcentage_style($event_details_stats['pourcentage_student'], 2)?>"><?=$event_details_stats['pourcentage_student']?></td>
                             <td class="col-sm-4"><?=$event_details_stats['student_quota']?></td>
                         </tr>
                         <?php } if($event_details_stats['graduated_count'] !=0) { ?>
@@ -39,7 +39,7 @@
                         <tr>
                             <th class="col-sm-4">Invités</th>
                             <td class="col-sm-4"><?=$event_details_stats['guests_count']?></td>
-                            <td class="col-sm-4 <?=display_pourcentage_style($event_details_stats['pourcentage_guests'], 5)?>"><?=$event_details_stats['pourcentage_guests']?></td>
+                            <td class="col-sm-4 <?=display_pourcentage_style($event_details_stats['pourcentage_guests'], 2)?>"><?=$event_details_stats['pourcentage_guests']?></td>
                             <td class="col-sm-4"><?=$event_details_stats['guest_quota']?></td>
                         </tr>
                         <?php } ?>
@@ -53,7 +53,7 @@
                         <tr>
                             <th class="col-sm-4">Bracelets distribués</th>
                             <td class="col-sm-4"><?=$event_details_stats['total_bracelet_count']?></td>
-                            <td class="col-sm-4 <?=display_pourcentage_style($event_details_stats['pourcentage_bracelets'], 1.8)?>"><?=$event_details_stats['pourcentage_bracelets']?></td>
+                            <td class="col-sm-4 <?=display_pourcentage_style($event_details_stats['pourcentage_bracelets'], 2)?>"><?=$event_details_stats['pourcentage_bracelets']?></td>
                             <td class="col-sm-4"><?=$event_details_stats['total_count']?></td>
                         </tr>
                         <?php } ?>
