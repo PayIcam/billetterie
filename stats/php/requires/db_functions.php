@@ -11,30 +11,6 @@ function get_displayed_participants($event_id, $start_lign, $rows_per_page)
     return $participant_data->fetchAll();
 }
 
-function get_participant_options($ids)
-{
-    global $db;
-    $option_query = $db->prepare('SELECT * FROM participant_has_options WHERE event_id=:event_id and participant_id=:participant_id and status="V" ');
-    $option_query->execute($ids);
-    return $option_query->fetchAll();
-}
-
-function get_pending_options($ids)
-{
-    global $db;
-    $option_query = $db->prepare('SELECT * FROM participant_has_options WHERE event_id=:event_id and participant_id=:participant_id and status="W" ');
-    $option_query->execute($ids);
-    return $option_query->fetchAll();
-}
-
-function get_current_guest_number_by_status($participant_id)
-{
-    global $db;
-    $current_guest_number = $db->prepare('SELECT status, COUNT(*) guest_number FROM icam_has_guests INNER JOIN participants ON guest_id = participant_id WHERE icam_id=:participant_id and status="V" GROUP BY status');
-    $current_guest_number->execute(array("participant_id" => $participant_id));
-    return $current_guest_number->fetchAll();
-}
-
 function get_current_participants_number($event_id)
 {
     global $db;
