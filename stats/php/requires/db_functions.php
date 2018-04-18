@@ -43,14 +43,6 @@ function get_current_participants_number($event_id)
     return $count_promo->fetch()['current_total_quota'];
 }
 
-function get_promo_guest_number($ids)
-{
-    global $db;
-    $promo_guest_number = $db->prepare('SELECT guest_number FROM promos_site_specifications WHERE event_id=:event_id and promo_id=:promo_id and site_id=:site_id ');
-    $promo_guest_number->execute($ids);
-    return $promo_guest_number->fetch()['guest_number'];
-}
-
 function get_option_name($option_id)
 {
     global $db;

@@ -579,3 +579,11 @@ function get_icam_inviter_data($guest_id)
     $participant_data->execute(array("guest_id" => $guest_id));
     return $participant_data->fetch();
 }
+
+function get_promo_guest_number($ids)
+{
+    global $db;
+    $promo_guest_number = $db->prepare('SELECT guest_number FROM promos_site_specifications WHERE event_id=:event_id and promo_id=:promo_id and site_id=:site_id ');
+    $promo_guest_number->execute($ids);
+    return $promo_guest_number->fetch()['guest_number'];
+}
