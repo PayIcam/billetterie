@@ -158,6 +158,7 @@ function insert_as_select_option($array_to_insert)
 
 function display_options($participant)
 {
+    var_dump($participant);
     ?>
         <td>
             <?php if(!empty($participant['validated_options'])) { ?>
@@ -257,4 +258,14 @@ function display_validate_button($participant)
         '<button class="is_out option_tooltip btn btn-success" data-container="body" type="button">✔</button>' ?>
     </th>
     <?php
+}
+
+function create_option_text($options)
+{
+    foreach($options as $option)
+    {
+        $select_message = $option['option_details']!=null ? json_decode($option['option_details'])->select_option : "";
+        $select_message = $select_message != "" ? " Choix " . $select_message : "";
+        echo get_option_name($option['option_id']) . $select_message . '<br>';
+    }
 }
