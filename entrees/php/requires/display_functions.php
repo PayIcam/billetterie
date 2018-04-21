@@ -6,7 +6,6 @@ function display_search_possibilities()
     - Prénom <br>
     - Nom <br>
     - Prénom + espace + nom <br>
-    - Initiales <br>
     - Promo exacte <br>
     - Site exact <br>
     - Identifiant de bracelet <br>

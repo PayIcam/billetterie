@@ -1,7 +1,8 @@
 <?php set_header_navbar($title) ?>
 
         <div class="container">
-            <h1 class="text-center">Entrées : <?= $event['name'] ?></h1>
+            <h1 class="text-center"><?=$title?></h1>
+            <h2><span id="nombre_entrees"><?=$arrival_number?></span> / <?=$participants_number?> Entrées !</h2>
             <h2>
                 Recherchez les participants !
                 <a data-toggle="collapse" href="#search_help" role="button" aria-expanded="false" aria-controls="search_help">
@@ -46,6 +47,7 @@
                 </tbody>
             </table>
         </div>
+        <div id="alerts"></div>
         <script src="jquery/get_ajax_response.js"></script>
     </body>
 </html>

@@ -13,6 +13,8 @@ if(isset($_GET['event_id']))
 
         $event = get_event_details($event_id);
         $title = "Entrees : " . $event['name'];
+        $arrival_number = get_arrival_number($event_id);
+        $participants_number = get_current_participants_number($event_id);
 
         require 'templates/entrees.php';
     }

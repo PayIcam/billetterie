@@ -19,7 +19,7 @@ if(isset($_GET['event_id']))
 
         handle_pending_reservations($email, $event_id);
 
-        check_if_event_should_be_displayed($event,$promo_id, $site_id, $email);
+        $ticketing_state = check_if_event_should_be_displayed($event,$promo_id, $site_id, $email);
 
         $icam_event_data = get_icam_event_data(array("email" => $email, "event_id" => $event_id, "promo_id" => $promo_id, "site_id" => $site_id));
 
@@ -47,7 +47,8 @@ if(isset($_GET['event_id']))
             $guests_specifications = get_promo_specification_details(array('event_id' => $event_id, 'promo_id' => get_promo_id('Invités'), 'site_id' => $site_id));
             $number_previous_guests = count($guests_event_data);
             $new_guests_number = $promo_specifications['guest_number']>0 ? number_of_guests_to_be_displayed($promo_specifications, $guests_specifications, $current_participants_number, $total_quota, $number_previous_guests) : 0;
-            $actual_guest_number = $number_previous_guests + $new_guests_number;
+
+            $actual_guest_number = $ticketing_state=='open' ? $number_previous_guests + $new_guests_number : $number_previous_guests;
 
             require 'templates/formulaire_inscriptions.php';
         }

@@ -20,7 +20,7 @@
                     <?php
                     for($i=1; $i<=$actual_guest_number; $i++)
                     {
-                        if(!isset($guests_event_data)){$guests_event_data = null;}
+                        $guests_event_data = $guests_event_data ?? null;
                         if($i<=count($guests_event_data))
                         {
                             $guest_event_data = $guests_event_data[$i-1];
@@ -46,6 +46,7 @@
             </div>
         </div>
         <br><br>
+        <?php if($ticketing_state=='open') { ?>
         <div id="recapitulatif" class="container">
             <h3> Récapitulatif du coût de vos nouvelles réservations : <span id="total_price" class="badge" style="background-color:#428bca; font-size:0.8em;"> <?= isset($icam_event_data) ? 0 : htmlspecialchars($promo_specifications['price'])?>€ </span> </h3>
             <div id="recap_icam">
@@ -66,10 +67,17 @@
         <div class="text-center">
             <button id="button_submit_form" type="submit" class="btn btn-primary">Passer au payement</button>
         </div>
+        <?php } ?>
     </form>
     <div id="alerts">
 
     </div>
+    <script>
+        $(document).ready(function()
+        {
+            ticketing_state = '<?=$ticketing_state?>';
+        });
+    </script>
     <script src="jquery/submit_inscriptions.js"></script>
     <script src="jquery/general_behaviour.js"></script>
     <?php if($icam_event_data!=null)

@@ -11,7 +11,7 @@
             <form action="participants.php?event_id=<?=$_GET['event_id']?>&rows=<?=$rows_per_page?>" method="post">
                 <div class="row">
                     <div class= "col-md-3">
-                        <input type="input-medium search-query" class="form-control" name ="recherche" id="recherche" placeholder="Nom, prénom, initiales..." value="<?= isset($_POST['recherche']) ? htmlspecialchars($_POST['recherche']) : '' ?>">
+                        <input type="input-medium search-query" class="form-control" name ="recherche" id="recherche" placeholder="Nom, prénom, promo..." value="<?= isset($_POST['recherche']) ? htmlspecialchars($_POST['recherche']) : '' ?>">
                     </div>
                     <div class="col-md-9">
                         <button class="inline btn btn-primary" type="submit">Rechercher</button>

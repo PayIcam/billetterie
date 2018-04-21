@@ -1,24 +1,5 @@
 <?php
 
-function get_displayed_participants($event_id, $start_lign, $rows_per_page)
-{
-    global $db;
-    $participant_data = $db->prepare('SELECT * FROM participants WHERE event_id = :event_id and status="V" ORDER BY participant_id LIMIT :start_lign,:rows_per_page');
-    $participant_data->bindParam('start_lign', $start_lign, PDO::PARAM_INT);
-    $participant_data->bindParam('rows_per_page', $rows_per_page, PDO::PARAM_INT);
-    $participant_data->bindParam('event_id', $event_id, PDO::PARAM_INT);
-    $participant_data->execute();
-    return $participant_data->fetchAll();
-}
-
-function get_current_participants_number($event_id)
-{
-    global $db;
-    $count_promo = $db->prepare('SELECT COUNT(*) current_total_quota FROM participants WHERE event_id= :event_id and status= "V"');
-    $count_promo->execute(array("event_id" => $event_id));
-    return $count_promo->fetch()['current_total_quota'];
-}
-
 function get_option_id($option_name)
 {
     global $db;

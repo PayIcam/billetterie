@@ -17,6 +17,15 @@ function initialisation_inscriptions()
 
     $("form").submit(submit_inscriptions);
     $("#message_submit").hide();
+
+    if(typeof(ticketing_state) != "undefined")
+    {
+        $('form').off('submit').submit(function()
+        {
+            console.log('nice try');
+            $(this).preventDefault();
+        });
+    }
 }
 
 function change_recap_prices(price, target)

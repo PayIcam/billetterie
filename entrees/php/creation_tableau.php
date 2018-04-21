@@ -15,7 +15,7 @@ if(isset($_POST))
                 require 'requires/db_functions.php';
                 require 'requires/controller_functions.php';
 
-                $participants = determination_recherche($_POST['recherche'], 0, 15);
+                $participants = trim($_POST['recherche'])!='' ? determination_recherche($_POST['recherche'], 0, 15) : get_displayed_participants($event_id, 0, 25);
 
                 display_participants_rows($participants);
             }

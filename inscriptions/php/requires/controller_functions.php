@@ -2,6 +2,7 @@
 
 function option_form($option, $promo_id, $site_id, $participant_id=-1)
 {
+    global $ticketing_state;
     $already_defined_option = get_participant_option(array("event_id" => $option['event_id'], "option_id" => $option['option_id'], "participant_id" => $participant_id));
     if(!empty($already_defined_option))
     {
@@ -17,20 +18,23 @@ function option_form($option, $promo_id, $site_id, $participant_id=-1)
     }
     else
     {
-        if($option['is_active']==1)
+        if($ticketing_state == 'open')
         {
-            $option_quota = $option['quota']==null ? INF : $option['quota'];
-            if(get_current_option_quota(array('event_id' => $option['event_id'], 'option_id' => $option['option_id'])) < $option_quota)
+            if($option['is_active']==1)
             {
-                if(promo_has_option(array("event_id" => $option['event_id'], "option_id" => $option['option_id'], "promo_id" => $promo_id, "site_id" => $site_id)))
+                $option_quota = $option['quota']==null ? INF : $option['quota'];
+                if(get_current_option_quota(array('event_id' => $option['event_id'], 'option_id' => $option['option_id'])) < $option_quota)
                 {
-                    if($option['type']=='Checkbox')
+                    if(promo_has_option(array("event_id" => $option['event_id'], "option_id" => $option['option_id'], "promo_id" => $promo_id, "site_id" => $site_id)))
                     {
-                        checkbox_form($option);
-                    }
-                    elseif($option['type']=='Select')
-                    {
-                        select_form($option);
+                        if($option['type']=='Checkbox')
+                        {
+                            checkbox_form($option);
+                        }
+                        elseif($option['type']=='Select')
+                        {
+                            select_form($option);
+                        }
                     }
                 }
             }
@@ -575,6 +579,8 @@ function check_if_event_should_be_displayed($event,$promo_id, $site_id, $email)
     $ticketing_state = get_ticketing_state($event, $promo_id, $site_id, $email, $icam_has_reservation);
 
     prevent_displaying_on_wrong_ticketing_state($ticketing_state);
+
+    return $ticketing_state;
 }
 
 function update_reservation_status($status, $pending_reservation)

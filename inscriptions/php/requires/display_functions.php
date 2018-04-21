@@ -2,6 +2,7 @@
 
 function form_icam($event, $promo_specifications, $options, $icam_reservation = null)
 {
+    global $ticketing_state;
     $email = $_SESSION['icam_informations']->mail;
     $prenom = $_SESSION['icam_informations']->prenom;
     $nom = $_SESSION['icam_informations']->nom;
@@ -32,8 +33,8 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
         </div>
         <div class="row">
             <div class="col-sm-6 form-group">
-                <label for="icam_phone_number">Numéro de téléphone : </label>
-                <input value="<?= isset($icam_reservation['telephone']) ? htmlspecialchars($icam_reservation['telephone']) : '' ?>" type="text" class="form-control" name="icam_phone_number" id="icam_phone_number" placeholder="Numéro de téléphone">
+                <label <?=$ticketing_state !='open' ? "disabled" : "" ?> for="icam_phone_number">Numéro de téléphone : </label>
+                <input  value="<?= isset($icam_reservation['telephone']) ? htmlspecialchars($icam_reservation['telephone']) : '' ?>" type="text" class="form-control" name="icam_phone_number" id="icam_phone_number" placeholder="Numéro de téléphone">
             </div>
             <?php if(isset($icam_reservation['bracelet_identification'])) { ?>
             <div class="col-sm-6 form-group">
@@ -70,6 +71,7 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
 
 function form_guest($event, $guest_specifications, $options, $i, $guest_reservation=null)
 {
+    global $ticketing_state;
     $guest_id = $guest_reservation == null ? -1 : $guest_reservation['participant_id'];
     ?>
     <div class="guest_form col-sm-6 <?= $guest_reservation!=null ? "previous_guest" : "" ?>">
@@ -83,12 +85,12 @@ function form_guest($event, $guest_specifications, $options, $i, $guest_reservat
             <div class="row guest_inputs">
                 <div class="col-sm-4 form-group">
                     <label for="guest_<?=$i?>_firstname">Prénom : </label>
-                    <input value="<?= isset($guest_reservation['prenom']) ? htmlspecialchars($guest_reservation['prenom']) : '' ?>" type="text" class="form-control guest_firstname" name="guest_<?=$i?>_firstname" id="guest_<?=$i?>_firstname" placeholder="Prénom">
+                    <input <?=$ticketing_state !='open' ? "disabled" : "" ?> value="<?= isset($guest_reservation['prenom']) ? htmlspecialchars($guest_reservation['prenom']) : '' ?>" type="text" class="form-control guest_firstname" name="guest_<?=$i?>_firstname" id="guest_<?=$i?>_firstname" placeholder="Prénom">
                 </div>
 
                 <div class="col-sm-5 form-group">
                     <label for="guest_<?=$i?>_lastname">Nom : </label>
-                    <input value="<?= isset($guest_reservation['nom']) ? htmlspecialchars($guest_reservation['nom']) : '' ?>" type="text" class="form-control guest_lastname" name="guest_<?=$i?>_lastname" id="guest_<?=$i?>_lastname" placeholder="Nom">
+                    <input <?=$ticketing_state !='open' ? "disabled" : "" ?> value="<?= isset($guest_reservation['nom']) ? htmlspecialchars($guest_reservation['nom']) : '' ?>" type="text" class="form-control guest_lastname" name="guest_<?=$i?>_lastname" id="guest_<?=$i?>_lastname" placeholder="Nom">
                 </div>
             </div>
             <input type="hidden" class="guest_promo_id" name="guest_promo_id" value=<?=$guest_specifications['promo_id']?> >
@@ -134,10 +136,11 @@ function checkbox_form($option, $checked=false)
 }
 function select_form($option, $option_subname=null)
 {
+    global $ticketing_state;
     ?>
     <div class="select_option form-group" <?= $option_subname!=null ? "data-payed=1" : "" ?>>
         <label>
-            <span><?= $option['name'] ?></span>
+            <span><?= htmlspecialchars($option['name']) ?></span>
             <span class="select_price badge" style="background-color: #468847"></span>
             <button class="btn option_tooltip" type="button" data-container="body" data-toggle="popover" title="Description de l'option : " data-content="<?= htmlspecialchars($option['description']) ?>">
                 <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
