@@ -1,13 +1,5 @@
 <?php
 
-function get_option_id($option_name)
-{
-    global $db;
-    $option_id = $db->prepare('SELECT option_id FROM options WHERE name=:name');
-    $option_id->execute(array("name" => $option_name));
-    return $option_id->fetch()['option_id'];
-}
-
 function get_event_promo_site_names($event_id)
 {
     global $db;

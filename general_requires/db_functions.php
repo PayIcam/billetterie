@@ -644,3 +644,11 @@ function get_current_participants_number($event_id)
     $count_promo->execute(array("event_id" => $event_id));
     return $count_promo->fetch()['current_total_quota'];
 }
+
+function get_option_id($option_name)
+{
+    global $db;
+    $option_id = $db->prepare('SELECT option_id FROM options WHERE name=:name');
+    $option_id->execute(array("name" => $option_name));
+    return $option_id->fetch()['option_id'];
+}
