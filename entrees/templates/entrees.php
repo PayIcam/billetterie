@@ -2,7 +2,9 @@
 
         <div class="container">
             <h1 class="text-center"><?=$title?></h1>
+            <?php display_back_to_list_button($event_id); ?>
             <h2><span id="nombre_entrees"><?=$arrival_number?></span> / <?=$participants_number?> Entrées !</h2>
+
             <h2>
                 Recherchez les participants !
                 <a data-toggle="collapse" href="#search_help" role="button" aria-expanded="false" aria-controls="search_help">

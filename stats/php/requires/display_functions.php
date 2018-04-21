@@ -351,15 +351,6 @@ function display_fundations_participants_admin($fundation)
     <?php
 }
 
-function display_back_to_list_button($event_id)
-{
-    global $_CONFIG;
-    ?>
-    <div class="container">
-        <a class="btn btn-primary" href="<?=$_CONFIG['public_url']?>stats/participants.php?event_id=<?=$event_id?>">Retour à la liste</a>
-    </div>
-    <?php
-}
 function display_promo_stats($promos_data)
 {
     foreach($promos_data as $promo_data)

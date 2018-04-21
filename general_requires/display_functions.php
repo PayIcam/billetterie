@@ -268,3 +268,22 @@ function create_option_text($options)
         echo get_option_name($option['option_id']) . $select_message . '<br>';
     }
 }
+
+function display_back_to_list_button($event_id)
+{
+    global $_CONFIG;
+    ?>
+    <div class="container">
+        <a class="btn btn-primary" href="<?=$_CONFIG['public_url']?>stats/participants.php?event_id=<?=$event_id?>">Retour à la liste</a>
+    </div>
+    <?php
+}
+function display_go_to_arrivals($event_id)
+{
+    global $_CONFIG;
+    ?>
+    <div class="container">
+        <a class="btn btn-primary" href="<?=$_CONFIG['public_url']?>entrees/entrees.php?event_id=<?=$event_id?>">Aller aux entrées</a>
+    </div>
+    <?php
+}

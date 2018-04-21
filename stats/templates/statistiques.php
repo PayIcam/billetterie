@@ -3,6 +3,7 @@
             <h1 class="text-center">Statistiques :  <?= htmlspecialchars($event_details_stats['name'])?></h1>
 
             <?php display_back_to_list_button($event_id); ?>
+            <?php echo '<br>'; display_go_to_arrivals($event_id); ?>
 
             <section class="row" id="tableau">
                 <table class="table">

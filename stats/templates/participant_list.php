@@ -18,6 +18,7 @@
                         <a type="button" class="btn btn-primary" href="statistiques.php?event_id=<?=$event_id?>" class="btn btn-primary">Statistiques de l'évènement</a>
                         <?php if($Auth->hasRole('admin')) { ?> <a type="button" class="btn btn-success" href="ajout_participant.php?event_id=<?=$event_id?>" class="btn btn-primary">Ajouter un invité</a> <?php } ?>
                     </div>
+                    <?php echo '<br><br>'; display_go_to_arrivals($event_id); ?>
                 </div>
             </form>
             <br>
