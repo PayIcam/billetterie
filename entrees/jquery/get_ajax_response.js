@@ -1,5 +1,6 @@
 function error_ajax(jqXHR, textStatus, errorThrown)
 {
+    $('table .is_out, table .is_in').prop('disabled', '');
     console.log(jqXHR);
     console.log();
     console.log(textStatus);
@@ -9,6 +10,9 @@ function error_ajax(jqXHR, textStatus, errorThrown)
 
 function participant_arrives(button_row)
 {
+    $('button[aria-describedby]').click();
+    console.log($('table .is_out, table .is_in'));
+    $('table .is_out, table .is_in').prop('disabled', 'disabled');
     $.get(
     {
         url: public_url + 'entrees/php/gestion_entrees.php',
@@ -18,10 +22,10 @@ function participant_arrives(button_row)
         {
             console.log(data);
             adjust_button_participant_arrives(button_row, data);
+            $('table .is_out, table .is_in').prop('disabled', '');
         },
         error: error_ajax
     });
-    // adjust_button_participant_arrives($(this));
 }
 function adjust_button_participant_arrives(button_row, data)
 {
@@ -35,6 +39,8 @@ function adjust_button_participant_arrives(button_row, data)
 
 function participant_leaves(button_row)
 {
+    $('button[aria-describedby]').click();
+    $('table .is_out, table .is_in').prop('disabled', 'disabled');
     $.get(
     {
         url: public_url + 'entrees/php/gestion_entrees.php',
@@ -44,10 +50,10 @@ function participant_leaves(button_row)
         {
             console.log(data);
             adjust_button_participant_leaves(button_row, data);
+            $('table .is_out, table .is_in').prop('disabled', '');
         },
         error: error_ajax
     });
-    // adjust_button_participant_leaves($(this));
 }
 function adjust_button_participant_leaves(button_row, data)
 {

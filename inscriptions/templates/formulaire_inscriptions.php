@@ -70,7 +70,7 @@
         <?php } ?>
     </form>
     <div id="alerts">
-
+        <?= isset($_SESSION['alert_errors']) ? add_alert($_SESSION['alert_errors'], 'warning') : ""; unset($_SESSION['alert_errors']) ?>
     </div>
     <script>
         $(document).ready(function()

@@ -4,9 +4,9 @@ $(document).ready(function()
 
     $('form').submit(function(submit)
     {
-        function add_error(message)
+        function add_alert(message, alert_type="danger")
         {
-            var message_displayed = '<div class="alert alert-danger alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Attention ! </strong>' + message + '</div>'
+            var message_displayed = '<div class="alert alert-'+alert_type+' alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Attention ! </strong>' + message + '</div>'
             $("#alerts").append(message_displayed);
         }
 
@@ -19,13 +19,13 @@ $(document).ready(function()
             {
                 if(action_url.indexOf(public_url + "stats/php/ajout_participant.php?event_id=" + event_id) == -1)
                 {
-                    add_error("A quoi joues tu ? Arrète de trafiquer les redirections.");
+                    add_alert("A quoi joues tu ? Arrète de trafiquer les redirections.");
                     return false;
                 }
             }
             else
             {
-                add_error("Il y a une erreur, l'indication du chemin est mauvaise");
+                add_alert("Il y a une erreur, l'indication du chemin est mauvaise");
                 return false;
             }
             return true;
@@ -36,29 +36,29 @@ $(document).ready(function()
             $error = false;
             if($('input[name=prenom]').val().length > 45)
             {
-                add_error('Le prénom est trop long');
+                add_alert('Le prénom est trop long');
             }
             if($('input[name=nom]').val().length > 45)
             {
-                add_error('Le nom est trop long');
+                add_alert('Le nom est trop long');
             }
             if($('input[name=telephone]').length)
             {
                 if($('input[name=telephone]').val().length > 25)
                 {
-                    add_error('Le numéro de téléphone est trop long');
+                    add_alert('Le numéro de téléphone est trop long');
                 }
             }
             if($('input[name=email]').length)
             {
                 if($('input[name=email]').val().length > 255)
                 {
-                    add_error('Le prénom est trop long');
+                    add_alert('Le prénom est trop long');
                 }
             }
             if($('input[name=bracelet_identification]').val().length > 25)
             {
-                add_error("L'identifiant de bracelet  est trop long");
+                add_alert("L'identifiant de bracelet  est trop long");
             }
             return !$error;
         }
@@ -82,7 +82,7 @@ $(document).ready(function()
                     console.log(textStatus);
                     console.log();
                     console.log(errorThrown);
-                    add_error('La requête Ajax permettant de submit les informations et ajouter le participant a échoué');
+                    add_alert('La requête Ajax permettant de submit les informations et ajouter le participant a échoué');
                     $("#submit_form").prop('disabled', '');
                     $('.waiting').hide();
                 }

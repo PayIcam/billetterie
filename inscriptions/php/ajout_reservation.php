@@ -2,6 +2,13 @@
 
 require __DIR__ . '/../../general_requires/_header.php';
 
+if(!isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
+{
+    set_alert_style('Erreur routing');
+    add_alert("Vous n'êtes pas censés appeler cette page directement.");
+    die();
+}
+
 if(!empty($_POST))
 {
     $ajax_json_response = array("message" => "" , "transaction_url" => "");
@@ -34,7 +41,7 @@ if(!empty($_POST))
     {
         if(get_current_promo_site_quota(array("event_id" => $event_id, "promo_id" => $promo_id, "site_id" => $site_id)) + 1 > $promo_specifications['quota'])
         {
-            add_error_to_ajax_response("Le quota pour les " . $promo . " de " . $site . " est déjà plein. ");
+            add_alert_to_ajax_response("Le quota pour les " . $promo . " de " . $site . " est déjà plein. ");
             echo json_encode($ajax_json_response);
             die();
         }
@@ -55,7 +62,7 @@ if(!empty($_POST))
 
                 if(get_whole_current_quota($event_id) + $participant_additions > $event['total_quota'])
                 {
-                    add_error_to_ajax_response('Trop de participants sont rajoutés pour le quota général.');
+                    add_alert_to_ajax_response('Trop de participants sont rajoutés pour le quota général.');
                     echo json_encode($ajax_json_response);
                     die();
                 }
@@ -67,13 +74,13 @@ if(!empty($_POST))
 
                     if($current_guests_quota > $guests_specifications['quota'])
                     {
-                        add_error_to_ajax_response("Le quota pour les invités de " . get_site_name($site_id) . " est déjà plein. ");
+                        add_alert_to_ajax_response("Le quota pour les invités de " . get_site_name($site_id) . " est déjà plein. ");
                         echo json_encode($ajax_json_response);
                         die();
                     }
                     elseif($current_guests_quota + count($guests_data) > $guests_specifications['quota'])
                     {
-                        add_error_to_ajax_response("Vous ajoutez trop d'invités pour le quota d'invités du site de " . get_site_name($site_id) . ".");
+                        add_alert_to_ajax_response("Vous ajoutez trop d'invités pour le quota d'invités du site de " . get_site_name($site_id) . ".");
                         echo json_encode($ajax_json_response);
                         die();
                     }
@@ -91,7 +98,7 @@ if(!empty($_POST))
             }
             else
             {
-                add_error_to_ajax_response("Quelqu'un s'est débrouillé pour supprimer l'input de nom 'guests_informations'");
+                add_alert_to_ajax_response("Quelqu'un s'est débrouillé pour supprimer l'input de nom 'guests_informations'");
                 echo json_encode($ajax_json_response);
                 die();
             }
@@ -99,7 +106,7 @@ if(!empty($_POST))
     }
     else
     {
-        add_error_to_ajax_response("Quelqu'un s'est débrouillé pour supprimer l'input hidden de nom 'icam_informations'");
+        add_alert_to_ajax_response("Quelqu'un s'est débrouillé pour supprimer l'input hidden de nom 'icam_informations'");
         echo json_encode($ajax_json_response);
         die();
     }
@@ -107,29 +114,28 @@ if(!empty($_POST))
     {
         if($total_price!=$_POST['total_transaction_price'])
         {
-            add_error_to_ajax_response('Le prix total est incorrect.');
+            add_alert_to_ajax_response('Le prix total est incorrect.');
             echo json_encode($ajax_json_response);
             die();
         }
     }
     else
     {
-        add_error_to_ajax_response("Quelqu'un s'est débrouillé pour supprimer l'input hidden de nom 'total_transaction_price'");
+        add_alert_to_ajax_response("Quelqu'un s'est débrouillé pour supprimer l'input hidden de nom 'total_transaction_price'");
         echo json_encode($ajax_json_response);
         die();
     }
-
 
     if($icam_data!=false)
     {
         $icam_data->telephone = $icam_data->telephone == '' ? null : $icam_data->telephone;
 
         $icam_insertion_data = array(
-            "prenom" => $icam_data->prenom,
-            "nom" => $icam_data->nom,
-            "is_icam" => $icam_data->is_icam,
-            "email" => $icam_data->email,
-            "price" => $icam_data->price,
+            "prenom" => $_SESSION['icam_informations']->prenom,
+            "nom" => $_SESSION['icam_informations']->nom,
+            "is_icam" => 1,
+            "email" => $_SESSION['icam_informations']->mail,
+            "price" => $icam_data->event_price,
             "telephone" => $icam_data->telephone,
             "event_id" => $event_id,
             "site_id" => $icam_data->site_id,
@@ -139,7 +145,10 @@ if(!empty($_POST))
 
         $transaction_linked_purchases = array("participant_ids" => array($icam_id), "option_ids" => array());
 
-        $icam_event_article_id = array(array($icam_data->icam_event_article_id, 1));
+        $icam_event_article_id = get_promo_article_id(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id));
+        $guests_event_article_id = get_promo_article_id(array('event_id' => $event_id, 'promo_id' => get_promo_id('Invités'), 'site_id' => $site_id));
+
+        $icam_event_article_id = array(array($icam_event_article_id, 1));
         $guests_article_id = array();
         $options_articles = array();
 
@@ -149,12 +158,11 @@ if(!empty($_POST))
         {
             foreach($guests_data as $guest_data)
             {
-
                 $guest_insertion_data = array(
                     "prenom" => $guest_data->prenom,
                     "nom" => $guest_data->nom,
-                    "is_icam" => $guest_data->is_icam,
-                    "price" => $guest_data->price,
+                    "is_icam" => 0,
+                    "price" => $guest_data->event_price,
                     "event_id" => $event_id,
                     "site_id" => $guest_data->site_id,
                     "promo_id" => $guest_data->promo_id
@@ -166,7 +174,7 @@ if(!empty($_POST))
 
                 array_push($transaction_linked_purchases["participant_ids"], $guest_id);
             }
-            $guests_article_id = array(array($guest_data->guest_event_article_id, count($guests_data)));
+            $guests_article_id = array(array($guests_event_article_id, count($guests_data)));
         }
         $transaction_articles = array_merge($icam_event_article_id, $guests_article_id, $options_articles);
 
@@ -190,5 +198,5 @@ if(!empty($_POST))
 else
 {
     set_alert_style("Erreur routing");
-    add_error("Vous n'êtes pas censés appeler la page directement.");
+    add_alert("Vous n'êtes pas censés appeler la page directement.");
 }

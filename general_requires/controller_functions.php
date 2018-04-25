@@ -1,5 +1,11 @@
 <?php
 
+//Possible qu'il y ait une erreur à cause de Php, qui a des problèmes avec la précision des float............
+function is_an_integer($number)
+{
+    return (floor($number) == $number) && $number>=0;
+}
+
 function get_ticketing_state($event, $promo_id, $site_id, $email, $icam_has_reservation)
 {
     $event_id = $event['event_id'];
@@ -62,7 +68,7 @@ function redirect_if_no_rights()
         else
         {
             set_alert_style("Erreur PayutcJsonClient");
-            add_error("Vous n'avez vraisemblablement pas les droits, mais quelque chose d'innattendu s'est produit. Contactez Grégoire Giraud pour l'aider à résoudre ce bug svp");
+            add_alert("Vous n'avez vraisemblablement pas les droits, mais quelque chose d'innattendu s'est produit. Contactez Grégoire Giraud pour l'aider à résoudre ce bug svp");
             die();
         }
     }
@@ -80,11 +86,11 @@ function check_user_fundations_rights($fundation_id, $death=true)
             set_alert_style('Erreur droits de fondation');
             if(isset($ajax_json_response))
             {
-                add_error_to_ajax_response($error_message);
+                add_alert_to_ajax_response($error_message);
             }
             else
             {
-                add_error($error_message);
+                add_alert($error_message);
             }
             die();
         }
@@ -92,11 +98,11 @@ function check_user_fundations_rights($fundation_id, $death=true)
         {
             if(isset($ajax_json_response))
             {
-                add_error_to_ajax_response($error_message);
+                add_alert_to_ajax_response($error_message);
             }
             else
             {
-                add_error($error_message);
+                add_alert($error_message);
             }
             $error = true;
         }
@@ -133,8 +139,8 @@ function prepare_participant_displaying($participant)
     }
     $participant['current_promo_guest_number'] = $participant['validated_guest_number'] . "/" . $participant['promo_guest_number'];
 
-    $participant['validated_options'] = get_participant_options(array("event_id" => $event_id, "participant_id" => $participant['participant_id']));
-    $participant['pending_options'] = get_pending_options(array("event_id" => $event_id, "participant_id" => $participant['participant_id']));
+    $participant['validated_options'] = get_participant_options_and_choices(array("event_id" => $event_id, "participant_id" => $participant['participant_id']));
+    $participant['pending_options'] = get_pending_options_and_choices(array("event_id" => $event_id, "participant_id" => $participant['participant_id']));
 
     return $participant;
 }

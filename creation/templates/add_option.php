@@ -1,6 +1,6 @@
 <?php
 
-function add_option_html_code($option_number, $option=null, $option_specifications=null, $promo_options=null)
+function add_option_html_code($option_number, $option=null, $option_choices=null, $promo_options=null)
 {
     ?>
                     <div id=<?= '"all_option_' . $option_number . '_accordion"' ?> class="panel panel-default">
@@ -68,7 +68,7 @@ function add_option_html_code($option_number, $option=null, $option_specificatio
                                     <h5>Option de type checkbox :</h5>
                                     <div class="form-group option_checkbox_price">
                                         <label for=<?= '"option_'.$option_number.'_checkbox_price_input"'; ?> >Prix de l'option:</label>
-                                        <input value="<?= isset($option['type']) ? ($option['type']=='Checkbox' ? htmlspecialchars($option_specifications->price) : '') : '' ?>" type="number" step="0.01" class="form-control" name="checkbox_price" id=<?= '"option_'.$option_number.'_checkbox_price_input"'; ?> aria-describedby=<?= '"option_'.$option_number.'_checkbox_price_input_help"'; ?> placeholder="Prix à fixer à la sélection">
+                                        <input value="<?= isset($option['type']) ? ($option['type']=='Checkbox' ? htmlspecialchars($option_choices[0]['price']) : '') : '' ?>" type="number" step="0.01" class="form-control" name="checkbox_price" id=<?= '"option_'.$option_number.'_checkbox_price_input"'; ?> aria-describedby=<?= '"option_'.$option_number.'_checkbox_price_input_help"'; ?> placeholder="Prix à fixer à la sélection">
                                         <small id=<?= '"option_'.$option_number.'_checkbox_price_input_help"'; ?> class="form-text text-muted">Définissez le prix de votre option checkbox.</small> <br>
                                     </div>
                                     <div class="checkbox_example form-check">
@@ -98,7 +98,7 @@ function add_option_html_code($option_number, $option=null, $option_specificatio
                                             </tr>
                                         </thead>
                                         <tbody>
-                                        <?php isset($option['type']) ? ($option['type']=='Select' ? insert_option_select_rows($option_specifications) : '' ) : '' ?>
+                                        <?php isset($option['type']) ? ($option['type']=='Select' ? insert_option_select_rows($option_choices) : '' ) : '' ?>
                                         </tbody>
                                     </table>
 
@@ -129,7 +129,7 @@ function add_option_html_code($option_number, $option=null, $option_specificatio
                                         <label for="select_example"></label>
                                         <select class="form-control select_select_example">
                                             <option disabled>Sélectionnez votre option !</option>
-                                            <?php isset($option['type']) ? ($option['type']=='Select' ? insert_select_options($option_specifications) : '' ) : '' ?>
+                                            <?php isset($option['type']) ? ($option['type']=='Select' ? insert_select_options($option_choices) : '' ) : '' ?>
                                         </select>
                                     </div>
                                 </div>

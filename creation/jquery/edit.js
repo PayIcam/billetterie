@@ -26,6 +26,11 @@ function edit_no_options_action()
                 $(this).parent().text(input_value);
             });
         });
+
+        if($(this).children(":nth-child(3)").text() == 'Invités')
+        {
+            $(this).children(":nth-child(6)").off('click');
+        }
     });
 
     $("#basic_availability #specification_table .removed").children(":nth-child(7)").html('<button type="button" class="btn btn-success creation_button_icons"><span class="glyphicon glyphicon-ok"></span></button>').children().click(function()

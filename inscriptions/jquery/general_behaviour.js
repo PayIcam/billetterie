@@ -18,12 +18,12 @@ function initialisation_inscriptions()
     $("form").submit(submit_inscriptions);
     $("#message_submit").hide();
 
-    if(typeof(ticketing_state) != "undefined")
+    if(typeof(ticketing_state) == "undefined")
     {
-        $('form').off('submit').submit(function()
+        $('form').off('submit').submit(function(submit)
         {
             console.log('nice try');
-            $(this).preventDefault();
+            submit.preventDefault();
         });
     }
 }
@@ -105,7 +105,7 @@ function filling_form_behaviour()
         }
         else
         {
-            $(this).siblings("label").find(".checkbox_price").attr("style", "background-color: #3a87ad");
+            $(this).siblings("label").find(".checkbox_price").addClass('badge-info');
             if($(this).closest(".container").attr("id")=='registration_icam')
             {
                 change_recap_prices(-option_price, 'icam');
@@ -157,7 +157,7 @@ function filling_form_behaviour()
     });
 }
 
-function check_urls(add_error)
+function check_urls(add_alert)
 {
     var current_path = window.location.pathname;
     var action_url = $('form').prop('action');
@@ -166,7 +166,7 @@ function check_urls(add_error)
     {
         if(action_url != public_url + "inscriptions/php/ajout_reservation.php?event_id=" + event_id)
         {
-            add_error("A quoi joues tu ? Arrète de trafiquer les redirections.");
+            add_alert("A quoi joues tu ? Arrète de trafiquer les redirections.");
             return false;
         }
     }
@@ -174,7 +174,7 @@ function check_urls(add_error)
     {
         if(action_url != public_url + "inscriptions/php/edition_reservation.php?event_id=" + event_id)
         {
-            add_error("A quoi joues tu ? Arrète de trafiquer les redirections.");
+            add_alert("A quoi joues tu ? Arrète de trafiquer les redirections.");
             return false;
         }
     }

@@ -33,12 +33,12 @@ if(isset($_GET['event_id']) && isset($_GET['participant_id']))
         else
         {
             set_alert_style("Erreur routing");
-            add_error("Les informations transmises ne correspondent pas.");
+            add_alert("Les informations transmises ne correspondent pas.");
         }
     }
 }
 else
 {
     set_alert_style("Erreur routing");
-    add_error("Il manque des paramètres.");
+    add_alert("Il manque des paramètres.");
 }

@@ -1,11 +1,5 @@
 <?php
 
-//Possible qu'il y ait une erreur à cause de Php, qui a des problèmes avec la précision des float............
-function is_an_integer($number)
-{
-    return (floor($number) == $number) && $number>=0;
-}
-
 function add_options_previously_defined($options)
 {
     global $db;
@@ -29,8 +23,8 @@ function add_options_previously_defined($options)
         }
         $option = array_merge($option, $all_opt);
 
-        $option_specifications = json_decode($option['specifications']);
-        add_option_html_code($compteur, $option, $option_specifications, $promo_options);
+        $option_choices = get_option_choices($option['option_id']);
+        add_option_html_code($compteur, $option, $option_choices, $promo_options);
     }
 }
 
@@ -77,13 +71,13 @@ function check_and_prepare_data()
         }
         else
         {
-            add_error("Les données de l'évènement sont vides");
+            add_alert("Les données de l'évènement sont vides");
             die();
         }
     }
     else
     {
-        add_error("Les données de l'évènement n'ont pas été transmises.");
+        add_alert("Les données de l'évènement n'ont pas été transmises.");
         die();
     }
 
@@ -98,12 +92,12 @@ function check_and_prepare_data()
     }
     elseif($_POST['event_accessibility_json']=='')
     {
-        add_error("Les données de l'accessibilité sont vides.");
+        add_alert("Les données de l'accessibilité sont vides.");
         die();
     }
     else
     {
-        add_error("Les données de l'accessibilité de l'évènement n'ont pas été transmises.");
+        add_alert("Les données de l'accessibilité de l'évènement n'ont pas été transmises.");
         die();
     }
 
@@ -118,7 +112,7 @@ function check_and_prepare_data()
     }
     else
     {
-        add_error("Les données des options de l'évènement n'ont pas été transmises.");
+        add_alert("Les données des options de l'évènement n'ont pas été transmises.");
         die();
     }
 }
@@ -131,39 +125,39 @@ function is_correct_event_data()
 
     if(!is_object($event))
     {
-        add_error("Les informations sur l'évènement sont mal passées. Ce n'est même pas un objet.");
+        add_alert("Les informations sur l'évènement sont mal passées. Ce n'est même pas un objet.");
         return false;
     }
     if(count(get_object_vars($event))!=7)
     {
-        add_error("Il n'y a pas le bon nombre de paramètres transmis pour les infos de l'évènement.");
+        add_alert("Il n'y a pas le bon nombre de paramètres transmis pour les infos de l'évènement.");
         $error = true;
     }
     else
     {
         if(!is_string($event->name))
         {
-            add_error("Le nom de l'évènement n'est même pas une chaine de caractères.");
+            add_alert("Le nom de l'évènement n'est même pas une chaine de caractères.");
             $error = true;
         }
         elseif(strlen($event->name)>60)
         {
-            add_error("Est ce vraiment nécessaire d'avoir un nom d'évènement si grand ?");
+            add_alert("Est ce vraiment nécessaire d'avoir un nom d'évènement si grand ?");
             $error = true;
         }
         if(!is_string($event->description))
         {
-            add_error("La description de l'évènement n'est même pas une chaine de caractères.");
+            add_alert("La description de l'évènement n'est même pas une chaine de caractères.");
             $error = true;
         }
         if(!is_numeric($event->quota))
         {
-            add_error("Le quota de l'évènement n'est même pas numérique.");
+            add_alert("Le quota de l'évènement n'est même pas numérique.");
             $error = true;
         }
         elseif(!is_an_integer($event->quota))
         {
-            add_error("Le quota de l'évènement n'est même pas entier.");
+            add_alert("Le quota de l'évènement n'est même pas entier.");
             $error = true;
         }
         try
@@ -172,7 +166,7 @@ function is_correct_event_data()
         }
         catch(Exception $exception)
         {
-            add_error("Impossible de convertir la date de début de la billetterie.");
+            add_alert("Impossible de convertir la date de début de la billetterie.");
             $error = true;
         }
         try
@@ -181,24 +175,24 @@ function is_correct_event_data()
         }
         catch(Exception $exception)
         {
-            add_error("Impossible de convertir la date de fin de la billetterie.");
+            add_alert("Impossible de convertir la date de fin de la billetterie.");
             $error = true;
         }
         if(!in_array($event->is_active, [0,1]))
         {
-            add_error("Les données traitant de l'activité ou non de l'évènement ont mal été transmises.");
+            add_alert("Les données traitant de l'activité ou non de l'évènement ont mal été transmises.");
             $error = true;
         }
         if(isset($event->fundation_id))
         {
             if(!is_numeric($event->fundation_id))
             {
-                add_error("L'id de la fondation n'est pas numérique.");
+                add_alert("L'id de la fondation n'est pas numérique.");
                 $error = true;
             }
             elseif(!is_an_integer($event->fundation_id))
             {
-                add_error("L'id de la fondation n'est pas entière.");
+                add_alert("L'id de la fondation n'est pas entière.");
                 $error = true;
             }
             else
@@ -208,7 +202,7 @@ function is_correct_event_data()
         }
         else
         {
-            add_error("L'id de la fondation sur laquelle ajouter l'évènement n'est pas transmis.");
+            add_alert("L'id de la fondation sur laquelle ajouter l'évènement n'est pas transmis.");
             $error = true;
         }
     }
@@ -224,20 +218,20 @@ function is_correct_event_accessibility()
     {
         if(!is_object($event_promo))
         {
-            add_error("Les informations sur une des options sont mal passées. Ce n'est même pas un objet.");
+            add_alert("Les informations sur une des options sont mal passées. Ce n'est même pas un objet.");
             $error = true;
             continue;
         }
         if(count(get_object_vars($event_promo))!=5)
         {
-            add_error("Il n'y a pas le bon nombre de paramètres transmis pour l'accessibilité de l'évènement.");
+            add_alert("Il n'y a pas le bon nombre de paramètres transmis pour l'accessibilité de l'évènement.");
             $error = true;
         }
         else
         {
             if(!is_string($event_promo->site))
             {
-                add_error("Le nom du site n'est même pas une chaine de caractères.");
+                add_alert("Le nom du site n'est même pas une chaine de caractères.");
                 $error = true;
             }
             else
@@ -245,13 +239,13 @@ function is_correct_event_accessibility()
                 $event_promo->site_id = get_site_id($event_promo->site);
                 if(empty($event_promo->site_id))
                 {
-                    add_error("Aucun site ne correspond au site donné. (".$event_promo->site.")");
+                    add_alert("Aucun site ne correspond au site donné. (".$event_promo->site.")");
                     $error = true;
                 }
             }
             if(!is_string($event_promo->promo))
             {
-                add_error("Le nom du promo n'est même pas une chaine de caractères.");
+                add_alert("Le nom du promo n'est même pas une chaine de caractères.");
                 $error = true;
             }
             else
@@ -259,18 +253,18 @@ function is_correct_event_accessibility()
                 $event_promo->promo_id = get_promo_id($event_promo->promo);
                 if(empty($event_promo->promo_id))
                 {
-                    add_error("Aucun promo ne correspond à la promo donné. (".$event_promo->promo.")");
+                    add_alert("Aucun promo ne correspond à la promo donné. (".$event_promo->promo.")");
                     $error = true;
                 }
             }
             if(!is_numeric($event_promo->price))
             {
-                add_error("Le prix d'une des promos n'est même pas numérique");
+                add_alert("Le prix d'une des promos n'est même pas numérique");
                 $error = true;
             }
             elseif(!is_an_integer(100*$event_promo->price))
             {
-                add_error("Le prix d'une des promos est défini avec une précision plus grande que le centime, ou n'est même pas positif");
+                add_alert("Le prix d'une des promos est défini avec une précision plus grande que le centime, ou n'est même pas positif");
                 $error = true;
             }
             if(!is_numeric($event_promo->quota))
@@ -281,23 +275,23 @@ function is_correct_event_accessibility()
                 }
                 else
                 {
-                    add_error("Le quota d'une des promos n'est même pas numérique");
+                    add_alert("Le quota d'une des promos n'est même pas numérique");
                     $error = true;
                 }
             }
             elseif(!is_an_integer(1*$event_promo->quota))
             {
-                add_error("Le quota d'une des promos n'est même pas entier");
+                add_alert("Le quota d'une des promos n'est même pas entier");
                 $error = true;
             }
             if(!is_numeric($event_promo->guest_number))
             {
-                add_error("Le nombre d'invités d'une des promos n'est même pas numérique");
+                add_alert("Le nombre d'invités d'une des promos n'est même pas numérique");
                 $error = true;
             }
             elseif(!is_an_integer(1*$event_promo->guest_number))
             {
-                add_error("Le nombre d'invités d'une des promos n'est même pas entier");
+                add_alert("Le nombre d'invités d'une des promos n'est même pas entier");
                 $error = true;
             }
         }
@@ -315,7 +309,7 @@ function are_correct_options()
         $option_name = isset($option->name) ? $option->name . ' : ' : "" ;
         if(!is_object($option))
         {
-            add_error("Les informations sur une des options sont mal passées. Ce n'est même pas un objet.");
+            add_alert("Les informations sur une des options sont mal passées. Ce n'est même pas un objet.");
             $error = true;
             continue;
         }
@@ -323,7 +317,7 @@ function are_correct_options()
         {
             if(!event_has_option(array("event_id" => $_GET['event_id'], "option_id" => $option->option_id)))
             {
-                add_error("L'id de l'option a été changée.");
+                add_alert("L'id de l'option a été changée.");
                 $error = true;
                 continue;
             }
@@ -332,36 +326,36 @@ function are_correct_options()
         {
             if(!is_string($option->name))
             {
-                add_error($option_name . "Le nom de l'option n'est même pas une chaine de caractères");
+                add_alert($option_name . "Le nom de l'option n'est même pas une chaine de caractères");
                 $error = true;
             }
             elseif(strlen($option->name)>45)
             {
-                add_error($option_name . "Est-il nécessaire d'avoir un nom si long pour votre option ?");
+                add_alert($option_name . "Est-il nécessaire d'avoir un nom si long pour votre option ?");
                 $error = true;
             }
             elseif(strlen($event->name . " Option " . $option->name)>100)
             {
-                add_error($option_name . "Le nom combiné de votre évènement et de votre option est trop grand... Enlevez quelques caractères là ou vous pouvez. La description est faire pour ça !");
+                add_alert($option_name . "Le nom combiné de votre évènement et de votre option est trop grand... Enlevez quelques caractères là ou vous pouvez. La description est faire pour ça !");
                 $error = true;
             }
         }
         else
         {
             $error = true;
-            add_error($option_name . "Impossible de trouver le nom de l'option");
+            add_alert($option_name . "Impossible de trouver le nom de l'option");
         }
         if(isset($option->description))
         {
             if(!is_string($option->description))
             {
-                add_error($option_name . "La description de l'option n'est même pas une chaine de caractères");
+                add_alert($option_name . "La description de l'option n'est même pas une chaine de caractères");
                 $error = true;
             }
         }
         else
         {
-            add_error($option_name . "Impossible de trouver la description de l'option");
+            add_alert($option_name . "Impossible de trouver la description de l'option");
             $error = true;
         }
         if(isset($option->quota))
@@ -372,32 +366,32 @@ function are_correct_options()
             }
             elseif(!is_numeric($option->quota))
             {
-                add_error($option_name . "Le quota d'une des options n'est même pas numérique");
+                add_alert($option_name . "Le quota d'une des options n'est même pas numérique");
                 $error = true;
             }
             elseif(!is_an_integer(1*$option->quota))
             {
-                add_error($option_name . "Le quota d'une des options n'est même pas entier");
+                add_alert($option_name . "Le quota d'une des options n'est même pas entier");
                 $error = true;
             }
         }
         else
         {
             $error = true;
-            add_error($option_name . "Impossible de trouver le quota de l'option");
+            add_alert($option_name . "Impossible de trouver le quota de l'option");
         }
         if(isset($option->is_active))
         {
             if(!in_array($option->is_active, [0,1]))
             {
-                add_error($option_name . "Les infos à propos de l'activation ou non de l'option sont mal passées.");
+                add_alert($option_name . "Les infos à propos de l'activation ou non de l'option sont mal passées.");
                 $error = true;
             }
         }
         else
         {
             $error = true;
-            add_error($option_name . "Impossible de trouver l'activité ou non de l'option");
+            add_alert($option_name . "Impossible de trouver l'activité ou non de l'option");
         }
         if(isset($option->type))
         {
@@ -406,12 +400,12 @@ function are_correct_options()
                 $option->is_mandatory = 0;
                 if(!is_numeric($option->type_specification->price))
                 {
-                    add_error($option_name . "Le prix d'une option checkbox n'est même pas numérique");
+                    add_alert($option_name . "Le prix d'une option checkbox n'est même pas numérique");
                     $error = true;
                 }
                 elseif(!is_an_integer(100*$option->type_specification->price))
                 {
-                    add_error($option_name . "Le prix d'une option checkbox est défini avec une précision plus grande que le centime, ou n'est même pas positif");
+                    add_alert($option_name . "Le prix d'une option checkbox est défini avec une précision plus grande que le centime, ou n'est même pas positif");
                     $error = true;
                 }
             }
@@ -419,7 +413,7 @@ function are_correct_options()
             {
                 if(!in_array($option->is_mandatory, [0,1]))
                 {
-                    add_error($option_name . "Les infos à propos de la facultativité ou non de l'option sont mal passées.");
+                    add_alert($option_name . "Les infos à propos de la facultativité ou non de l'option sont mal passées.");
                     $error = true;
                 }
                 elseif($option->is_mandatory==1)
@@ -430,7 +424,7 @@ function are_correct_options()
                         {
                             if(a_participant_would_have_to_pay_obliged_option(array('event_id' => $_GET['event_id'], 'option_id' => $option->option_id)) && get_current_option_quota(array('event_id' => $event_id, 'option_id' => $option->option_id)) < $option->quota)
                             {
-                                add_error($option_name . "Il est impossible de forcer cette option à être obligatoire après que la billetterie ait commencé. En effet, certains participants ont déjà payé leur place sans prendre cette option. Si vous souhaitez tout de même faire ce changement, venez voir l'organisation de PayIcam pour en discuter.");
+                                add_alert($option_name . "Il est impossible de forcer cette option à être obligatoire après que la billetterie ait commencé. En effet, certains participants ont déjà payé leur place sans prendre cette option. Si vous souhaitez tout de même faire ce changement, venez voir l'organisation de PayIcam pour en discuter.");
                                 $error = true;
                             }
                         }
@@ -438,7 +432,7 @@ function are_correct_options()
                         {
                             if(a_participant_would_have_to_pay_obliged_option(array('event_id' => $_GET['event_id'], 'option_id' => $option->option_id)) && get_current_option_quota(array('event_id' => $event_id, 'option_id' => $option->option_id)) < $option->quota)
                             {
-                                add_error($option_name . "Cette option était déjà obligatoire, mais il y a un problème... Un participant a accès à cette option, sa place, mais n'a pas cette option, supposée obligatoire. Contactez PayIcam si vous voyez ce message.");
+                                add_alert($option_name . "Cette option était déjà obligatoire, mais il y a un problème... Un participant a accès à cette option, sa place, mais n'a pas cette option, supposée obligatoire. Contactez PayIcam si vous voyez ce message.");
                                 $error = true;
                             }
                         }
@@ -447,7 +441,7 @@ function are_correct_options()
                     {
                         if(participants_already_took_places($event_id))
                         {
-                            add_error($option_name . "Il est impossible d'ajouter cette option. En effet, au moins un participant a déjà une place ou une place en attente. Il faut absolument définir les options obligatoires au TOUT début. Contactez PayIcam très vite s'il faut absolument ajouter cette option OBLIGATOIRE.");
+                            add_alert($option_name . "Il est impossible d'ajouter cette option. En effet, au moins un participant a déjà une place ou une place en attente. Il faut absolument définir les options obligatoires au TOUT début. Contactez PayIcam très vite s'il faut absolument ajouter cette option OBLIGATOIRE.");
                             $error = true;
                         }
                     }
@@ -456,7 +450,7 @@ function are_correct_options()
                 {
                     if(count($option->type_specification)<=1)
                     {
-                        add_error($option_name .  "Il n'y a qu'une seule option select, ce n'est pas normal. Autant utiliser une checkbox.");
+                        add_alert($option_name .  "Il n'y a qu'une seule option select, ce n'est pas normal. Autant utiliser une checkbox.");
                         $error = true;
                     }
 
@@ -464,7 +458,7 @@ function are_correct_options()
                     {
                         if(!is_object($suboption))
                         {
-                            add_error($option_name .  "Les informations sur une des sous-options select sont mal passées. Ce n'est même pas un objet.");
+                            add_alert($option_name .  "Les informations sur une des sous-options select sont mal passées. Ce n'est même pas un objet.");
                             $error = true;
                             continue;
                         }
@@ -472,41 +466,41 @@ function are_correct_options()
                         {
                             if(!is_string($suboption->name))
                             {
-                                add_error($option_name .  "Le nom d'une sous-option select n'est même pas une chaine de caractères");
+                                add_alert($option_name .  "Le nom d'une sous-option select n'est même pas une chaine de caractères");
                                 $error = true;
                             }
                             elseif(!strlen($suboption->name)>40)
                             {
-                                add_error($option_name .  "Est-il nécessaire d'avoir une sous-option si longue ?");
+                                add_alert($option_name .  "Est-il nécessaire d'avoir une sous-option si longue ?");
                                 $error = true;
                             }
                             elseif(strlen($event->name . " Option " . $option->name . " Choix " . $suboption->name)>100)
                             {
-                                add_error($option_name .  "Le nom combiné de votre évènement, de votre option, et de votre sous-option est trop grand... Enlevez quelques caractères là ou vous pouvez.");
+                                add_alert($option_name .  "Le nom combiné de votre évènement, de votre option, et de votre sous-option est trop grand... Enlevez quelques caractères là ou vous pouvez.");
                                 $error = true;
                             }
                         }
                         else
                         {
-                            add_error($option_name .  "le nom d'une sous-option n'est pas défini.");
+                            add_alert($option_name .  "le nom d'une sous-option n'est pas défini.");
                             $error = true;
                         }
                         if(isset($suboption->price))
                         {
                             if(!is_numeric($suboption->price))
                             {
-                                add_error($option_name .  "Le prix d'une sous-option select n'est même pas numérique");
+                                add_alert($option_name .  "Le prix d'une sous-option select n'est même pas numérique");
                                 $error = true;
                             }
                             elseif(!is_an_integer(100*$suboption->price))
                             {
-                                add_error($option_name .  "Le prix d'une sous-option select est défini avec une précision plus grande que le centime, ou n'est même pas positif");
+                                add_alert($option_name .  "Le prix d'une sous-option select est défini avec une précision plus grande que le centime, ou n'est même pas positif");
                                 $error = true;
                             }
                         }
                         else
                         {
-                            add_error($option_name .  "le prix d'une sous-option n'est pas défini.");
+                            add_alert($option_name .  "le prix d'une sous-option n'est pas défini.");
                             $error = true;
                         }
                         if(isset($suboption->quota))
@@ -519,26 +513,26 @@ function are_correct_options()
                                 }
                                 else
                                 {
-                                    add_error($option_name .  "Le quota d'une sous-option select n'est même pas numérique");
+                                    add_alert($option_name .  "Le quota d'une sous-option select n'est même pas numérique");
                                     $error = true;
                                 }
                             }
                             elseif(!is_an_integer($suboption->quota))
                             {
-                                add_error($option_name .  "Le quota d'une sous-option select n'est pas un entier");
+                                add_alert($option_name .  "Le quota d'une sous-option select n'est pas un entier");
                                 $error = true;
                             }
                         }
                         else
                         {
-                            add_error($option_name .  "le quota d'une sous-option n'est pas défini.");
+                            add_alert($option_name .  "le quota d'une sous-option n'est pas défini.");
                             $error = true;
                         }
                     }
                 }
                 else
                 {
-                    add_error($option_name .  "Les sous-options ne sont pas définies.");
+                    add_alert($option_name .  "Les sous-options ne sont pas définies.");
                     $error = true;
                 }
             }
@@ -546,20 +540,20 @@ function are_correct_options()
         else
         {
             $error = true;
-            add_error($option_name . "Impossible de trouver le type de l'option");
+            add_alert($option_name . "Impossible de trouver le type de l'option");
         }
         if(isset($option->accessibility))
         {
             if(count($option->accessibility)==0)
             {
-                add_error($option_name . "Aucune promo n'a le droit à cette option.");
+                add_alert($option_name . "Aucune promo n'a le droit à cette option.");
                 $error = true;
             }
             foreach($option->accessibility as &$promo)
             {
                 if(!is_string($promo->site))
                 {
-                    add_error($option_name . "Le nom du site n'est même pas une chaine de caractères.");
+                    add_alert($option_name . "Le nom du site n'est même pas une chaine de caractères.");
                     $error = true;
                 }
                 else
@@ -567,13 +561,13 @@ function are_correct_options()
                     $promo->site_id = get_site_id($promo->site);
                     if(empty($promo->site_id))
                     {
-                        add_error($option_name . "Aucun site ne correspond au site donné. (".$promo->site.")");
+                        add_alert($option_name . "Aucun site ne correspond au site donné. (".$promo->site.")");
                         $error = true;
                     }
                 }
                 if(!is_string($promo->promo))
                 {
-                    add_error($option_name . "Le nom du promo n'est même pas une chaine de caractères.");
+                    add_alert($option_name . "Le nom du promo n'est même pas une chaine de caractères.");
                     $error = true;
                 }
                 else
@@ -581,7 +575,7 @@ function are_correct_options()
                     $promo->promo_id = get_promo_id($promo->promo);
                     if(empty($promo->promo_id))
                     {
-                        add_error($option_name . "Aucun promo ne correspond à la promo donné. (".$promo->promo.")");
+                        add_alert($option_name . "Aucun promo ne correspond à la promo donné. (".$promo->promo.")");
                         $error = true;
                     }
                 }
@@ -590,7 +584,7 @@ function are_correct_options()
         else
         {
             $error = true;
-            add_error($option_name . "Impossible de trouver l'accessibilité de l'option");
+            add_alert($option_name . "Impossible de trouver l'accessibilité de l'option");
         }
     }
     return !$error;

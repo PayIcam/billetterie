@@ -75,26 +75,21 @@ function add_participant($participant_data)
     $addition->execute($participant_data);
     return $db->lastInsertId();
 }
-function add_participant_option($option_data)
-{
-    global $db;
-    $option_query = $db->prepare('INSERT INTO participant_has_options VALUES (:event_id, :participant_id, :option_id, "V", :option_details)');
-    return $option_query->execute($option_data);
-}
 function get_select_mandatory_options($ids)
 {
     global $db;
-    $select_mandatory_options = $db->prepare('SELECT * FROM options o LEFT JOIN promo_site_has_options psho ON o.option_id = psho.option_id WHERE is_active=1 and is_removed=0 and type="Select" and is_mandatory=1 and o.event_id=:event_id and promo_id=:promo_id and site_id=:site_id');
+    $select_mandatory_options = $db->prepare('SELECT * FROM options o LEFT JOIN promo_site_has_options psho ON o.option_id = psho.option_id LEFT JOIN option_choices oc ON oc.option_id=o.option_id WHERE is_active=1 and o.is_removed=0 and oc.is_removed=0 and type="Select" and is_mandatory=1 and o.event_id=:event_id and promo_id=:promo_id and site_id=:site_id ORDER BY oc.option_id');
     $select_mandatory_options->execute($ids);
     return $select_mandatory_options->fetchAll();
 }
 function get_optional_options($ids)
 {
     global $db;
-    $optional_options = $db->prepare('SELECT * FROM options o LEFT JOIN promo_site_has_options psho ON o.option_id = psho.option_id WHERE (is_active=1 and is_removed=0 and o.event_id=:event_id and promo_id=:promo_id and site_id=:site_id and o.option_id NOT IN(SELECT option_id FROM participant_has_options WHERE participant_id=:participant_id)) and ((type="Select" and is_mandatory=0) or (type="Checkbox"))');
+    $optional_options = $db->prepare('SELECT DISTINCT o.option_id, o.name, description, type, o.event_id FROM options o LEFT JOIN option_choices oc ON oc.option_id=o.option_id LEFT JOIN promo_site_has_options psho ON o.option_id = psho.option_id WHERE (is_active=1 and o.is_removed=0 and oc.is_removed=0 and o.event_id=:event_id and promo_id=:promo_id and site_id=:site_id and o.option_id NOT IN(SELECT option_id FROM participant_has_options phoo LEFT JOIN option_choices occ ON occ.choice_id=phoo.choice_id WHERE participant_id=:participant_id)) and ((type="Select" and is_mandatory=0) or (type="Checkbox"))');
     $optional_options->execute($ids);
     return $optional_options->fetchAll();
 }
+
 function option_can_be_added($ids)
 {
     global $db;
@@ -105,17 +100,18 @@ function option_can_be_added($ids)
 function participant_has_option($ids)
 {
     global $db;
-    $optional_options = $db->prepare('SELECT COUNT(*) matches FROM participant_has_options WHERE participant_id=:participant_id and option_id=:option_id and event_id=:event_id');
+    $optional_options = $db->prepare('SELECT COUNT(*) matches FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE participant_id=:participant_id and oc.option_id=:option_id and pho.event_id=:event_id');
     $optional_options->execute($ids);
     return $optional_options->fetch()['matches'] == 1 ? true : false;
 }
+
 function get_event_details_stats($event_id)
 {
     global $db;
     $details_stats = $db->prepare('
         SELECT e.*, SUM(IF(p.status IN ("V", "W"), 1, 0)) total_count, SUM(IF(p.bracelet_identification IS NULL or p.status="A", 0, 1)) total_bracelet_count, SUM(IF(pr.still_student = 1 and p.status!="A", 1, 0)) student_count, SUM(IF(pr.still_student = 0 and p.status!="A", 1, 0)) graduated_count, SUM(IF(pr.promo_name="Invités" and p.status!="A", 1, 0)) guests_count
         FROM events e
-        LEFT JOIN participants p on p.event_id=e.event_id LEFT JOIN promos pr ON pr.promo_id=p.promo_id LEFT JOIN promos_site_specifications pss ON p.promo_id = pss.promo_id and p.site_id = pss.site_id
+        LEFT JOIN participants p on p.event_id=e.event_id LEFT JOIN promos pr ON pr.promo_id=p.promo_id LEFT JOIN promos_site_specifications pss ON p.promo_id = pss.promo_id and p.site_id = pss.site_id and p.event_id=pss.event_id
         WHERE e.event_id=:event_id');
     $details_stats->execute(array('event_id' => $event_id));
 
@@ -129,14 +125,14 @@ function get_promo_specification_details_stats($event_id)
     $details_stats = $db->prepare('
         SELECT pr.promo_name, s.site_name, pss.quota, pss.guest_number, SUM(IF(p.status IN ("V", "W"), 1, 0)) promo_count, SUM(IF(p.bracelet_identification IS NULL or p.status="A", 0, 1)) bracelet_count
         FROM promos_site_specifications pss
-        LEFT JOIN participants p ON p.promo_id = pss.promo_id and p.site_id = pss.site_id LEFT JOIN promos pr ON pr.promo_id=pss.promo_id LEFT JOIN sites s ON s.site_id=pss.site_id
+        LEFT JOIN participants p ON p.promo_id = pss.promo_id and p.site_id = pss.site_id and pss.event_id=p.event_id LEFT JOIN promos pr ON pr.promo_id=pss.promo_id LEFT JOIN sites s ON s.site_id=pss.site_id
         WHERE p.event_id=:event_id and status != "A"
         GROUP BY pss.promo_id, pss.site_id, pss.quota, pss.guest_number');
     $details_stats->execute(array('event_id' => $event_id));
     $details_stats = $details_stats->fetchAll();
     $guest_promo_count = $db->prepare('SELECT COUNT(ihg.icam_id) invited_guests
         FROM promos_site_specifications pss
-        LEFT JOIN participants p ON p.promo_id = pss.promo_id and p.site_id = pss.site_id LEFT JOIN icam_has_guests ihg on ihg.icam_id=p.participant_id
+        LEFT JOIN participants p ON p.promo_id = pss.promo_id and p.site_id = pss.site_id and pss.event_id=p.event_id LEFT JOIN icam_has_guests ihg on ihg.icam_id=p.participant_id
         WHERE p.event_id=:event_id and status != "A"
         GROUP BY p.promo_id, p.site_id');
     $guest_promo_count->execute(array('event_id' => $event_id));

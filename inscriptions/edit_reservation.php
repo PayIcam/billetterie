@@ -26,7 +26,7 @@ if(isset($_GET['event_id']))
         if($icam_event_data=='several_emails')
         {
             set_alert_style("Erreur doublons réservations");
-            add_error("Plus d'un email est enregistré pour votre réservation. Contactez PayIcam pour résoudre ce problème.");
+            add_alert("Plus d'un email est enregistré pour votre réservation. Contactez PayIcam pour résoudre ce problème.");
             die();
         }
         elseif(empty($icam_event_data))
@@ -55,7 +55,7 @@ if(isset($_GET['event_id']))
         else
         {
             set_alert_style("Erreur routing");
-            add_error("Vous n'avez pas accès à cet évènement. C'est une erreur qu'il vous soit apparu.");
+            add_alert("Vous n'avez pas accès à cet évènement. C'est une erreur qu'il vous soit apparu.");
             die();
         }
     }
@@ -63,7 +63,7 @@ if(isset($_GET['event_id']))
 else
 {
     set_alert_style("Erreur routing");
-    add_error("Le GET n'est pas défini, vous n'avez pas eu la bonne url.");
+    add_alert("Le GET n'est pas défini, vous n'avez pas eu la bonne url.");
     die();
 }
 

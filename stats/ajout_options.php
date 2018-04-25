@@ -22,19 +22,25 @@ if($Auth->hasRole('admin'))
                 $promo_id = $icam['promo_id'];
                 $site_id = $icam['site_id'];
                 $options = get_optional_options(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id, 'participant_id' => $_GET['participant_id']));
+                if(empty($options))
+                {
+                    set_alert_style("Erreur options déjà prises");
+                    add_alert("Le participant a déjà toutes les options possibles");
+                    die();
+                }
                 require 'templates/ajout_options.php';
             }
             else
             {
                 set_alert_style("Erreur routing");
-                add_error("Les informations transmises ne correspondent pas.");
+                add_alert("Les informations transmises ne correspondent pas.");
             }
         }
     }
     else
     {
         set_alert_style("Erreur routing");
-        add_error("Il manque des paramètres.");
+        add_alert("Il manque des paramètres.");
     }
 }
 else

@@ -10,17 +10,38 @@
             <div class="container">
             <hr>
                 <div id="options">
-                    <h2 class="text-center">Choisissez les options que vous offrez</h2>
+                    <h2 class="text-center">Choisissez les options que vous ajoutez</h2>
                     <div class="row option">
                         <?php
                         foreach($options as $option)
                         {
-                            $option['specifications'] = json_decode($option['specifications']);
+                            $option['option_choices'] = get_option_choices($option['option_id']);
                             display_option_no_checking($option);
                         }
                         ?>
                     </div>
                 </div>
+                <div id="payement_infos" class="row">
+                    <div class="col-sm-6 form-group">
+                        <label for="sel1">Payement:</label>
+                        <select class="form-control" name="payement">
+                            <option disabled> Choisissez le moyen de payement de votre participant</option>
+                            <option>Espèces</option>
+                            <option>Carte bleue</option>
+                            <option>Pumpkin</option>
+                            <option>Lydia</option>
+                            <option>Circle</option>
+                            <option>Offert</option>
+                            <option>à l'amiable</option>
+                            <option>Autre</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label for="price">Price</label>
+                        <input required type="number" min=0 step=0.01 class="form-control" id="price" name="price">
+                    </div>
+                </div>
+
                 <hr>
                 <div id="message_submit" class="container">
                     <div class="alert alert-info alert-dismissible waiting">

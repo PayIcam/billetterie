@@ -1,8 +1,8 @@
 function prepare_edit_submit()
 {
-    function add_error(message)
+    function add_alert(message, alert_type="danger")
     {
-        var message_displayed = '<div class="alert alert-danger alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Attention ! </strong>' + message + '</div>'
+        var message_displayed = '<div class="alert alert-'+alert_type+' alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Attention ! </strong>' + message + '</div>'
         $("#alerts").append(message_displayed);
     }
 
@@ -14,9 +14,9 @@ function prepare_edit_submit()
             {
                 if($(this).find('.has_option').is(':checked'))
                 {
-                    var id = $(this).find('input[name=option_id]').val();
+                    var option_id = $(this).find('input[name=option_id]').val();
+                    var choice_id = $(this).find('.has_option').val();
                     var name = $(this).find('.option_name').text();
-
                     var option_price = parseFloat($(this).find('input[name=option_price]').val());
 
                     if($(this).parent()[0] == $("#icam_options")[0])
@@ -28,9 +28,7 @@ function prepare_edit_submit()
                         guest_price_addition+=option_price;
                     }
 
-                    var option_article_id= $(this).find('.has_option').val();
-
-                    option = {id: id, type: 'Checkbox', name: name, price: option_price, option_article_id: option_article_id};
+                    option = {option_id: option_id, choice_id: choice_id, type: 'Checkbox', name: name, price: option_price};
                     options.push(option);
                 }
             }
@@ -38,15 +36,14 @@ function prepare_edit_submit()
             {
                 if($(this).find('select option:not(:first):selected').length == 1)
                 {
-                    var id = $(this).find('input[name=option_id]').val();
-                    var selection_name = $.trim($(this).find('select option:selected').text());
-
-                    var option_text = $.trim($(this).find('select option:selected').text());
+                    var option_id = $(this).find('input[name=option_id]').val();
+                    var choice_id = $(this).find('select option:not(:first):selected').val();
+                    var option_text = $.trim($(this).find('select option:not(:first):selected').text());
                     var regExp = /\(([0-9]+)€\)$/;
                     var option_price = parseFloat(regExp.exec(option_text)[1]);
 
                     var regExp_name = /(\([0-9]+€\))$/;
-                    var name = selection_name.replace(regExp_name, '');
+                    var name = option_text.replace(regExp_name, '');
 
                     if($(this).parent()[0] == $("#icam_options")[0])
                     {
@@ -59,7 +56,7 @@ function prepare_edit_submit()
 
                     var option_article_id= $(this).find('select option:not(:first):selected').val();
 
-                    option = {id: id, type: 'Select', name: name, price: option_price, option_article_id: option_article_id};
+                    option = {option_id: option_id, choice_id: choice_id, type: 'Select', name: name, price: option_price};
                     options.push(option);
                 }
             }
@@ -67,7 +64,7 @@ function prepare_edit_submit()
 
         $("#alerts").empty();
 
-        if(!check_urls(add_error))
+        if(!check_urls(add_alert))
         {
             submit.preventDefault();
             throw("problèmes d'urls");
@@ -84,12 +81,10 @@ function prepare_edit_submit()
         var promo_id = $('input[name=icam_promo_id]').val();
         var site_id = $('input[name=icam_site_id]').val();
 
-        var icam_event_article_id = $('input[name=icams_event_article_id]').val();
-
         var options = [];
         $("#icam_options").children('div:not(div[data-payed=1])').each(prepare_option_data);
 
-        var icam_data = {icam_id: icam_id, price: icam_price_addition, telephone: telephone, options: options, site_id: site_id, promo_id: promo_id, icam_event_article_id: icam_event_article_id};
+        var icam_data = {participant_id: icam_id, participant_price_addition: icam_price_addition, telephone: telephone, options: options, site_id: site_id, promo_id: promo_id};
         var json_icam_data = JSON.stringify(icam_data);
         $("#hidden_inputs input[name=icam_informations]").attr('value', json_icam_data);
 
@@ -103,12 +98,12 @@ function prepare_edit_submit()
             {
                 if(prenom == '')
                 {
-                    add_error("Vous n'avez pas défini le prénom de l'" + $(this).find(".guest_title_default_text").text());
+                    add_alert("Vous n'avez pas défini le prénom de l'" + $(this).find(".guest_title_default_text").text());
                     submit.preventDefault();
                 }
                 else if(nom == '')
                 {
-                    add_error("Vous n'avez pas défini le nom de l'" + $(this).find(".guest_title_default_text").text());
+                    add_alert("Vous n'avez pas défini le nom de l'" + $(this).find(".guest_title_default_text").text());
                     submit.preventDefault();
                 }
                 else
@@ -120,28 +115,23 @@ function prepare_edit_submit()
                         var promo_id = $(this).find('.guest_promo_id').val();
                         var site_id = $(this).find('.guest_site_id').val();
 
-                        var guest_event_article_id = $('input[name=guests_event_article_id]').val();
-
                         options = [];
                         $(this).find(".guest_options").children("div:not(div[data-payed=1])").each(prepare_option_data);
 
-                        var guest_data = {guest_id: guest_id, prenom: prenom, nom: nom, price: guest_price_addition, options: options, site_id: site_id, promo_id: promo_id, guest_event_article_id: guest_event_article_id};
+                        var guest_data = {participant_id: guest_id, prenom: prenom, nom: nom, participant_price_addition: guest_price_addition, options: options, site_id: site_id, promo_id: promo_id};
                         previous_guests_data.push(guest_data);
                     }
                     else
                     {
-                        var is_icam = 0;
                         var event_price = parseFloat($(this).find('.event_price').text());
                         guest_price_addition = event_price;
                         var promo_id = $(this).find('.guest_promo_id').val();
                         var site_id = $(this).find('.guest_site_id').val();
 
-                        var guest_event_article_id = $('input[name=guests_event_article_id]').val();
-
                         options = [];
                         $(this).find(".guest_options div").each(prepare_option_data);
 
-                        var guest_data = {prenom: prenom, nom: nom, is_icam: is_icam, price: guest_price_addition, options: options, site_id: site_id, promo_id: promo_id, guest_event_article_id: guest_event_article_id};
+                        var guest_data = {prenom: prenom, nom: nom, event_price: event_price, total_participant_price: guest_price_addition, options: options, site_id: site_id, promo_id: promo_id};
                         new_guests_data.push(guest_data);
                     }
                 }
@@ -173,7 +163,7 @@ function prepare_edit_submit()
             console.log(textStatus);
             console.log();
             console.log(errorThrown);
-            add_error('La requête Ajax permettant de submit les informations et ajouter les modifications a échoué');
+            add_alert('La requête Ajax permettant de submit les informations et ajouter les modifications a échoué');
         }
 
         function ajax_success(data)

@@ -4,9 +4,9 @@ function connect_to_db($conf)
 {
     try
     {
-        $bd = new PDO('mysql:host='.$conf['sql_host'].';dbname='.$conf['sql_db'].';charset=utf8',$conf['sql_user'],$conf['sql_pass'],array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ));
-        $bd ->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        return $bd;
+        $db = new PDO('mysql:host='.$conf['sql_host'].';dbname='.$conf['sql_db'].';charset=utf8',$conf['sql_user'],$conf['sql_pass'],array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ));
+        $db ->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        return $db;
     }
     catch(Exeption $e)
     {
@@ -28,14 +28,14 @@ function event_id_is_correct($event_id)
             $message = "Cet event_id n'existe pas";
             if(isset($ajax_json_response))
             {
-                add_error_to_ajax_response($message);
+                add_alert_to_ajax_response($message);
                 echo json_encode($ajax_json_response);
                 die();
             }
             else
             {
                 set_alert_style("Erreur routing");
-                add_error($message);
+                add_alert($message);
             }
         }
         return $correct_id;
@@ -45,14 +45,14 @@ function event_id_is_correct($event_id)
         $message = "L'event_id n'est pas spécifié en GET";
         if(isset($ajax_json_response))
         {
-            add_error_to_ajax_response($message);
+            add_alert_to_ajax_response($message);
             echo json_encode($ajax_json_response);
             die();
         }
         else
         {
             set_alert_style("Erreur routing");
-            add_error($message);
+            add_alert($message);
         }
         return false;
     }
@@ -61,14 +61,14 @@ function event_id_is_correct($event_id)
         $message = "L'event_id spécifiée n'est même pas un entier.";
         if(isset($ajax_json_response))
         {
-            add_error_to_ajax_response($message);
+            add_alert_to_ajax_response($message);
             echo json_encode($ajax_json_response);
             die();
         }
         else
         {
             set_alert_style("Erreur routing");
-            add_error($message);
+            add_alert($message);
         }
         return false;
     }
@@ -250,20 +250,27 @@ function get_option($ids)
 function insert_participant_option($option_data)
 {
     global $db;
-    $option_query = $db->prepare('INSERT INTO participant_has_options VALUES (:event_id, :participant_id, :option_id, "W", :option_details)');
+    $option_query = $db->prepare('INSERT INTO participant_has_options(event_id, participant_id, choice_id, status, price, payement) VALUES (:event_id, :participant_id, :choice_id, :status, :price, :payement)');
     return $option_query->execute($option_data);
 }
 function get_participant_option($ids)
 {
     global $db;
-    $option_query = $db->prepare('SELECT * FROM participant_has_options WHERE event_id=:event_id and option_id=:option_id and participant_id=:participant_id and status="V" ');
+    if (isset($ids['option_id']) && isset($ids['event_id']))
+        $option_query = $db->prepare('
+        SELECT pho.*
+        FROM participant_has_options pho
+        LEFT JOIN option_choices oc ON pho.choice_id = oc.choice_id
+        WHERE pho.event_id=:event_id and oc.option_id=:option_id and participant_id=:participant_id and status="V" ');
+    elseif (isset($ids['choice_id']))
+        $option_query = $db->prepare('SELECT pho.* FROM participant_has_options pho WHERE choice_id=:choice_id and participant_id=:participant_id and status="V" ');
     $option_query->execute($ids);
     return $option_query->fetch();
 }
 function get_current_option_quota($ids)
 {
     global $db;
-    $count_promo = $db->prepare('SELECT COUNT(*) current_option_quota FROM participant_has_options WHERE event_id= :event_id and option_id= :option_id and status IN("V", "W")');
+    $count_promo = $db->prepare('SELECT COUNT(*) current_option_quota FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE pho.event_id= :event_id and oc.option_id= :option_id and status IN("V", "W")');
     $count_promo->execute($ids);
     return $count_promo->fetch()['current_option_quota'];
 }
@@ -429,6 +436,13 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
             break;
 
+        case('pending_reservations'):
+            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE participant_id IN(SELECT icam_id FROM transactions INNER JOIN events ON events.event_id = transactions.event_id WHERE status = "W" and transactions.event_id= :event_id) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE participant_id IN(SELECT icam_id FROM transactions INNER JOIN events ON events.event_id = transactions.event_id WHERE status = "W" and transactions.event_id= :event_id)');
+            $count_recherche->execute(array('event_id' => $event_id));
+            $count_recherche = $count_recherche->fetch()['COUNT(*)'];
+            break;
+
         case (preg_match($promo_site_search_regex, $recherche) == 1):
             $recherche = explode(' ', $recherche);
             $promo_id = get_promo_id($recherche[0]);
@@ -461,10 +475,10 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             break;
 
         case(preg_match($option_search_regex, $recherche) ==1):
-            $recherche_bdd = $db->prepare('SELECT * FROM participants p WHERE event_id = :event_id and status="V" and participant_id IN(SELECT DISTINCT participant_id FROM participant_has_options WHERE option_id=:option_id) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $recherche_bdd = $db->prepare('SELECT * FROM participants p WHERE p.event_id = :event_id and status="V" and participant_id IN(SELECT DISTINCT participant_id FROM participant_has_options LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE oc.option_id=:option_id) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $option_id = get_option_id($recherche);
             $recherche_bdd->bindParam('option_id', $option_id);
-            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE event_id = :event_id and status="V" and participant_id IN(SELECT DISTINCT participant_id FROM participant_has_options WHERE option_id=:option_id)');
+            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE event_id = :event_id and status="V" and participant_id IN(SELECT DISTINCT participant_id FROM participant_has_options LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE oc.option_id=:option_id)');
             $count_recherche->execute(array('event_id' => $event_id, 'option_id' => $option_id));
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
             break;
@@ -651,4 +665,65 @@ function get_option_id($option_name)
     $option_id = $db->prepare('SELECT option_id FROM options WHERE name=:name');
     $option_id->execute(array("name" => $option_name));
     return $option_id->fetch()['option_id'];
+}
+
+function get_option_choices($option_id)
+{
+    global $db;
+    $option_choices = $db->prepare('SELECT * FROM option_choices WHERE option_id=:option_id');
+    $option_choices->execute(array('option_id' => $option_id));
+    return $option_choices->fetchAll();
+}
+
+function get_option_choice($choice_id)
+{
+    global $db;
+    $option_choices = $db->prepare('SELECT * FROM option_choices WHERE choice_id=:choice_id');
+    $option_choices->execute(array('choice_id' => $choice_id));
+    return $option_choices->fetch();
+}
+
+function get_participant_options_and_choices($ids)
+{
+    global $db;
+    $option_query = $db->prepare('SELECT * FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id = pho.choice_id WHERE event_id=:event_id and participant_id=:participant_id and status="V" ');
+    $option_query->execute($ids);
+    return $option_query->fetchAll();
+}
+
+function get_pending_options_and_choices($ids)
+{
+    global $db;
+    $option_query = $db->prepare('SELECT * FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id = pho.choice_id WHERE event_id=:event_id and participant_id=:participant_id and status="W" ');
+    $option_query->execute($ids);
+    return $option_query->fetchAll();
+}
+
+function get_participant_option_prices($participant_id)
+{
+    global $db;
+    $price_sum = $db->prepare('SELECT SUM(price) sum FROM participant_has_options WHERE participant_id=:participant_id');
+    $price_sum->execute(array('participant_id' => $participant_id));
+    return $price_sum->fetch()['sum'];
+}
+
+function is_correct_choice_id($ids)
+{
+    global $db;
+    $rows_number = $db->prepare('SELECT COUNT(*) FROM option_choices WHERE choice_id=:choice_id and option_id=:option_id');
+    $rows_number->execute($ids);
+    return $rows_number->fetch()['COUNT(*)']==1 ? true : false;
+}
+
+function participant_can_have_choice($ids)
+{
+    global $db;
+    $rows_number = $db->prepare('SELECT COUNT(*) FROM option_choices oc
+        LEFT JOIN options o ON o.option_id=oc.option_id
+        LEFT JOIN promo_site_has_options psho ON psho.option_id=o.option_id and psho.event_id=o.event_id
+        LEFT JOIN promos_site_specifications pss ON pss.promo_id=psho.promo_id and pss.site_id=psho.site_id and pss.event_id=psho.event_id
+        LEFT JOIN participants p ON p.promo_id=pss.promo_id and p.site_id=pss.site_id and p.event_id=pss.event_id
+        WHERE p.participant_id=:participant_id and oc.choice_id=:choice_id');
+    $rows_number->execute($ids);
+    return $rows_number->fetch()['COUNT(*)']==1 ? true : false;
 }

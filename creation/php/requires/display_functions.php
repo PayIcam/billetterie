@@ -37,17 +37,17 @@ function insert_option_accessibility_rows($promo_options)
     }
 }
 
-function insert_option_select_rows($option_specifications)
+function insert_option_select_rows($option_choices)
 {
     $numero = 1;
-    foreach($option_specifications as $option_specification)
+    foreach($option_choices as $option_choice)
     {
         ?>
-        <tr>
+        <tr data-choice_id=<?=$option_choice['choice_id']?>>
             <th><?= $numero ?></th>
-            <td><?= htmlspecialchars($option_specification->name) ?></td>
-            <td><?= htmlspecialchars($option_specification->price).'€' ?></td>
-            <td><?= htmlspecialchars($option_specification->quota) ?></td>
+            <td><?= htmlspecialchars($option_choice['name']) ?></td>
+            <td><?= htmlspecialchars($option_choice['price']).'€' ?></td>
+            <td><?= htmlspecialchars($option_choice['quota']) ?></td>
             <td><button type="button" class="btn btn-danger creation_button_icons"><span class="glyphicon glyphicon-trash"></span></button></td>
         </tr>
         <?php

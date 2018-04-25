@@ -31,13 +31,13 @@ if($Auth->hasRole('admin'))
                     else
                     {
                         set_alert_style("Erreur fonctionnalité");
-                        add_error("Ce n'est pas un Icam à qui vous essayez d'ajouter des invités");
+                        add_alert("Ce n'est pas un Icam à qui vous essayez d'ajouter des invités");
                     }
                 }
                 else
                 {
                     set_alert_style("Erreur fonctionnalité");
-                    add_error("Les informations transmises ne correspondent pas.");
+                    add_alert("Les informations transmises ne correspondent pas.");
                 }
             }
             else
@@ -49,7 +49,7 @@ if($Auth->hasRole('admin'))
     else
     {
         set_alert_style("Erreur routing");
-        add_error("Il manque des paramètres.");
+        add_alert("Il manque des paramètres.");
     }
 }
 else

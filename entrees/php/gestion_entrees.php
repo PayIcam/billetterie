@@ -29,7 +29,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         }
                         else
                         {
-                            add_error_to_ajax_response("Le participant est déjà rentré");
+                            add_alert_to_ajax_response("Le participant est déjà rentré");
                             echo json_encode($ajax_json_response);
                         }
                     }
@@ -43,37 +43,37 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         }
                         else
                         {
-                            add_error_to_ajax_response("Le participant est déjà parti");
+                            add_alert_to_ajax_response("Le participant est déjà parti");
                             echo json_encode($ajax_json_response);
                         }
                     }
                     else
                     {
-                        add_error_to_ajax_response("L'action n'est pas dans la liste possible");
+                        add_alert_to_ajax_response("L'action n'est pas dans la liste possible");
                         echo json_encode($ajax_json_response);
                     }
                 }
                 else
                 {
-                    add_error_to_ajax_response("Aucun participant retrouvé avec les infos transmises");
+                    add_alert_to_ajax_response("Aucun participant retrouvé avec les infos transmises");
                     echo json_encode($ajax_json_response);
                 }
             }
         }
         else
         {
-            add_error_to_ajax_response("Les paramètres envoyés ne sont pas bons.");
+            add_alert_to_ajax_response("Les paramètres envoyés ne sont pas bons.");
             echo json_encode($ajax_json_response);
         }
     }
     else
     {
-        add_error_to_ajax_response("Aucune donnée en GET n'est arrivée.");
+        add_alert_to_ajax_response("Aucune donnée en GET n'est arrivée.");
         echo json_encode($ajax_json_response);
     }
 }
 else
 {
     set_alert_style('Erreur routing');
-    add_error("Vous n'êtes pas censés appeler cette page directement.");
+    add_alert("Vous n'êtes pas censés appeler cette page directement.");
 }

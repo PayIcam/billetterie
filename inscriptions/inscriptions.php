@@ -25,7 +25,7 @@ if(isset($_GET['event_id']))
             die();
         }
 
-        check_if_event_should_be_displayed($event, $promo_id, $site_id, $email);
+        $ticketing_state = check_if_event_should_be_displayed($event, $promo_id, $site_id, $email);
 
         $promo_specifications = get_promo_specification_details(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id));
 
@@ -49,24 +49,24 @@ if(isset($_GET['event_id']))
                 else
                 {
                     set_alert_style("Quota promo rempli");
-                    add_error('Toutes les places proposées à votre promo ont été vendues...');
+                    add_alert('Toutes les places proposées à votre promo ont été vendues...');
                 }
             }
             else
             {
                 set_alert_style("Quota total rempli");
-                add_error("Toutes les places ont été vendues...");
+                add_alert("Toutes les places ont été vendues...");
             }
         }
         else
         {
             set_alert_style("Erreur routing");
-            add_error("Vous n'avez pas accès à cet évènement. C'est une erreur qu'il vous soit apparu.");
+            add_alert("Vous n'avez pas accès à cet évènement. C'est une erreur qu'il vous soit apparu.");
         }
     }
 }
 else
 {
     set_alert_style("Erreur routing");
-    add_error("Le GET n'est pas défini, vous n'avez pas eu la bonne url.");
+    add_alert("Le GET n'est pas défini, vous n'avez pas eu la bonne url.");
 }

@@ -1,8 +1,8 @@
 $('form').submit(function(submit)
 {
-    function add_error(message)
+    function add_alert(message, alert_type="danger")
     {
-        var message_displayed = '<div class="alert alert-danger alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Attention ! </strong>' + message + '</div>'
+        var message_displayed = '<div class="alert alert-'+alert_type+' alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Attention ! </strong>' + message + '</div>'
         $("#alerts").append(message_displayed);
     }
 
@@ -17,7 +17,7 @@ $('form').submit(function(submit)
         if(nom.length > 45)
         {
             error = true;
-            add_error('Le nouveau nom est trop grand');
+            add_alert('Le nouveau nom est trop grand');
         }
     }
     if($('input[name=prenom]').length)
@@ -26,14 +26,14 @@ $('form').submit(function(submit)
         if(prenom.length > 45)
         {
             error = true;
-            add_error('Le nouveau prenom est trop grand');
+            add_alert('Le nouveau prenom est trop grand');
         }
     }
     var bracelet_identification = $('input[name=bracelet_identification]').val();
     if(bracelet_identification.length > 25)
     {
         error = true;
-        add_error("L'identifiant de bracelet est trop grand");
+        add_alert("L'identifiant de bracelet est trop grand");
     }
     else if(bracelet_identification=='')
     {
@@ -44,7 +44,7 @@ $('form').submit(function(submit)
     if($.trim(post_url.split('?')[0]) != $.trim(public_url + 'stats/php/update_participant.php'))
     {
         error = true;
-        add_error('As tu joué avec ma page ?');
+        add_alert('As tu joué avec ma page ?');
     }
     if(!error)
     {
@@ -80,7 +80,7 @@ $('form').submit(function(submit)
             console.log(textStatus);
             console.log();
             console.log(errorThrown);
-            add_error("La requête Ajax permettant d'éditer les infos du participant a échoué");
+            add_alert("La requête Ajax permettant d'éditer les infos du participant a échoué");
             $("#submit_participant_update").prop('disabled', '');
         }
 

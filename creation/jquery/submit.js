@@ -1,8 +1,8 @@
 function check_then_submit_form(event)
 {
-    function add_error(message)
+    function add_alert(message, alert_type="danger")
     {
-        var message_displayed = '<div class="alert alert-danger alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Attention ! </strong>' + message + '</div>'
+        var message_displayed = '<div class="alert alert-'+alert_type+' alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Attention ! </strong>' + message + '</div>'
         $("#erreurs_submit").append(message_displayed);
     }
     function check_form()
@@ -10,77 +10,98 @@ function check_then_submit_form(event)
         var form_is_correct = true;
         if($('input[name=event_name]').val()=='')
         {
-            add_error('Le nom de votre évènement n\'est pas défini...');
+            add_alert('Le nom de votre évènement n\'est pas défini...');
             form_is_correct = false;
         }
         else if($('input[name=event_name]').val().length>100)
         {
-            add_error("Le nom de l'évènement est bien trop long");
+            add_alert("Le nom de l'évènement est bien trop long");
             form_is_correct = false;
         }
         if($('textarea[name=event_description]').val()=='')
         {
-            add_error('La description de votre évènement n\'est pas définie...');
+            add_alert('La description de votre évènement n\'est pas définie...');
             form_is_correct = false;
         }
         if($('input[name=event_quota]').val()=='')
         {
-            add_error('Le quota total de votre évènement n\'est pas défini...');
+            add_alert('Le quota total de votre évènement n\'est pas défini...');
             form_is_correct = false;
         }
         if($('input[name=ticketing_start_date]').val()=='')
         {
-            add_error('La date d\'ouverture de votre billetterie n\'est pas définie...');
+            add_alert('La date d\'ouverture de votre billetterie n\'est pas définie...');
             form_is_correct = false;
         }
         if($('input[name=ticketing_end_date]').val()=='')
         {
-            add_error('La date de fermeture de votre billetterie n\'est pas définie...');
+            add_alert('La date de fermeture de votre billetterie n\'est pas définie...');
             form_is_correct = false;
         }
         if($('#specification_table tbody tr').length==0)
         {
-            add_error('Vous ne visez aucune promo...');
+            add_alert('Vous ne visez aucune promo...');
             form_is_correct = false;
+        }
+        if($('input[name=guests]').val()==1)
+        {
+            $('#specification_table tbody tr').each(function()
+            {
+                should_have_guests = false;
+                guests_row = false
+                if($(this).children(":nth-child(6)").text()>0)
+                {
+                    should_have_guests = true;
+                }
+                if($(this).children(":nth-child(2)").text()=='Invités')
+                {
+                    guests_row = true;
+                }
+            });
+            if(should_have_guests && !guests_row)
+            {
+                add_alert("Vous avez donné la possibilité d'avoir des invités à au moins une promo, mais vous n'avez pas spécifié de promos 'Invités'. Allez le faire !");
+                form_is_correct = false;
+            }
         }
         $("#options .panel-default").each(function()
         {
             var option_name = ($(this).find("input[name=option_name]").val()=='') ? 'Option sans nom' : $(this).find("input[name=option_name]").val();
             if($(this).find("input[name=option_name]").val()=='')
             {
-                add_error('L\'option ' + option_name + ' est incomplète : Le nom de l\'option n\'est pas défini');
+                add_alert('L\'option ' + option_name + ' est incomplète : Le nom de l\'option n\'est pas défini');
                 form_is_correct = false;
             }
             else if($('input[name=option_name]').val().length>100)
             {
-                add_error("Le nom de l'option : " + option_name + " est bien trop long");
+                add_alert("Le nom de l'option : " + option_name + " est bien trop long");
                 form_is_correct = false;
             }
             if($(this).find("textarea[name=option_description]").val()=='')
             {
-                add_error('L\'option ' + option_name + ' est incomplète : La description de l\'option n\'est pas définie');
+                add_alert('L\'option ' + option_name + ' est incomplète : La description de l\'option n\'est pas définie');
                 form_is_correct = false;
             }
             if(!$(this).find("input[class=option_type_input]").is(":checked"))
             {
-                add_error('L\'option ' + option_name + ' est incomplète : Vous n\'avez pas coché le type de l\'option');
+                add_alert('L\'option ' + option_name + ' est incomplète : Vous n\'avez pas coché le type de l\'option');
                 form_is_correct = false;
             }
             if(!$(this).find("input[class=option_active_input]").is(":checked"))
             {
-                add_error('L\'option ' + option_name + ' est incomplète : Vous n\'avez pas précisé si votre option devait être active dès maintenant');
+                add_alert('L\'option ' + option_name + ' est incomplète : Vous n\'avez pas précisé si votre option devait être active dès maintenant');
                 form_is_correct = false;
             }
             if(!$(this).find("input[class=option_accessibility_input]").is(":checked"))
             {
-                add_error('L\'option ' + option_name + ' est incomplète : Vous n\'avez pas coché l\'accessibilité de l\'option');
+                add_alert('L\'option ' + option_name + ' est incomplète : Vous n\'avez pas coché l\'accessibilité de l\'option');
                 form_is_correct = false;
             }
             if($(this).find("input:radio[class=option_type_input]:checked").val()=='Checkbox')
             {
                 if($(this).find("input[name=checkbox_price]").val()=='')
                 {
-                    add_error('L\'option ' + option_name + ' est incomplète : Le prix de l\'option Checkbox n\'est pas défini');
+                    add_alert('L\'option ' + option_name + ' est incomplète : Le prix de l\'option Checkbox n\'est pas défini');
                     form_is_correct = false;
                 }
             }
@@ -88,22 +109,22 @@ function check_then_submit_form(event)
             {
                 if($(this).find('.select_table tbody tr').length ==0)
                 {
-                    add_error('L\'option ' + option_name + ' est incomplète : Il n\'y a rien dans votre select');
+                    add_alert('L\'option ' + option_name + ' est incomplète : Il n\'y a rien dans votre select');
                     form_is_correct = false;
                 }
                 if($(this).find('.select_table tbody tr :nth-child(2)').text().length>100)
                 {
-                    add_error("Le sous-nom de l'option : " + option_name + " est bien trop long");
+                    add_alert("Le sous-nom de l'option : " + option_name + " est bien trop long");
                     form_is_correct = false;
                 }
                 if($(this).find('.select_table tbody tr').length ==1)
                 {
-                    add_error('L\'option ' + option_name + ' est incomplète : Votre select ne contient qu\'une sous option. Utilisez plutôt un Checkbox...');
+                    add_alert('L\'option ' + option_name + ' est incomplète : Votre select ne contient qu\'une sous option. Utilisez plutôt un Checkbox...');
                     form_is_correct = false;
                 }
                 if(!$(this).find('.select_type .select_option_mandatory_input').is(":checked"))
                 {
-                    add_error('L\'option ' + option_name + ' est incomplète : Vous n\'avez pas précisé si le select était obligatoire.');
+                    add_alert('L\'option ' + option_name + ' est incomplète : Vous n\'avez pas précisé si le select était obligatoire.');
                     form_is_correct = false;
                 }
             }
@@ -111,7 +132,7 @@ function check_then_submit_form(event)
             {
                 if($(this).find('.option_accessibility_table tbody tr').length ==0)
                 {
-                    add_error('L\'option ' + option_name + ' est incomplète : Votre option ne s\'adresse à personne');
+                    add_alert('L\'option ' + option_name + ' est incomplète : Votre option ne s\'adresse à personne');
                     form_is_correct = false;
                 }
             }
@@ -155,11 +176,12 @@ function check_then_submit_form(event)
             var select_options = [];
             rows.each(function()
             {
+                var choice_id = $(this).data('choice_id');
                 var name = $(this).children(':nth-child(2)').text();
                 var price = $(this).children(':nth-child(3)').text().slice(0,-1);//On vire le symbole €
                 var quota = $(this).children(':nth-child(4)').text();
 
-                var select_option = {name:name, price:price, quota:quota};
+                var select_option = {choice_id:choice_id, name:name, price:price, quota:quota};
                 select_options.push(select_option);
             });
             return select_options;
@@ -192,7 +214,9 @@ function check_then_submit_form(event)
 
             if(type=='Checkbox')
             {
-                var specification = {price: $(this).find("input[name=checkbox_price]").val()};
+                var choice_id = $(this).find("input[name=choice_id]").val();
+                var price = $(this).find("input[name=checkbox_price]").val();
+                var specification = {choice_id:choice_id, price:price};
             }
             else
             {
@@ -219,7 +243,7 @@ function check_then_submit_form(event)
         {
             if(action_url != public_url + "creation/php/ajout_billetterie.php")
             {
-                add_error("A quoi joues tu ? Trafiquer les url est passible instantanné de permaban de PayIcam.");
+                add_alert("A quoi joues tu ? Trafiquer les url est passible instantanné de permaban de PayIcam.");
                 return false;
             }
         }
@@ -227,7 +251,7 @@ function check_then_submit_form(event)
         {
             if(action_url != public_url + "creation/php/edit_billetterie.php?event_id=" + event_id)
             {
-                add_error("A quoi joues tu ? Trafiquer les url est passible instantanné de permaban de PayIcam.");
+                add_alert("A quoi joues tu ? Trafiquer les url est passible instantanné de permaban de PayIcam.");
                 return false;
             }
         }
@@ -298,7 +322,7 @@ function check_then_submit_form(event)
                 console.log(textStatus);
                 console.log();
                 console.log(errorThrown);
-                add_error('La requête Ajax permettant de submit les informations et ajouter la billetterie a échoué');
+                add_alert('La requête Ajax permettant de submit les informations et ajouter la billetterie a échoué');
                 $("#submit_form").prop('disabled', '');
                 $('.waiting').hide();
             }

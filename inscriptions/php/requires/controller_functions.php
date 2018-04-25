@@ -8,11 +8,12 @@ function option_form($option, $promo_id, $site_id, $participant_id=-1)
     {
         if($option['type']=='Checkbox')
         {
-            checkbox_form($option, true);
+            checkbox_form($option, $already_defined_option['price']);
         }
         elseif($option['type']=='Select')
         {
-            $select_choice = json_decode($already_defined_option['option_details'])->select_option;
+            $select_choice = get_option_choice($already_defined_option['choice_id']);
+            $select_choice['price_paid'] = $already_defined_option['price'];
             select_form($option, $select_choice);
         }
     }
@@ -47,48 +48,24 @@ function participant_options_handling($event_id, $participant_id, $options)
     global $options_articles, $transaction_linked_purchases;
     foreach($options as $option)
     {
-        $option_id = $option->id;
-        $option_type = $option->type;
-        $option_price = $option->price;
+        $article_id = get_option_article_id($option->choice_id);
+        $previous_status = get_participant_previous_option_choice_status(array('event_id' => $event_id, 'participant_id' => $participant_id, 'choice_id' => $option->choice_id));
 
-        $option_db_data = get_option(array("event_id" => $event_id, "option_id" => $option_id));
-        if($option_db_data['type']=='Checkbox')
+        if($previous_status!==false)
         {
-            $option_name = $option->name;
-            if($option_db_data['name'] == $option_name)
-            {
-                if($option_price == json_decode($option_db_data['specifications'])->price)
-                {
-                    insert_participant_option(array("event_id" => $event_id, "participant_id" => $participant_id, "option_id" => $option_id, "option_details" => null));
-                }
-            }
+            update_participant_option_to_waiting(array("event_id" => $event_id, "participant_id" => $participant_id, "choice_id" => $option->choice_id, "price" => $option->price));
         }
-        else if($option_db_data['type']=='Select')
+        else
         {
-            $option_subname = $option->name;
-            $db_specifications = json_decode($option_db_data['specifications']);
-            $name_found = false;
-            foreach($db_specifications as $db_specification)
-            {
-                if(trim($db_specification->name) == trim($option_subname))
-                {
-                    $name_found = true;
-                    if($option_price == $db_specification->price)
-                    {
-                        $option_details = json_encode(array("select_option" => $option_subname));
-                        insert_participant_option(array("event_id" => $event_id, "participant_id" => $participant_id, "option_id" => $option_id, "option_details" => $option_details));
-                    }
-                    break;
-                }
-            }
+            insert_participant_option(array("event_id" => $event_id, "participant_id" => $participant_id, "choice_id" => $option->choice_id, "status" => "W", "price" => $option->price, 'payement' => 'PayIcam'));
         }
 
-        array_push($transaction_linked_purchases["option_ids"], array("participant_id" => $participant_id, "option_id" => $option_id));
+        array_push($transaction_linked_purchases["option_ids"], array("participant_id" => $participant_id, "choice_id" => $option->choice_id));
 
         $found=false;
         foreach($options_articles as &$article)
         {
-            if(in_array($option->option_article_id, $article))
+            if(in_array($article_id, $article))
             {
                 $article[1]+=1;
                 $found=true;
@@ -97,7 +74,7 @@ function participant_options_handling($event_id, $participant_id, $options)
         }
         if(!$found)
         {
-            array_push($options_articles, array($option->option_article_id, 1));
+            array_push($options_articles, array($article_id, 1));
         }
     }
 }
@@ -122,7 +99,8 @@ function number_of_guests_to_be_displayed($promo_specifications, $guests_specifi
 
     if($temporary_guest_number + $previous_guests_number < $promo_specifications['guest_number'])
     {
-        add_error("Il n'y a pas assez de places encore disponibles pour tout l'évènement pour que vous ayez tous les invités que vous êtes censés avoir avec la promotion ". get_promo_name($promo_specifications['promo_id']). ".<br>");
+        $error_message = "Il n'y a pas assez de places encore disponibles pour tout l'évènement pour que vous ayez tous les invités que vous êtes censés avoir avec la promotion ". get_promo_name($promo_specifications['promo_id']). ".<br>";
+        $_SESSION['alert_errors'] = isset($_SESSION['alert_errors']) ? $_SESSION['alert_errors'] . $error_message : $error_message;
     }
 
     $guest_quota = $guests_specifications['quota'];
@@ -133,7 +111,8 @@ function number_of_guests_to_be_displayed($promo_specifications, $guests_specifi
 
     if($actual_guest_number < $temporary_guest_number)
     {
-        add_error("Il n'y a pas assez de places encore disponibles pour les invités pour que vous ayez tous les invités que vous êtes censés avoir avec la promotion ". get_promo_name($promo_specifications['promo_id']) . ".<br>");
+        $error_message = "Il n'y a pas assez de places encore disponibles pour les invités pour que vous ayez tous les invités que vous êtes censés avoir avec la promotion ". get_promo_name($promo_specifications['promo_id']) . ".<br>";
+        $_SESSION['alert_errors'] = isset($_SESSION['alert_errors']) ? $_SESSION['alert_errors'] . $error_message : $error_message;
     }
 
     return $actual_guest_number;
@@ -143,122 +122,191 @@ function check_participant_options($participant_data, $participant_type, $event_
 {
     foreach($participant_data->options as $option)
     {
-        $option_id = $option->id;
         if(!is_object($option))
         {
-            add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur d'une option <br>");
+            add_alert_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur d'une option <br>");
             $error = true;
         }
         else
         {
-            if(!is_integer(intval($option_id)))
+            if(isset($option->option_id))
             {
-                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de l'id d'une option (pas entière) <br>");
+                $option_id = $option->option_id;
+                if(!is_an_integer($option_id))
+                {
+                    add_alert_to_ajax_response($participant_type . " : Impossible d'identifier l'option, qui a un identifiant non entier <br>");
+                    $error = true;
+                }
+            }
+            else
+            {
+                add_alert_to_ajax_response($participant_type . " : L'identifiant de l'option n'a pas été transmis <br>");
+                return ["error" => true, "left_to_pay" => false];
+            }
+            if(!promo_has_option(array("event_id" => $event_id, "option_id" => $option_id, "site_id" => $site_id, "promo_id" => $promo_id)))
+            {
+                add_alert_to_ajax_response($participant_type . " : Cette promotion n'a pas le droit à cette option. <br>");
                 $error = true;
             }
-            elseif(!promo_has_option(array("event_id" => $event_id, "option_id" => $option_id, "site_id" => $site_id, "promo_id" => $promo_id)))
+            if(isset($option->choice_id))
             {
-                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de l'id d'une option (Cette promo n'a pas le droit à cette option.) <br>");
-                $error = true;
+                $choice_id = $option->choice_id;
+                if(!is_correct_choice_id(array('choice_id' => $choice_id, 'option_id' => $option_id)))
+                {
+                    add_alert_to_ajax_response($participant_type . " : Ce choix n'existe pas <br>");
+                    return ["error" => true, "left_to_pay" => false];
+                }
+            }
+            else
+            {
+                add_alert_to_ajax_response($participant_type . " : L'identifiant du choix n'a pas été transmis <br>");
+                return ["error" => true, "left_to_pay" => false];
             }
 
             $option_db_data = get_option(array("event_id" => $event_id, "option_id" => $option_id));
 
             if($option_db_data['is_active']==0)
             {
-                add_error_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " L'option n'est pas active...<br>".$option_id);
+                add_alert_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " L'option n'est pas active...<br>".$option_id);
                 $error = true;
             }
 
-            if($option->type != $option_db_data['type'])
+            if(isset($option->type))
             {
-                add_error_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " Quelqu'un s'est débrouillé pour altérer la valeur du type d'une option".$option_id);
-                $error = true;
-            }
-            else
-            {
-                if(get_current_option_quota(array("event_id" => $event_id, "option_id" => $option_id)) +1 > $option_db_data['quota'])
+                if($option->type != $option_db_data['type'])
                 {
-                    add_error_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Il n'y a plus de places disponibles pour cette option. <br>");
+                    add_alert_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " Quelqu'un s'est débrouillé pour altérer la valeur du type d'une option".$option_id);
                     $error = true;
                 }
-                if($option_db_data['type']=='Checkbox')
+                else
                 {
-                    if($option_db_data['name'] == $option->name)
+                    if(get_current_option_quota(array("event_id" => $event_id, "option_id" => $option_id)) +1 > $option_db_data['quota'])
                     {
-                        if($option->price == json_decode($option_db_data['specifications'])->price)
+                        add_alert_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Il n'y a plus de places disponibles pour cette option. <br>");
+                        $error = true;
+                    }
+                    if($option_db_data['type']=='Checkbox')
+                    {
+                        $choice_data = get_checkbox_option_choice($choice_id);
+                        if(empty($choice_data))
                         {
-                            // add_error_to_ajax_response($participant_type . " : Checkbox option correcte <br>");
-                            if($left_to_pay!=false)
+                            add_alert_to_ajax_response($participant_type . " : ". $option_db_data['name'] . " : Les informations relatives ont choix sont vides. Ce choix n'est pas un choix de checkbox<br>");
+                            return ["error" => true, "left_to_pay" => false];
+                        }
+                        if(isset($option->name))
+                        {
+                            if($option_db_data['name'] == $option->name)
                             {
-                                $left_to_pay-=$option->price;
+                                if(isset($option->price))
+                                {
+                                    if($option->price == $choice_data['price'])
+                                    {
+                                        if($left_to_pay!=false)
+                                        {
+                                            $left_to_pay-=$option->price;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        add_alert_to_ajax_response($participant_type . " : ". $option_db_data['name'] . " : Le prix de l'option checkbox est incorrect <br>");
+                                        $error = true;
+                                    }
+                                }
+                                else
+                                {
+                                    add_alert_to_ajax_response($participant_type . " : ". $option_db_data['name'] . " : Le prix de l'option checkbox n'est pas transmis. <br>");
+                                    $error = true;
+
+                                }
+                            }
+                            else
+                            {
+                                add_alert_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Le nom de l'option Checkbox est incorrect <br>");
+                                $error = true;
                             }
                         }
                         else
                         {
-                            add_error_to_ajax_response($participant_type . " : ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix d'une option checkbox <br>");
+                            add_alert_to_ajax_response($participant_type . " : Le nom de l'option n'a pas été transmis <br>");
+                            $error = true;
+                        }
+                    }
+                    elseif($option_db_data['type']=='Select')
+                    {
+                        $choice_data = get_select_option_choice($choice_id);
+                        if(empty($choice_data))
+                        {
+                            add_alert_to_ajax_response($participant_type . " : ". $option_db_data['name'] . " : Les informations relatives ont choix sont vides. Ce choix n'est pas un choix de select<br>");
+                            return ["error" => true, "left_to_pay" => false];
+                        }
+
+                        $select_option_quota = $choice_data['quota']==null ? INF : $choice_data['quota'];
+                        if(get_current_select_option_quota(array("event_id" => $event_id, "choice_id" => $choice_id))+1 > $select_option_quota)
+                        {
+                            add_alert_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Le quota d'une sous-option est déjà plein. <br>");
+                            $error = true;
+                        }
+
+                        if(isset($option->price))
+                        {
+                            if($option->price == $choice_data['price'])
+                            {
+                                if($left_to_pay!=false)
+                                {
+                                    if($choice_data['is_removed']==0)
+                                    {
+                                        $left_to_pay-=$option->price;
+                                    }
+                                    else
+                                    {
+                                        add_alert_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Cette sous-option a été enlevée à la vente <br>");
+                                        $error = true;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                add_alert_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Le prix d'une sous-option select est faux <br>");
+                                $error = true;
+                            }
+                        }
+                        else
+                        {
+                            add_alert_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Le prix d'une sous option select n'est pas transmis <br>");
                             $error = true;
                         }
                     }
                     else
                     {
-                        add_error_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom d'une option checkbox <br>");
+                        add_alert_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Le type de l'option n'est ni 'Checkbox', ni 'Select'. Comment est ce arrivé ? <br>");
                         $error = true;
                     }
                 }
-                else if($option_db_data['type']=='Select')
-                {
-                    $option_subname = $option->name;
-                    $db_specifications = json_decode($option_db_data['specifications']);
-                    $name_found = false;
-                    foreach($db_specifications as $db_specification)
-                    {
-                        if(trim($db_specification->name) == trim($option_subname))
-                        {
-                            $select_option_quota = $db_specification->quota==null ? INF : $db_specification->quota;
-                            if(get_current_select_option_quota(array("event_id" => $event_id, "option_id" => $option_id, "subname" => $db_specification->name))+1 > $select_option_quota)
-                            {
-                                add_error_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Le quota d'une sous-option est déjà plein. <br>");
-                                $error = true;
-                            }
+            }
+            else
+            {
+                add_alert_to_ajax_response($participant_type . " : Le type de l'option n'est pas correct <br>");
+                $error = true;
 
-                            $name_found = true;
-                            if($option->price == $db_specification->price)
-                            {
-                                // add_error_to_ajax_response($participant_type . " : Select option correcte <br>");
-                                if($left_to_pay!=false)
-                                {
-                                    $left_to_pay-=$option->price;
-                                }
-                            }
-                            else
-                            {
-                                add_error_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix d'une sous-option select <br>");
-                                $error = true;
-                            }
-                            break;
-                        }
-                    }
-                    if($name_found == false)
-                    {
-                        add_error_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom d'une sous-option select <br>");
-                        $error = true;
-                    }
-                }
-                else
-                {
-                    add_error_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Quelqu'un s'est débrouillé pour mettre un type qui n'est ni 'Select' ni 'Checkbox' dans le champ type de la table option de la base de données <br>");
-                    $error = true;
-                }
             }
         }
     }
     return ["error" => $error, "left_to_pay" => $left_to_pay];
 }
 
-
-function is_correct_participant_data($participant_data, $participant_type, $promo_specifications)
+function is_correct_participant_data($participant_data, $participant_type, $promo_specifications, $participant_action='addition')
 {
+    if(!in_array($participant_action, ['addition', 'update']))
+    {
+        add_alert_to_ajax_response("Erreur du développeur. participant_action doit être soit 'addition', soit 'update' <br>");
+        return false;
+    }
+    if(!in_array($participant_type, ['icam', 'guest']))
+    {
+        add_alert_to_ajax_response("Erreur du développeur. participant_type doit être soit 'icam', soit 'guest' <br>");
+        return false;
+    }
+
     $event_id = $promo_specifications['event_id'];
     $email = $_SESSION['icam_informations']->mail;
     $promo_id = $promo_specifications['promo_id'];
@@ -267,82 +315,160 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
     $nom = $_SESSION['icam_informations']->nom;
 
     $error = false;
+    $left_to_pay = false;
     if($participant_data == null)
     {
-        add_error_to_ajax_response($participant_type . " : POST['".$participant_type."_informations'] est mal défini. Il est impossible de le décoder. <br>");
+        add_alert_to_ajax_response($participant_type . " : POST['".$participant_type."_informations'] est mal défini. Il est impossible de le décoder. <br>");
         $error = true;
     }
     else
     {
-        $participant_data_length = $participant_type=='icam' ? 10:8;
+        $participant_data_length = $participant_action=='addition' ? ($participant_type=='icam' ? 6:7) : ($participant_type=='icam' ? 6:7);
         if(count(get_object_vars($participant_data)) != $participant_data_length)
         {
-            add_error_to_ajax_response($participant_type . " : Il n'y a pas le bon nombre d'éléments dans l'objet. <br>");
+            die();
+            add_alert_to_ajax_response($participant_type . " : Il n'y a pas le bon nombre d'éléments dans l'objet. <br>");
             $error = true;
         }
         else
         {
-            $participant_data_is_icam = $participant_type=='icam' ? 1:0;
-            $participant_data_promo_id = $participant_type=='icam' ? $promo_id : get_promo_id('Invités');
-            $left_to_pay = $participant_data->price-$promo_specifications['price'];
+            if($participant_action=='update')
+            {
+                if(isset($participant_data->participant_id))
+                {
+                    if($participant_type=='icam')
+                    {
+                        if(!icam_id_is_correct(array('participant_id' => $participant_data->participant_id, 'event_id' => $event_id, 'login' => $email, 'promo_id' => $promo_id, 'site_id' => $site_id)))
+                        {
+                            add_alert_to_ajax_response($participant_type . " : L'identifiant d'un des participants ayant déjà leur place est incorrect. <br>");
+                            $error = true;
+                        }
+                    }
+                    elseif($participant_type=='guest')
+                    {
+                        if(!guest_id_is_correct(array('participant_id' => $participant_data->participant_id, 'icam_promo_id' => get_promo_id($_SESSION['icam_informations']->promo), 'event_id' => $event_id, 'login' => $email, 'promo_id' => $promo_id, 'site_id' => $site_id)))
+                        {
+                            add_alert_to_ajax_response($participant_type . " : L'identifiant d'un des participants ayant déjà leur place est incorrect. <br>");
+                            $error = true;
+                        }
+                    }
+                }
+                else
+                {
+                    add_alert_to_ajax_response($participant_type . " : L'idenfiant du participant n'a pas été transmis. <br>");
+                    $error = true;
+                }
+            }
 
-            if($participant_data->is_icam != $participant_data_is_icam)
+            $participant_data_promo_id = $participant_type=='icam' ? $promo_id : get_promo_id('Invités');
+
+            if(isset($participant_data->site_id))
             {
-                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de is_icam <br>");
+                if($participant_data->site_id != $site_id)
+                {
+                    add_alert_to_ajax_response($participant_type . " : Le site n'est pas bon. <br>");
+                    $error = true;
+                }
+            }
+            else
+            {
+                add_alert_to_ajax_response($participant_type . " : Le site du participant n'a pas été transmis <br>");
                 $error = true;
             }
-            if($participant_data->site_id != $site_id)//Faire avec les variables de session
+            if(isset($participant_data->promo_id))
             {
-                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de site_id <br>");
+                if($participant_data->promo_id != $participant_data_promo_id)
+                {
+                    add_alert_to_ajax_response($participant_type . " : La promo n'est pas bonne <br>");
+                    $error = true;
+                }
+            }
+            else
+            {
+                add_alert_to_ajax_response($participant_type . " : La promo du participant n'a pas été transmise <br>");
                 $error = true;
             }
-            if($participant_data->promo_id != $participant_data_promo_id)//Faire avec les variables de session
+            if($participant_action == 'addition')
             {
-                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de promo_id <br>");
-                $error = true;
+                if(isset($participant_data->event_price))
+                {
+                    if(!is_numeric($participant_data->event_price))
+                    {
+                        add_alert_to_ajax_response($participant_type . " : Le prix de l'évènement n'est pas numérique<br>");
+                        $left_to_pay=false;
+                        $error = true;
+                    }
+                    elseif($participant_data->event_price != $promo_specifications['price'])
+                    {
+                        add_alert_to_ajax_response($participant_type . " : Le prix de l'évènement est incorrect.<br>");
+                        $left_to_pay=false;
+                        $error = true;
+                    }
+                }
+                if(isset($participant_data->total_participant_price))
+                {
+                    if(!is_numeric($participant_data->total_participant_price))
+                    {
+                        add_alert_to_ajax_response($participant_type . " : Le prix total payé pour le participant n'est pas numérique.<br>");
+                        $left_to_pay=false;
+                        $error = true;
+                    }
+                    elseif($participant_data->total_participant_price < $promo_specifications['price'])
+                    {
+                        add_alert_to_ajax_response($participant_type . " : Le prix total payé par le participant est incohérent (inférieur au prix de l'évènement)<br>");
+                        $left_to_pay=false;
+                        $error = true;
+                    }
+                    else
+                    {
+                        $left_to_pay = $participant_data->total_participant_price-$promo_specifications['price'];
+                    }
+                }
+                else
+                {
+                    add_alert_to_ajax_response($participant_type . " : Le prix total payé pour le participant n'a pas été transmis <br>");
+                    $error = true;
+                }
             }
-            if(!is_numeric($participant_data->price))
+            elseif($participant_action == 'update')
             {
-                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix (pas numérique)<br>");
-                $left_to_pay=false;
-                $error = true;
-            }
-            elseif($participant_data->price < $promo_specifications['price'])
-            {
-                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix (inférieur au prix de base de données)<br>");
-                $left_to_pay=false;
-                $error = true;
+                if(isset($participant_data->participant_price_addition))
+                {
+                    if(!is_numeric($participant_data->participant_price_addition) || $participant_data->participant_price_addition <0)
+                    {
+                        add_alert_to_ajax_response($participant_type . " : Le supplément de cout n'est pas numérique, ou négatif <br>");
+                        $left_to_pay=false;
+                        $error = true;
+                    }
+                    else
+                    {
+                        $left_to_pay = $participant_data->participant_price_addition;
+                    }
+                }
+                else
+                {
+                    add_alert_to_ajax_response($participant_type . " : Le supplément de cout n'est pas transmis <br>");
+                    $error = true;
+                }
             }
             if($participant_type=='icam')
             {
-                if($participant_data->prenom != $prenom)
+                if(isset($participant_data->telephone))
                 {
-                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prénom <br>");
-                    $error = true;
+                    if(!is_string($participant_data->telephone))
+                    {
+                        add_alert_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du numéro de téléphone <br>");
+                        $error = true;
+                    }
+                    elseif(count($participant_data->telephone)>25)
+                    {
+                        add_alert_to_ajax_response($participant_type . " : Pourquoi avez vous besoin d'autant de caractères pour un simple numéro de téléphone ?<br>");
+                        $error = true;
+                    }
                 }
-                if($participant_data->nom != $nom)
+                else
                 {
-                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom <br>");
-                    $error = true;
-                }
-                if($participant_data->email != $email)
-                {
-                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de l'email <br>");
-                    $error = true;
-                }
-                if(participant_has_its_place(array("event_id" => $event_id, "email" => $email, "promo_id" => $promo_id, "site_id" => $site_id, "email" => $email)))
-                {
-                    add_error_to_ajax_response("Vous avez déjà une réservation enregistrée à votre email.");
-                    $error = true;
-                }
-                if(!is_string($participant_data->telephone))
-                {
-                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du numéro de téléphone <br>");
-                    $error = true;
-                }
-                elseif(count($participant_data->telephone)>25)
-                {
-                    add_error_to_ajax_response($participant_type . " : Pourquoi avez vous besoin d'autant de caractères pour un simple numéro de téléphone ?<br>");
+                    add_alert_to_ajax_response($participant_type . " : Le numéro de téléphone du participant n'a pas été transmis <br>");
                     $error = true;
                 }
             }
@@ -350,163 +476,64 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
             {
                 if(!is_string($participant_data->prenom))
                 {
-                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prénom <br>");
+                    add_alert_to_ajax_response($participant_type . " : Le prénom n'est pas une chaine de caractères <br>");
                     $error = true;
                 }
                 elseif(count($participant_data->prenom)>45)
                 {
-                    add_error_to_ajax_response($participant_type . " : Le prenom a-t-il besoin d'être si long ?<br>");
+                    add_alert_to_ajax_response($participant_type . " : Le prenom a-t-il besoin d'être si long ?<br>");
                 }
                 if(!is_string($participant_data->nom))
                 {
-                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom <br>");
+                    add_alert_to_ajax_response($participant_type . " : Le nom n'est pas une chaine de caractères <br>");
                     $error = true;
                 }
                 elseif(count($participant_data->nom)>45)
                 {
-                    add_error_to_ajax_response($participant_type . " : Le nom a-t-il besoin d'être si long ?<br>");
+                    add_alert_to_ajax_response($participant_type . " : Le nom a-t-il besoin d'être si long ?<br>");
                 }
             }
-            if(!is_array($participant_data->options))
+
+            if(isset($participant_data->options))
             {
-                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur des options <br>");
-                $error = true;
-            }
-            elseif(count($participant_data->options)>0)
-            {
-                $res = check_participant_options($participant_data, $participant_type, $event_id, $site_id, $promo_id, $error, $left_to_pay);
-                $error = $res['error'];
-                $left_to_pay = $res['left_to_pay'];
-            }
-            if($left_to_pay!=0)
-            {
-                if($left_to_pay>0.01)
+                if(!is_array($participant_data->options))
                 {
+                    add_alert_to_ajax_response($participant_type . " : Les options transmises ne le sont pas sous forme de tableau <br>");
                     $error = true;
-                    add_error_to_ajax_response("Le prix total n'est pas bon.");
                 }
-                else
+                elseif(count($participant_data->options)>0)
                 {
-                    global $total_price;
-                    $total_price+=$participant_data->price;
+                    $res = check_participant_options($participant_data, $participant_type, $event_id, $site_id, $promo_id, $error, $left_to_pay);
+                    $error = $res['error'];
+                    $left_to_pay = $res['left_to_pay'];
                 }
             }
             else
             {
-                global $total_price;
-                $total_price+=$participant_data->price;
-            }
-        }
-    }
-    return !$error;
-}
-function is_correct_participant_supplement_data($participant_data, $participant_type, $promo_specifications)
-{
-    $event_id = $promo_specifications['event_id'];
-    $email = $_SESSION['icam_informations']->mail;
-    $promo_id = $promo_specifications['promo_id'];
-    $site_id = $promo_specifications['site_id'];
-    $prenom = $_SESSION['icam_informations']->prenom;
-    $nom = $_SESSION['icam_informations']->nom;
-
-    $error = false;
-    if($participant_data == null)
-    {
-        add_error_to_ajax_response($participant_type . " : POST['".$participant_type."_informations'] est mal défini. Il est impossible de le décoder. <br>");
-        $error = true;
-    }
-    else
-    {
-        $participant_data_length = $participant_type=='icam' ? 7:8;
-        if(count(get_object_vars($participant_data)) != $participant_data_length)
-        {
-            add_error_to_ajax_response($participant_type . " : Il n'y a pas le bon nombre d'éléments dans l'objet. <br>");
-            $error = true;
-        }
-        else
-        {
-            $participant_data_promo_id = $participant_type=='icam' ? $promo_id : get_promo_id('Invités');
-            $left_to_pay = $participant_data->price;
-
-            if($participant_data->site_id != $site_id)//Faire avec les variables de session
-            {
-                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de site_id <br>");
+                add_alert_to_ajax_response($participant_type . " : Les options du participant ne sont pas transmises <br>");
                 $error = true;
             }
-            if($participant_data->promo_id != $participant_data_promo_id)//Faire avec les variables de session
+            if(!is_numeric($left_to_pay))
             {
-                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur de promo_id <br>");
                 $error = true;
+                add_alert_to_ajax_response("Le prix total n'est pas numérique. C'est vraiment étrange, puisqu'il est défini en serveur.");
             }
-            if(!is_numeric($participant_data->price))
+            elseif($left_to_pay>0.01 && $left_to_pay<-0.01)
             {
-                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prix (pas numérique)<br>");
-                $left_to_pay=false;
                 $error = true;
-            }
-            if($participant_type=='icam')
-            {
-                if(!is_string($participant_data->telephone))
-                {
-                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du numéro de téléphone <br>");
-                    $error = true;
-                }
-                elseif(count($participant_data->telephone)>25)
-                {
-                    add_error_to_ajax_response($participant_type . " : Pourquoi avez vous besoin d'autant de caractères pour un simple numéro de téléphone ?<br>");
-                    $error = true;
-                }
-            }
-            elseif($participant_type=='guest')
-            {
-                if(!is_string($participant_data->prenom))//Faire avec les variables de session
-                {
-                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du prénom <br>");
-                    $error = true;
-                }
-                elseif(count($participant_data->prenom)>45)
-                {
-                    add_error_to_ajax_response($participant_type . " : Le prenom a-t-il besoin d'être si long ?<br>");
-                }
-
-                if(!is_string($participant_data->nom))//Faire avec les variables de session
-                {
-                    add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du nom <br>");
-                    $error = true;
-                }
-                elseif(count($participant_data->nom)>45)
-                {
-                    add_error_to_ajax_response($participant_type . " : Le nom a-t-il besoin d'être si long ?<br>");
-                }
-            }
-            if(!is_array($participant_data->options))
-            {
-                add_error_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur des options <br>");
-                $error = true;
-            }
-            elseif(count($participant_data->options)>0)
-            {
-                $res = check_participant_options($participant_data, $participant_type, $event_id, $site_id, $promo_id, $error, $left_to_pay);
-                $error = $res['error'];
-                $left_to_pay = $res['left_to_pay'];
-            }
-            if($left_to_pay!=0)
-            {
-                if($left_to_pay>0.01)
-                {
-                    $error = true;
-                    add_error_to_ajax_response("Le prix total n'est pas bon.");
-                }
-                else
-                {
-                    global $total_price;
-                    $total_price+=$participant_data->price;
-                }
+                add_alert_to_ajax_response("Le prix total n'est pas bon.");
             }
             else
             {
                 global $total_price;
-                $total_price+=$participant_data->price;
+                if($participant_action=='addition')
+                {
+                    $total_price+=$participant_data->total_participant_price;
+                }
+                else
+                {
+                    $total_price+=$participant_data->participant_price_addition;
+                }
             }
         }
     }
@@ -526,13 +553,13 @@ function prevent_displaying_on_wrong_ticketing_state($ticketing_state)
                 $message = "La billetterie n'a pas encore commencé.";
                 if(isset($ajax_json_response))
                 {
-                    add_error_to_ajax_response($message);
+                    add_alert_to_ajax_response($message);
                     echo json_encode($ajax_json_response);
                 }
                 else
                 {
                     set_alert_style("Erreur ticketing state");
-                    add_error($message);
+                    add_alert($message);
                 }
                 die();
             }
@@ -542,13 +569,13 @@ function prevent_displaying_on_wrong_ticketing_state($ticketing_state)
                 $message = "La billetterie est finie.";
                 if(isset($ajax_json_response))
                 {
-                    add_error_to_ajax_response($message);
+                    add_alert_to_ajax_response($message);
                     echo json_encode($ajax_json_response);
                 }
                 else
                 {
                     set_alert_style("Erreur ticketing state");
-                    add_error($message);
+                    add_alert($message);
                 }
                 die();
             }
@@ -564,13 +591,13 @@ function check_if_event_should_be_displayed($event,$promo_id, $site_id, $email)
     {
         if(isset($ajax_json_response))
         {
-            add_error_to_ajax_response("L'évènement n'est pas encore actif");
+            add_alert_to_ajax_response("L'évènement n'est pas encore actif");
             echo json_encode($ajax_json_response);
         }
         else
         {
             set_alert_style("Erreur évènement non actif");
-            add_error("L'évènement n'est pas encore actif");
+            add_alert("L'évènement n'est pas encore actif");
         }
         die();
     }
@@ -589,8 +616,8 @@ function update_reservation_status($status, $pending_reservation)
     $list_purchases = json_decode($pending_reservation['liste_places_options']);
     foreach($list_purchases->participant_ids as $participant_id)
     {
-        $participant_data = get_participant_event_data(array("event_id" => $pending_reservation['event_id'], "participant_id" => $participant_id));
-        if($participant_data['status'] != $status)
+        $should_update = participant_has_pending_event(array("event_id" => $pending_reservation['event_id'], "participant_id" => $participant_id));
+        if($should_update)
         {
             $update=true;
             update_participant_status(array("participant_id" => $participant_id, "status" => $status));
@@ -598,11 +625,11 @@ function update_reservation_status($status, $pending_reservation)
     }
     foreach($list_purchases->option_ids as $ids)
     {
-        $option_data = get_participant_option(array("event_id" => $pending_reservation['event_id'], "participant_id" => $ids->participant_id, "option_id" => $ids->option_id));
-        if($option_data['status'] != $status)
+        $should_update = participant_has_specific_pending_option(array("event_id" => $pending_reservation['event_id'], "participant_id" => $ids->participant_id, "choice_id" => $ids->choice_id));
+        if($should_update)
         {
             $update=true;
-            update_option_status(array("participant_id" => $ids->participant_id, "status" => $status, "option_id" => $ids->option_id));
+            update_option_status(array("participant_id" => $ids->participant_id, "status" => $status, "choice_id" => $ids->choice_id));
         }
     }
     if($update)
@@ -623,7 +650,7 @@ function handle_pending_reservations($login, $event_id)
             $message = "Vous avez une réservation en attente non payée... " . "<a href='".$transaction['payicam_transaction_url']."' class='btn btn-warning'>Aller la payer</a>";
             if(isset($ajax_json_response))
             {
-                add_error_to_ajax_response($message);
+                add_alert_to_ajax_response($message);
                 echo json_encode($ajax_json_response);
             }
             else

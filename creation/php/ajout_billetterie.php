@@ -2,6 +2,13 @@
 
 require __DIR__ . '/../../general_requires/_header.php';
 
+if(!isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
+{
+    set_alert_style('Erreur routing');
+    add_alert("Vous n'êtes pas censés appeler cette page directement.");
+    die();
+}
+
 if(!empty($_POST))
 {
     require 'requires/db_functions.php';
@@ -30,7 +37,6 @@ if(!empty($_POST))
     $event_id = insert_event_details($table_event_data);
 
     //table promos_sites_specifications
-
 
     foreach($event_promos as $promo_data)
     {
@@ -61,6 +67,17 @@ if(!empty($_POST))
 
     foreach($options as $option)
     {
+        $table_option_data = array(
+            "name" => $option->name,
+            "description" => $option->description,
+            "is_active" => $option->is_active,
+            "is_mandatory" => $option->is_mandatory,
+            "type" => $option->type,
+            "quota" => $option->quota,
+            "event_id" => $event_id
+            );
+        $option_id = insert_option($table_option_data);
+
         if($option->type == "Checkbox")
         {
             $scoobydoo_article_id = $payutcClient->setProduct(array(
@@ -74,10 +91,15 @@ if(!empty($_POST))
                 "fun_id" => $event->fundation_id
                 ))->success;
 
-            $option->type_specification->scoobydoo_article_id = $scoobydoo_article_id;
+            $option_choices = array(
+                'price' => $option->type_specification->price,
+                'scoobydoo_article_id' => $scoobydoo_article_id,
+                'option_id' => $option_id
+                );
         }
         elseif($option->type == "Select")
         {
+            $option_choices = array();
             foreach($option->type_specification as &$select_option)
             {
                 $scoobydoo_article_id = $payutcClient->setProduct(array(
@@ -91,21 +113,17 @@ if(!empty($_POST))
                     "fun_id" => $event->fundation_id
                     ))->success;
 
-                $select_option->scoobydoo_article_id = $scoobydoo_article_id;
+                $option_choices[] = array(
+                    'price' => $select_option->price,
+                    'scoobydoo_article_id' => $scoobydoo_article_id,
+                    'name' => $select_option->name,
+                    'quota' => $select_option->quota,
+                    'is_removed' => 0,
+                    'option_id' => $option_id
+                    );
             }
         }
-
-        $table_option_data = array(
-            "name" => $option->name,
-            "description" => $option->description,
-            "is_active" => $option->is_active,
-            "is_mandatory" => $option->is_mandatory,
-            "type" => $option->type,
-            "quota" => $option->quota,
-            "specifications" => json_encode($option->type_specification),
-            "event_id" => $event_id
-            );
-        $option_id = insert_option($table_option_data);
+        insert_option_choices($option_choices, $option->type);
 
         foreach($option->accessibility as $promo_data)
         {
@@ -123,6 +141,5 @@ if(!empty($_POST))
 else
 {
     set_alert_style("Erreur routing");
-    add_error("Vous n'êtes pas censé ouvrir cette page directement.");
+    add_alert("Vous n'êtes pas censé ouvrir cette page directement.");
 }
-

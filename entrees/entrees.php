@@ -22,5 +22,5 @@ if(isset($_GET['event_id']))
 else
 {
     set_alert_style('Erreur paramètres');
-    add_error("Vous n'avez pas spécifié pour quel évènement vous vouliez administrer les entrées.");
+    add_alert("Vous n'avez pas spécifié pour quel évènement vous vouliez administrer les entrées.");
 }

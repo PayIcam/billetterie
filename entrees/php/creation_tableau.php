@@ -2,6 +2,13 @@
 
 require dirname(dirname(__DIR__)) . '/general_requires/_header.php';
 
+if(!isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
+{
+    set_alert_style('Erreur routing');
+    add_alert("Vous n'êtes pas censés appeler cette page directement.");
+    die();
+}
+
 if(isset($_POST))
 {
     if(isset($_GET['event_id']))
@@ -22,18 +29,18 @@ if(isset($_POST))
             else
             {
                 set_alert_style('Erreur routing');
-                add_error("La recherche n'est pas définie.");
+                add_alert("La recherche n'est pas définie.");
             }
         }
     }
     else
     {
         set_alert_style('Erreur paramètres');
-        add_error("Vous n'avez pas spécifié pour quel évènement vous vouliez administrer les entrées.");
+        add_alert("Vous n'avez pas spécifié pour quel évènement vous vouliez administrer les entrées.");
     }
 }
 else
 {
     set_alert_style('Erreur routing');
-    add_error("Vous n'êtes pas censés appeler cette page directement.");
+    add_alert("Vous n'êtes pas censés appeler cette page directement.");
 }

@@ -4,9 +4,9 @@ $(document).ready(function()
 
     $('form').submit(function(submit)
     {
-        function add_error(message)
+        function add_alert(message, alert_type="danger")
         {
-            var message_displayed = '<div class="alert alert-danger alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Attention ! </strong>' + message + '</div>'
+            var message_displayed = '<div class="alert alert-'+alert_type+' alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Attention ! </strong>' + message + '</div>'
             $("#alerts").append(message_displayed);
         }
 
@@ -19,13 +19,13 @@ $(document).ready(function()
             {
                 if(action_url.indexOf(public_url + "stats/php/ajout_options.php?event_id=" + event_id) == -1)
                 {
-                    add_error("A quoi joues tu ? Arrète de trafiquer les redirections.");
+                    add_alert("A quoi joues tu ? Arrète de trafiquer les redirections.");
                     return false;
                 }
             }
             else
             {
-                add_error("Il y a une erreur, l'indication du chemin est mauvaise");
+                add_alert("Il y a une erreur, l'indication du chemin est mauvaise");
                 return false;
             }
             return true;
@@ -43,20 +43,20 @@ $(document).ready(function()
                         if(!(Number.isInteger(parseInt($(this).find('input[name=option_id]').val())) && $(this).find('input[name=option_id]').val()>0))
                         {
                             error=true;
-                            add_error("L'id de l'option a été altérée.");
+                            add_alert("L'id de l'option a été altérée.");
                         }
                     }
                     else
                     {
                         error=true;
-                        add_error("Impossible de retrouver de quelle option il s'agit.");
+                        add_alert("Impossible de retrouver de quelle option il s'agit.");
                     }
                 });
             }
             else
             {
                 error=true;
-                add_error("Rien n'a été sélectionné");
+                add_alert("Rien n'a été sélectionné");
             }
             return !error;
         }
@@ -67,22 +67,20 @@ $(document).ready(function()
         {
             if(check_form())
             {
-                var options = [];
-                $('#options .option').find('input:checkbox:checked, option:selected').each(function()
+                var choice_ids = [];
+                $('#options .option').find('input:checkbox:checked, option:selected:not(:disabled)').each(function()
                 {
-                    var option_id = $(this).parents('.option').find('input[name=option_id]').val();
-                    if($(this).parents('.option').find('input:checkbox:checked').length)
+                    console.log($(this));
+                    if($(this).parents('div').hasClass('checkbox_option'))
                     {
-                        var type = "Checkbox";
-                        var complement = "";
+                        var choice_id = $(this).parents('.option').find('input[name=choice_id]').val();
                     }
-                    else if($(this).parents('.option').find('option:selected').length)
+                    else if($(this).parents('div').hasClass('select_option'))
                     {
-                        var type = "Select";
-                        var complement = $(this).parents('.option').find(':selected').val();
+                        var choice_id = $(this).parents('.option').find(':selected').val();
                     }
-                    var option = {option_id: option_id, type: type, complement: complement};
-                    options.push(option);
+                    var choice_id = {choice_id};
+                    choice_ids.push(choice_id);
                 });
 
                 $("#alerts").empty();
@@ -98,13 +96,15 @@ $(document).ready(function()
                     console.log(textStatus);
                     console.log();
                     console.log(errorThrown);
-                    add_error('La requête Ajax permettant de submit les informations et ajouter le participant a échoué');
+                    add_alert('La requête Ajax permettant de submit les informations et ajouter le participant a échoué');
                     $("#submit_form").prop('disabled', '');
                     $('.waiting').hide();
                 }
 
                 function ajax_success(data)
                 {
+                    throw('on va pas envoyer');
+
                     if(data.message=="L'ajout a bien été effectué")
                     {
                         var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data.message + '</div>';
@@ -126,10 +126,11 @@ $(document).ready(function()
                     }
                 }
 
+
                 $.post(
                 {
                     url: action_url,
-                    data: {options:options},
+                    data: {choice_ids:choice_ids},
                     dataType: 'json',
                     success: ajax_success,
                     error: error_ajax
@@ -154,6 +155,7 @@ $(document).ready(function()
                 //     }
                 //     else
                 //     {
+
                 //         $("#alerts").append(data);
                 //         $("#button_submit_form").prop('disabled', '');
                 //     }
@@ -162,7 +164,7 @@ $(document).ready(function()
                 // $.post(
                 // {
                 //     url: action_url,
-                //     data: {options:options},
+                //     data: {choice_ids:choice_ids, payement: $('select[name=payement] option:selected').val(), price: $('input[name=price]').val()},
                 //     dataType: 'html',
                 //     success: ajax_success,
                 //     error: error_ajax

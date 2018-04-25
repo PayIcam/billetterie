@@ -61,7 +61,7 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
         <?php
         foreach($options as $option)
         {
-            $option['specifications'] = json_decode($option['specifications']);
+            $option['option_choices'] = get_option_choices($option['option_id']);
             option_form($option, $promo_specifications['promo_id'], $promo_specifications['site_id'], $icam_id);
         }
         ?>
@@ -106,7 +106,7 @@ function form_guest($event, $guest_specifications, $options, $i, $guest_reservat
             <?php
             foreach($options as $option)
             {
-                $option['specifications'] = json_decode($option['specifications']);
+                $option['option_choices'] = get_option_choices($option['option_id']);
                 option_form($option, $guest_specifications['promo_id'], $guest_specifications['site_id'], $guest_id);
             }
             ?>
@@ -116,29 +116,29 @@ function form_guest($event, $guest_specifications, $options, $i, $guest_reservat
     <?php
 }
 
-function checkbox_form($option, $checked=false)
+function checkbox_form($option, $price_paid=false)
 {
     ?>
     <div class="checkbox_option form-check" <?= $checked ? "data-payed=1" : "" ?> >
-        <input class="form-check-input has_option" name="has_option" type="checkbox" value="<?=$option['specifications']->scoobydoo_article_id?>" <?= $checked ? "checked disabled data-payed=1" : "" ?> >
+        <input class="form-check-input has_option" name="has_option" type="checkbox" value="<?=$option['option_choices'][0]['choice_id']?>" <?= $price_paid ? "checked disabled data-payed=1" : "" ?> >
         <label class="form-check-label">
             <span class="option_name"><?= htmlspecialchars($option['name']) ?></span>
-            <span class="checkbox_price badge" style="background-color: #3a87ad"><?= htmlspecialchars($option['specifications']->price) . ' €' ?></span>
+            <span class="checkbox_price badge badge-pill badge-info"><?= isset($price_paid) ? htmlspecialchars($price_paid) : htmlspecialchars($option['option_choices'][0]['price']) . ' €' ?></span>
             <button class="btn option_tooltip" data-container="body" data-toggle="popover" title="Description de l'option : " data-content="<?= htmlspecialchars($option['description']) ?>" type="button">
                 <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
             </button>
         </label>
-        <input type="hidden" name="option_price" value="<?=htmlspecialchars($option['specifications']->price)?>">
+        <input type="hidden" name="option_price" value="<?=htmlspecialchars($option['option_choices'][0]['price'])?>">
         <input type="hidden" name="option_id" value="<?=$option['option_id']?>">
-        <input type="hidden" class="option_article_id" name="option_article_id" value="<?=$option['specifications']->scoobydoo_article_id?>">
+        <input type="hidden" class="option_article_id" name="option_article_id" value="<?=$option['option_choices'][0]['scoobydoo_article_id']?>">
     </div>
     <?php
 }
-function select_form($option, $option_subname=null)
+function select_form($option, $select_choice=null)
 {
     global $ticketing_state;
     ?>
-    <div class="select_option form-group" <?= $option_subname!=null ? "data-payed=1" : "" ?>>
+    <div class="select_option form-group" <?= $select_choice!=null ? "data-payed=1" : "" ?>>
         <label>
             <span><?= htmlspecialchars($option['name']) ?></span>
             <span class="select_price badge" style="background-color: #468847"></span>
@@ -148,37 +148,37 @@ function select_form($option, $option_subname=null)
         </label>
         <select class="form-control">
             <option disabled <?= ($option['is_mandatory']=='0') ? "selected" : "" ?> style="display:none">Sélectionnez votre option !</option>
-            <?php insert_according_select_options($option, $option_subname); ?>
+            <?php insert_according_select_options($option, $select_choice); ?>
         </select>
         <input type="hidden" name="option_id" value="<?=$option['option_id']?>">
     </div>
     <?php
 }
 
-function insert_according_select_options($option, $option_subname=null)
+function insert_according_select_options($option, $select_choice=null)
 {
     $compteur=0;
-    foreach($option['specifications'] as $option_specification)
+    if($select_choice==null)
     {
-        if($option_subname==null)
+        foreach($option['option_choices'] as $option_choice)
         {
-            $suboption_quota = $option_specification->quota==null ? INF : $option_specification->quota;
-            if(get_current_select_option_quota(array("event_id" => $option['event_id'], "option_id" => $option['option_id'], "subname" => $option_specification->name)) < $suboption_quota)
+            $suboption_quota = $option_choice['quota']==null ? INF : $option_choice['quota'];
+            if(get_current_select_option_quota(array("event_id" => $option['event_id'], "choice_id" => $option_choice['choice_id'])) < $suboption_quota)
             {
                 ?>
-                <option value="<?= $option_specification->scoobydoo_article_id?>" <?=($option['is_mandatory']==1 and $compteur==0) ? 'selected' : ''?> >
-                    <?= htmlspecialchars($option_specification->name) . ' (' . htmlspecialchars($option_specification->price) . '€)' ?>
+                <option value="<?= $option_choice['choice_id']?>" <?=($option['is_mandatory']==1 and $compteur==0) ? 'selected' : ''?> >
+                    <?= htmlspecialchars($option_choice['name']) . ' (' . htmlspecialchars($option_choice['price']) . '€)' ?>
                 </option>
                 <?php
                 $compteur++;
             }
         }
-        elseif(trim($option_subname) == trim($option_specification->name))
-        {
-            ?>
-            <option value="<?= $option_specification->scoobydoo_article_id?>" selected data-payed=1><?= htmlspecialchars($option_specification->name) . '(' . $option_specification->price . '€)' ?></option>
-            <?php
-        }
+    }
+    else
+    {
+        ?>
+        <option value="<?= $select_choice['choice_id']?>" selected data-payed=1><?= htmlspecialchars($select_choice['name']) . '(' . $select_choice['price_paid'] . '€)' ?></option>
+        <?php
     }
 }
 function cancel_or_finish_transaction($payicam_transaction_url, $event_id)

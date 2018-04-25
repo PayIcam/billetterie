@@ -191,10 +191,12 @@ function links_to_various_addition($participant)
         <a class="btn btn-primary" href="ajout_participant.php?event_id=<?=$event_id?>&icam_id=<?=$participant['participant_id']?>">
             <span class="glyphicon glyphicon-plus"></span>
         </a>
-        <?php } ?>
+        <?php }
+        if(!empty(get_optional_options(array('event_id' => $participant['event_id'], 'promo_id' => $participant['promo_id'], 'site_id' => $participant['site_id'], 'participant_id' => $participant['participant_id'])))) { ?>
         <a class="btn btn-primary" href="ajout_options.php?event_id=<?=$event_id?>&participant_id=<?=$participant['participant_id']?>">
             <span class="glyphicon glyphicon-gift"></span>
         </a>
+        <?php } ?>
     </td>
     <?php
 }
@@ -284,15 +286,15 @@ function checkbox_form_basic($option)
 {
     ?>
     <div class="checkbox_option form-check">
-        <input class="form-check-input has_option" name="has_option" type="checkbox" value="<?=$option['specifications']->scoobydoo_article_id?>" >
+        <input class="form-check-input has_option" name="has_option" type="checkbox" value="<?=$option['option_choices']['choice_id']?>" >
         <label class="form-check-label">
             <span class="option_name"><?= htmlspecialchars($option['name']) ?></span>
             <button class="btn option_tooltip" data-container="body" data-toggle="popover" title="Description de l'option : " data-content="<?= htmlspecialchars($option['description']) ?>" type="button">
                 <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
             </button>
         </label>
-        <input type="hidden" name="option_id" value="<?=$option['option_id']?>">
-        <input type="hidden" class="option_article_id" name="option_article_id" value="<?=$option['specifications']->scoobydoo_article_id?>">
+        <input type="hidden" name="choice_id" value="<?=$option['option_choices']['choice_id']?>">
+        <input type="hidden" class="option_article_id" name="option_article_id" value="<?=$option['option_choices']['scoobydoo_article_id']?>">
     </div>
     <?php
 }
@@ -317,11 +319,11 @@ function select_form_basic($option)
 
 function insert_select_options_no_checking($option)
 {
-    foreach($option['specifications'] as $option_specification)
+    foreach($option['option_choices'] as $option_choice)
     {
         ?>
-        <option value="<?=$option_specification->name?>">
-            <?= htmlspecialchars($option_specification->name) . ' (' . htmlspecialchars($option_specification->price) . '€)' ?>
+        <option value="<?=$option_choice['choice_id']?>">
+            <?= htmlspecialchars($option_choice['name']) . ' (' . htmlspecialchars($option_choice['price']) . '€)' ?>
         </option>
         <?php
     }
@@ -431,24 +433,41 @@ function display_pending_reservations($participant)
     <?php
     if($participant['is_icam']==1)
     {
-        if(count(get_pending_reservations($participant['event_id'], $participant['email'])) >=1 )
+        $pending_reservations = get_pending_reservations($participant['event_id'], $participant['email']);
+        if(!empty($pending_reservations))
         {
-            ?>
-            <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="" data-content="" type="button">
-                <span style="color: red" class="glyphicon glyphicon-usd option_tooltip_glyph"></span>
-            </button>
-            <?php
+            if(count($pending_reservations)==1)
+            {
+                ?>
+                <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Réservation en attente : <?=$pending_reservations[0]['price']?>€" data-content="<?=display_pending_description(json_decode($pending_reservations[0]['liste_places_options']))?>" type="button">
+                    <span style="color: red" class="glyphicon glyphicon-usd option_tooltip_glyph"></span>
+                </button>
+                <?php
+            }
+            else
+            {
+                foreach($pending_reservations as $pending_reservation)
+                {
+                    update_reservation_status('A', $pending_reservation);
+                }
+            }
         }
-        else
-        {
+        // else
+        // {
             ?>
-            <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="" data-content="" type="button">
+            <!-- <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="" data-content="" type="button">
                 <span style="color: green" class="glyphicon glyphicon-usd option_tooltip_glyph"></span>
-            </button>
+            </button> -->
             <?php
-        }
+        // }
     }
     ?>
     </td>
     <?php
+}
+
+function display_pending_description($transaction_content)
+{
+    echo count($transaction_content->participant_ids) >=1 ? count($transaction_content->participant_ids) . " Places <br>" : "";
+    echo count($transaction_content->option_ids) >=1 ? count($transaction_content->option_ids) . " Options <br>" : "";
 }

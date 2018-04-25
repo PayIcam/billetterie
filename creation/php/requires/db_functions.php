@@ -24,8 +24,7 @@ function get_sites()
 function get_sites_id()
 {
     global $db;
-    $id = $db->prepare('SELECT site_id FROM sites');
-    $id->execute();
+    $id = $db->query('SELECT site_id FROM sites');
     return $id->fetchAll();
 }
 
@@ -46,7 +45,7 @@ function get_scoobydoo_event_infos($event_id)
 {
     global $db;
     $scoobydoo_ids = $db->prepare('SELECT scoobydoo_category_ids, fundation_id FROM events WHERE event_id = :event_id');
-    $scoobydoo_ids->execute($event_id);
+    $scoobydoo_ids->execute(array('event_id' => $event_id));
     return $scoobydoo_ids->fetch();
 }
 function insert_specification_details($table_specification_data)
@@ -78,14 +77,14 @@ function get_option_ids_from_event($event_id)
 function insert_option($table_option_data)
 {
     global $db;
-    $option_insertion = $db->prepare('INSERT INTO options(name, description, is_active, is_mandatory, type, quota, specifications, event_id) VALUES (:name, :description, :is_active, :is_mandatory, :type, :quota, :specifications, :event_id)');
+    $option_insertion = $db->prepare('INSERT INTO options(name, description, is_active, is_mandatory, type, quota, event_id) VALUES (:name, :description, :is_active, :is_mandatory, :type, :quota, :event_id)');
     $option_insertion->execute($table_option_data);
     return $db->lastInsertId();
 }
 function update_option($table_option_data)
 {
     global $db;
-    $option_update = $db->prepare('UPDATE options SET name= :name, description= :description, is_active= :is_active, is_mandatory= :is_mandatory, type= :type, quota= :quota, specifications= :specifications, event_id= :event_id WHERE event_id= :event_id and option_id= :option_id and is_removed=0');
+    $option_update = $db->prepare('UPDATE options SET name= :name, description= :description, is_active= :is_active, is_mandatory= :is_mandatory, type= :type, quota= :quota, event_id= :event_id WHERE event_id= :event_id and option_id= :option_id and is_removed=0');
     return $option_update->execute($table_option_data);
 }
 function delete_option($ids)
@@ -130,7 +129,14 @@ function remove_promo($ids)
 function can_delete_option($ids)
 {
     global $db;
-    $count_option = $db->prepare('SELECT COUNT(*) rows FROM participant_has_options WHERE event_id= :event_id and option_id= :option_id');
+    $count_option = $db->prepare('SELECT COUNT(*) rows FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE pho.event_id= :event_id and oc.option_id= :option_id');
+    $count_option->execute($ids);
+    return $count_option->fetch()['rows'] == 0 ? true : false;
+}
+function can_delete_option_choice($ids)
+{
+    global $db;
+    $count_option = $db->prepare('SELECT COUNT(*) rows FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE pho.event_id= :event_id and pho.choice_id= :choice_id');
     $count_option->execute($ids);
     return $count_option->fetch()['rows'] == 0 ? true : false;
 }
@@ -157,12 +163,21 @@ function get_all_specification_details($event_id)
     $promos_specifications = $promos_query->fetchAll();
     return $promos_specifications;
 }
+
 function a_participant_would_have_to_pay_obliged_option($ids)
 {
     global $db;
-    $count_option = $db->prepare('SELECT COUNT(*) FROM participants WHERE event_id=:event_id and promo_id IN(SELECT promo_id FROM promo_site_has_options WHERE option_id=:option_id) and site_id IN(SELECT site_id FROM promo_site_has_options WHERE option_id=:option_id) and participant_id NOT IN(SELECT participant_id FROM participant_has_options WHERE option_id=:option_id and status="V")');
+    $count_option = $db->prepare('
+    SELECT COUNT(*) nb_participants_without_option FROM participants p
+    LEFT JOIN promo_site_has_options psho ON psho.promo_id=p.promo_id and psho.site_id=p.site_id and psho.site_id=p.site_id and psho.event_id=p.event_id
+    WHERE p.status!="A" and psho.option_id=:option_id and participant_id
+    NOT IN(SELECT p.participant_id FROM participants p
+        LEFT JOIN participant_has_options pho ON pho.participant_id=p.participant_id
+        LEFT JOIN option_choices oc ON oc.choice_id = pho.choice_id
+        WHERE p.event_id=:event_id and oc.option_id=:option_id and p.status !="A" and pho.status!="A")
+    ');
     $count_option->execute($ids);
-    return $count_option->fetch()['COUNT(*)'] == 0 ? false : true;
+    return $count_option->fetch()['nb_participants_without_option'] == 0 ? false : true;
 }
 
 function participants_already_took_places($event_id)
@@ -171,4 +186,68 @@ function participants_already_took_places($event_id)
     $count_promo = $db->prepare('SELECT COUNT(*) current_total_quota FROM participants WHERE event_id= :event_id and status IN("V", "W")');
     $count_promo->execute(array("event_id" => $event_id));
     return $count_promo->fetch()['current_total_quota'] == 0 ? false : true;
+}
+
+function insert_option_choices($data, $type)
+{
+    global $db;
+    if($type=='Checkbox')
+    {
+        $insertion = $db->prepare('INSERT INTO option_choices(price, scoobydoo_article_id, option_id) VALUES (:price, :scoobydoo_article_id, :option_id)');
+        return $insertion->execute($data);
+    }
+    elseif($type=="Select")
+    {
+        foreach($data as $choice_data)
+        {
+            $insertion = $db->prepare('INSERT INTO option_choices(price, scoobydoo_article_id, name, quota, is_removed, option_id) VALUES (:price, :scoobydoo_article_id, :name ,:quota ,:is_removed, :option_id)');
+            $insertion->execute($choice_data);
+        }
+    }
+}
+function update_option_choices($data, $type)
+{
+    global $db;
+    if($type=='Checkbox')
+    {
+        $insertion = $db->prepare('UPDATE option_choices SET price=:price WHERE choice_id=:choice_id ');
+        return $insertion->execute($data);
+    }
+    elseif($type=="Select")
+    {
+        foreach($data as $choice_data)
+        {
+            $insertion = $db->prepare('UPDATE option_choices SET price=:price, name=:name, quota=:quota WHERE choice_id=:choice_id ');
+            $insertion->execute($choice_data);
+        }
+    }
+}
+
+function remove_option_choice($choice_id)
+{
+    global $db;
+    $removal = $db->prepare('UPDATE option_choices SET is_removed=1 WHERE choice_id=:choice_id');
+    $removal->execute(array('choice_id' => $choice_id));
+}
+function delete_option_choice($choice_id)
+{
+    global $db;
+    $removal = $db->prepare('DELETE FROM option_choices WHERE choice_id=:choice_id');
+    $removal->execute(array('choice_id' => $choice_id));
+}
+
+function get_choice_article_id($choice_id)
+{
+    global $db;
+    $option_choices = $db->prepare('SELECT scoobydoo_article_id FROM option_choices WHERE choice_id=:choice_id');
+    $option_choices->execute(array('choice_id' => $choice_id));
+    return $option_choices->fetch()['scoobydoo_article_id'];
+}
+
+function get_previous_choices($option_id, $updated_choice_ids)
+{
+    global $db;
+    $option_choices = $db->prepare("SELECT * FROM option_choices WHERE option_id=:option_id and choice_id NOT IN ('$updated_choice_ids')");
+    $option_choices->execute(array('option_id' => $option_id));
+    return $option_choices->fetchAll();
 }

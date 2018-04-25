@@ -62,34 +62,34 @@ function set_header_navbar($title)
     <?php
 }
 
-function insert_select_options($option_specifications, $is_mandatory = 0)
+function insert_select_options($option_choices, $is_mandatory = 0)
 {
     $compteur=0;
-    foreach($option_specifications as $option_specification)
+    foreach($option_choices as $option_choice)
     {
         ?>
-        <option value="<?= htmlspecialchars($option_specification->name) ?>" <?=($is_mandatory==1 and $compteur==0) ? 'selected' : ''?> >
-            <?= htmlspecialchars($option_specification->name) . '(' . htmlspecialchars($option_specification->price) . '€)' ?>
+        <option value="<?= htmlspecialchars($option_choice['choice_id']) ?>" <?=($is_mandatory==1 and $compteur==0) ? 'selected' : ''?> >
+            <?= htmlspecialchars($option_choice['name']) . '(' . htmlspecialchars($option_choice['price']) . '€)' ?>
         </option>
         <?php
         $compteur++;
     }
 }
 
-function add_error($message)
+function add_alert($message, $class="danger")
 {
     ?>
-    <div class="alert alert-danger alert-dismissible">
+    <div class="alert alert-<?=$class?> alert-dismissible">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
         <strong>Attention ! </strong> <?=$message?>
     </div>
     <?php
 }
 
-function add_error_to_ajax_response($message)
+function add_alert_to_ajax_response($message, $class="danger")
 {
     ob_start(); ?>
-    <div class="alert alert-danger alert-dismissible">
+    <div class="alert alert-<?=$class?> alert-dismissible">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
         <strong>Attention ! </strong> <?=$message?>
     </div>
@@ -229,7 +229,7 @@ function create_personal_informations_text($participant)
 {
     ?>
     <strong>Site :</strong> <span class='badge badge-pill badge-inverse'><?=$participant['site']?></span> <br>
-    <strong>Prix :</strong> <span class='badge badge-pill badge-info'><?=$participant['price']?>€</span> <br>
+    <strong>Prix :</strong> <span class='badge badge-pill badge-info'><?=get_participant_option_prices($participant['participant_id']) + $participant['price']?>€</span> <br>
     <strong>Payement :</strong> <span class='badge badge-pill badge-success'><?=$participant['payement']?></span> <br>
     <?= isset($participant['telephone']) ? "<strong>Telephone :</strong> <span class='badge badge-pill badge-warning'>" . $participant['telephone'] . "</span><br>" : "" ?>
     <strong>Inscription :</strong> <span class='badge badge-pill badge-error'><?=date('d/m/Y à H:i:s', date_create_from_format('Y-m-d H:i:s', $participant['inscription_date'])->getTimestamp())?></span> <br>
@@ -251,21 +251,20 @@ function display_personnal_informations($participant)
 function display_validate_button($participant)
 {
     ?>
-    <th>
+    <td>
         <?= $participant['is_in'] ?
         '<button class="is_in option_tooltip btn btn-danger" data-container="body" type="button">✘</button>' :
         '<button class="is_out option_tooltip btn btn-success" data-container="body" type="button">✔</button>' ?>
-    </th>
+    </td>
     <?php
 }
 
-function create_option_text($options)
+function create_option_text($option_choices)
 {
-    foreach($options as $option)
+    foreach($option_choices as $option_choice)
     {
-        $select_message = $option['option_details']!=null ? json_decode($option['option_details'])->select_option : "";
-        $select_message = $select_message != "" ? " Choix " . $select_message : "";
-        echo get_option_name($option['option_id']) . $select_message . '<br>';
+        $option_message = $option_choice['name']==null ? "" : " Choix " . $option_choice['name'];
+        echo get_option_name($option_choice['option_id']) . $option_message. '<br>';
     }
 }
 
