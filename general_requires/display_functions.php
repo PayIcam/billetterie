@@ -2,7 +2,7 @@
 
 function set_header_navbar($title)
 {
-    global $_CONFIG, $is_super_admin, $event_id;
+    global $_CONFIG, $is_super_admin, $event_id, $Auth;
     ?>
     <!DOCTYPE html>
         <html lang="fr">
@@ -54,26 +54,16 @@ function set_header_navbar($title)
                         <ul class="nav navbar-nav">
                             <li><a href="https://payicam.icam.fr/accueil-payicam/">Accueil PayIcam</a></li>
                             <li><a href="<?=$_CONFIG['public_url']?>">Accueil Billetterie</a></li>
-                            <li><a href="<?=$_CONFIG['public_url']?>creation">Administration Billetterie</a></li>
-                            <?=$is_super_admin ? '<li><a href="https://payicam.icam.fr/scoobydoo">Scoobydoo</a></li>' : ''?>
+                            <?php
+                            echo $Auth->hasRole('member') ? '<li><a href="' . $_CONFIG['public_url'] . 'event_administration">Administration des évènements</a></li>' : '';
+
+                            echo $Auth->hasRole('member++') ? '<li><a href="' . $_CONFIG['public_url'] . 'participant_administration">Administration des participants</a></li>' : '';
+
+                            echo $is_super_admin ? '<li><a href="https://payicam.icam.fr/scoobydoo">Scoobydoo</a></li>' : ''?>
                         </ul>
                     </div>
                 </nav>
     <?php
-}
-
-function insert_select_options($option_choices, $is_mandatory = 0)
-{
-    $compteur=0;
-    foreach($option_choices as $option_choice)
-    {
-        ?>
-        <option value="<?= htmlspecialchars($option_choice['choice_id']) ?>" <?=($is_mandatory==1 and $compteur==0) ? 'selected' : ''?> >
-            <?= htmlspecialchars($option_choice['name']) . '(' . htmlspecialchars($option_choice['price']) . '€)' ?>
-        </option>
-        <?php
-        $compteur++;
-    }
 }
 
 function add_alert($message, $class="danger")
@@ -140,7 +130,7 @@ function set_alert_style($title)
                 <ul class="nav navbar-nav">
                     <li><a href="https://payicam.icam.fr/accueil-payicam/">Accueil PayIcam</a></li>
                     <li><a href="<?=$_CONFIG['public_url']?>">Accueil Billetterie</a></li>
-                    <li><a href="<?=$_CONFIG['public_url']?>creation">Administration Billetterie</a></li>
+                    <li><a href="<?=$_CONFIG['public_url']?>event_administration">Administration Billetterie</a></li>
                     <?=$is_super_admin ? '<li><a href="https://payicam.icam.fr/scoobydoo">Scoobydoo</a></li>' : ''?>
                 </ul>
             </div>
@@ -156,44 +146,9 @@ function insert_as_select_option($array_to_insert)
     }
 }
 
-function display_options($participant)
-{
-    ?>
-        <td>
-            <?php if(!empty($participant['validated_options'])) { ?>
-            <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Options du participant : " data-content="<?= create_option_text($participant['validated_options']) ?>" type="button">
-                <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
-            </button>
-            <?php } ?>
-        </td>
-    <?php
-}
-
-function display_guest_infos($participant)
-{
-    global $event_id;
-    ?> <td> <?php
-        if($participant['is_icam'] == 1)
-        {
-            $guests = get_icams_guests(array('event_id' => $_GET['event_id'], 'icam_id' => $participant['participant_id']));
-            if(!empty($guests)) { ?>
-                <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Invités :" data-content="<?= create_guests_text($guests) ?>" type="button">
-                    <?=$participant['current_promo_guest_number']?>
-                </button>
-            <?php }
-        }
-        else
-        {
-            $icam_data = get_icam_inviter_data($participant['participant_id']);
-            if(!empty($icam_data)) { ?>
-                <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-content="Invité par <?=$icam_data['prenom'] . " " . $icam_data['nom'] ?>" type="button">
-                    <span class="glyphicon glyphicon-user option_tooltip_glyph"></span>
-                </button>
-            <?php }
-        }
-    ?> </td> <?php
-}
-
+/**
+ * unused
+ */
 function display_pending_reservations_entrees($participant)
 {
     if($participant['is_icam']==1)
@@ -215,74 +170,4 @@ function display_pending_reservations_entrees($participant)
             <?php
         }
     }
-}
-
-function create_guests_text($guests)
-{
-    foreach($guests as $guest)
-    {
-        echo $guest['prenom'] . ' ' . $guest['nom'] . '<br>';
-    }
-}
-
-function create_personal_informations_text($participant)
-{
-    ?>
-    <strong>Site :</strong> <span class='badge badge-pill badge-inverse'><?=$participant['site']?></span> <br>
-    <strong>Prix :</strong> <span class='badge badge-pill badge-info'><?=get_participant_option_prices($participant['participant_id']) + $participant['price']?>€</span> <br>
-    <strong>Payement :</strong> <span class='badge badge-pill badge-success'><?=$participant['payement']?></span> <br>
-    <?= isset($participant['telephone']) ? "<strong>Telephone :</strong> <span class='badge badge-pill badge-warning'>" . $participant['telephone'] . "</span><br>" : "" ?>
-    <strong>Inscription :</strong> <span class='badge badge-pill badge-error'><?=date('d/m/Y à H:i:s', date_create_from_format('Y-m-d H:i:s', $participant['inscription_date'])->getTimestamp())?></span> <br>
-    <?= isset($participant['email']) ? "<strong>Email :</strong> <span class='badge badge-pill badge-inverse'>" . $participant['email'] . "</span><br>" : "" ?>
-    <?php
-}
-
-function display_personnal_informations($participant)
-{
-    ?>
-    <td>
-        <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Informations supplémentaires" data-content="<?= create_personal_informations_text($participant) ?>" type="button">
-            <span class="glyphicon glyphicon-eye-open option_tooltip_glyph"></span>
-        </button>
-    </td>
-    <?php
-}
-
-function display_validate_button($participant)
-{
-    ?>
-    <td>
-        <?= $participant['is_in'] ?
-        '<button class="is_in option_tooltip btn btn-danger" data-container="body" type="button">✘</button>' :
-        '<button class="is_out option_tooltip btn btn-success" data-container="body" type="button">✔</button>' ?>
-    </td>
-    <?php
-}
-
-function create_option_text($option_choices)
-{
-    foreach($option_choices as $option_choice)
-    {
-        $option_message = $option_choice['name']==null ? "" : " Choix " . $option_choice['name'];
-        echo get_option_name($option_choice['option_id']) . $option_message. '<br>';
-    }
-}
-
-function display_back_to_list_button($event_id)
-{
-    global $_CONFIG;
-    ?>
-    <div class="container">
-        <a class="btn btn-primary" href="<?=$_CONFIG['public_url']?>stats/participants.php?event_id=<?=$event_id?>">Retour à la liste</a>
-    </div>
-    <?php
-}
-function display_go_to_arrivals($event_id)
-{
-    global $_CONFIG;
-    ?>
-    <div class="container">
-        <a class="btn btn-primary" href="<?=$_CONFIG['public_url']?>entrees/entrees.php?event_id=<?=$event_id?>">Aller aux entrées</a>
-    </div>
-    <?php
 }

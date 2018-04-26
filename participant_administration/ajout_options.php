@@ -47,7 +47,7 @@ else
 {
     if(isset($_GET['event_id']))
     {
-        header('Location: ' . $_CONFIG["public_url"] . 'stats/participants.php?event_id=' . $_GET['event_id']);
+        header('Location: ' . $_CONFIG["public_url"] . 'participant_administration/participants.php?event_id=' . $_GET['event_id']);
     }
     else
     {

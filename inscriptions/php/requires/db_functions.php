@@ -197,3 +197,52 @@ function update_participant_option_to_waiting($data)
     $option_query = $db->prepare('UPDATE participant_has_options SET status="W", price=:price, option_date=CURRENT_TIMESTAMP() WHERE event_id=:event_id and participant_id=:participant_id and choice_id=:choice_id');
     return $option_query->execute($data);
 }
+
+function get_current_promo_site_quota($ids)
+{
+    global $db;
+    $count_promo = $db->prepare('SELECT COUNT(*) current_promo_quota FROM participants WHERE event_id= :event_id and site_id= :site_id and promo_id= :promo_id and status IN("V", "W")');
+    $count_promo->execute($ids);
+    return $count_promo->fetch()['current_promo_quota'];
+}
+
+function get_icam_event_data($identification_data)
+{
+    global $db;
+    $icam_data = $db->prepare('SELECT * FROM participants WHERE email = :email and event_id = :event_id and promo_id = :promo_id and site_id = :site_id and status ="V" ');
+    $icam_data->execute($identification_data);
+    $icam_data = $icam_data->fetchAll();
+    $icam_data = count($icam_data)>1 ? 'several_emails' : current($icam_data);
+    return $icam_data;
+}
+
+function get_whole_current_quota($event_id)
+{
+    global $db;
+    $count_promo = $db->prepare('SELECT COUNT(*) current_total_quota FROM participants WHERE event_id= :event_id and status IN("V", "W")');
+    $count_promo->execute(array("event_id" => $event_id));
+    return $count_promo->fetch()['current_total_quota'];
+}
+
+function get_participant_option($ids)
+{
+    global $db;
+    if (isset($ids['option_id']) && isset($ids['event_id']))
+        $option_query = $db->prepare('
+        SELECT pho.*
+        FROM participant_has_options pho
+        LEFT JOIN option_choices oc ON pho.choice_id = oc.choice_id
+        WHERE pho.event_id=:event_id and oc.option_id=:option_id and participant_id=:participant_id and status="V" ');
+    elseif (isset($ids['choice_id']))
+        $option_query = $db->prepare('SELECT pho.* FROM participant_has_options pho WHERE choice_id=:choice_id and participant_id=:participant_id and status="V" ');
+    $option_query->execute($ids);
+    return $option_query->fetch();
+}
+
+function is_correct_choice_id($ids)
+{
+    global $db;
+    $rows_number = $db->prepare('SELECT COUNT(*) FROM option_choices WHERE choice_id=:choice_id and option_id=:option_id');
+    $rows_number->execute($ids);
+    return $rows_number->fetch()['COUNT(*)']==1 ? true : false;
+}

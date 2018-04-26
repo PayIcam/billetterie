@@ -239,17 +239,17 @@ function check_then_submit_form(event)
         var current_path = window.location.pathname;
         var action_url = $('form').prop('action');
 
-        if(current_path == base_path + "creation/" || current_path == base_path + "creation/new_ticketing.php")
+        if(current_path == base_path + "event_administration/" || current_path == base_path + "event_administration/new_ticketing.php")
         {
-            if(action_url != public_url + "creation/php/ajout_billetterie.php")
+            if(action_url != public_url + "event_administration/php/ajout_billetterie.php")
             {
                 add_alert("A quoi joues tu ? Trafiquer les url est passible instantanné de permaban de PayIcam.");
                 return false;
             }
         }
-        else if(current_path == base_path + "creation/edit_ticketing.php")
+        else if(current_path == base_path + "event_administration/edit_ticketing.php")
         {
-            if(action_url != public_url + "creation/php/edit_billetterie.php?event_id=" + event_id)
+            if(action_url != public_url + "event_administration/php/edit_billetterie.php?event_id=" + event_id)
             {
                 add_alert("A quoi joues tu ? Trafiquer les url est passible instantanné de permaban de PayIcam.");
                 return false;
@@ -305,7 +305,7 @@ function check_then_submit_form(event)
                     });
                     setTimeout(function()
                     {
-                        document.location.href = public_url + 'creation';
+                        document.location.href = public_url + 'event_administration';
                     }, 1000);
                 }
                 else

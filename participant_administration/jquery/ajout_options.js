@@ -15,9 +15,9 @@ $(document).ready(function()
             var action_url = $('form').prop('action');
             var current_path = window.location.pathname;
 
-            if(current_path == base_path + "stats/ajout_participant.php")
+            if(current_path == base_path + "participant_administration/ajout_options.php")
             {
-                if(action_url.indexOf(public_url + "stats/php/ajout_participant.php?event_id=" + event_id) == -1)
+                if(action_url.indexOf(public_url + "participant_administration/php/ajout_options.php?event_id=" + event_id) == -1)
                 {
                     add_alert("A quoi joues tu ? Arrète de trafiquer les redirections.");
                     return false;
@@ -33,34 +33,32 @@ $(document).ready(function()
 
         function check_form()
         {
-            $error = false;
-            if($('input[name=prenom]').val().length > 45)
+            error = false;
+            if($('#options .option').find('input:checkbox:checked, option:selected').not('[disabled]').length)
             {
-                add_alert('Le prénom est trop long');
-            }
-            if($('input[name=nom]').val().length > 45)
-            {
-                add_alert('Le nom est trop long');
-            }
-            if($('input[name=telephone]').length)
-            {
-                if($('input[name=telephone]').val().length > 25)
+                $('#options .option').each(function()
                 {
-                    add_alert('Le numéro de téléphone est trop long');
-                }
+                    if($(this).find('input[name=option_id]').length)
+                    {
+                        if(!(Number.isInteger(parseInt($(this).find('input[name=option_id]').val())) && $(this).find('input[name=option_id]').val()>0))
+                        {
+                            error=true;
+                            add_alert("L'id de l'option a été altérée.");
+                        }
+                    }
+                    else
+                    {
+                        error=true;
+                        add_alert("Impossible de retrouver de quelle option il s'agit.");
+                    }
+                });
             }
-            if($('input[name=email]').length)
+            else
             {
-                if($('input[name=email]').val().length > 255)
-                {
-                    add_alert('Le prénom est trop long');
-                }
+                error=true;
+                add_alert("Rien n'a été sélectionné");
             }
-            if($('input[name=bracelet_identification]').val().length > 25)
-            {
-                add_alert("L'identifiant de bracelet  est trop long");
-            }
-            return !$error;
+            return !error;
         }
 
         $("#alerts").empty();
@@ -69,10 +67,26 @@ $(document).ready(function()
         {
             if(check_form())
             {
-                $("#erreurs_submit").empty();
+                var choice_ids = [];
+                $('#options .option').find('input:checkbox:checked, option:selected:not(:disabled)').each(function()
+                {
+                    console.log($(this));
+                    if($(this).parents('div').hasClass('checkbox_option'))
+                    {
+                        var choice_id = $(this).parents('.option').find('input[name=choice_id]').val();
+                    }
+                    else if($(this).parents('div').hasClass('select_option'))
+                    {
+                        var choice_id = $(this).parents('.option').find(':selected').val();
+                    }
+                    var choice_id = {choice_id};
+                    choice_ids.push(choice_id);
+                });
+
+                $("#alerts").empty();
                 $("#message_submit").show();
                 $('.waiting').show();
-                $("#submit_form").prop('disabled', 'disabled');
+                $("#button_submit_form").prop('disabled', 'disabled');
                 action_url = $('form').prop('action');
 
                 function error_ajax(jqXHR, textStatus,errorThrown)
@@ -89,6 +103,8 @@ $(document).ready(function()
 
                 function ajax_success(data)
                 {
+                    throw('on va pas envoyer');
+
                     if(data.message=="L'ajout a bien été effectué")
                     {
                         var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data.message + '</div>';
@@ -99,7 +115,7 @@ $(document).ready(function()
                         });
                         setTimeout(function()
                         {
-                            document.location.href = public_url + 'stats/ajout_options.php?event_id=' + event_id + '&participant_id=' + data.participant_id;
+                            document.location.href = public_url + 'participant_administration/participants.php?event_id=' + event_id;
                         }, 1000);
                     }
                     else
@@ -110,10 +126,11 @@ $(document).ready(function()
                     }
                 }
 
+
                 $.post(
                 {
                     url: action_url,
-                    data: $(this).serialize(),
+                    data: {choice_ids:choice_ids},
                     dataType: 'json',
                     success: ajax_success,
                     error: error_ajax
@@ -121,6 +138,8 @@ $(document).ready(function()
 
                 // function ajax_success(data)
                 // {
+                //     console.log(data);
+                //     $('.waiting').hide();
                 //     if(data=="L'ajout a bien été effectué")
                 //     {
                 //         var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data + '</div>';
@@ -131,27 +150,28 @@ $(document).ready(function()
                 //         });
                 //         // setTimeout(function()
                 //         // {
-                //         //     document.location.href = public_url + 'stats/edit_participant.php?event_id=' + event_id + '&participant_id=' + data.participant_id;
+                //         //     document.location.href = public_url + 'participant_administration/edit_participant.php?event_id=' + event_id + '&participant_id=' + data.participant_id;
                 //         // }, 1000);
                 //     }
                 //     else
                 //     {
+
                 //         $("#alerts").append(data);
-                //         $("#submit_form").prop('disabled', '');
+                //         $("#button_submit_form").prop('disabled', '');
                 //     }
                 // }
 
                 // $.post(
                 // {
                 //     url: action_url,
-                //     data: $(this).serialize(),
+                //     data: {choice_ids:choice_ids, payement: $('select[name=payement] option:selected').val(), price: $('input[name=price]').val()},
                 //     dataType: 'html',
                 //     success: ajax_success,
                 //     error: error_ajax
                 // });
+
             }
         }
-
         submit.preventDefault();
     });
 });

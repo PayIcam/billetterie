@@ -50,6 +50,6 @@
             </table>
         </div>
         <div id="alerts"></div>
-        <script src="jquery/get_ajax_response.js"></script>
+        <script src="jquery/entrees.js"></script>
     </body>
 </html>

@@ -251,3 +251,20 @@ function get_previous_choices($option_id, $updated_choice_ids)
     $option_choices->execute(array('option_id' => $option_id));
     return $option_choices->fetchAll();
 }
+
+function get_current_options($event_id)
+{
+    global $db;
+    $option_query = $db->prepare('SELECT * FROM options WHERE event_id=:event_id and is_removed=0');
+    $option_query->execute(array('event_id'=>$event_id));
+    return $option_query->fetchAll();
+}
+
+function event_has_option($ids)
+{
+    global $db;
+    $option = $db->prepare('SELECT * FROM options WHERE event_id = :event_id and option_id = :option_id and is_removed=0');
+    $option->execute($ids);
+    $option = $option->fetch();
+    return empty($option) ? false : true;
+}

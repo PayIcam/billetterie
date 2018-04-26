@@ -59,7 +59,7 @@ function display_event_admin($event)
 {
     global $_CONFIG;
     ?>
-        <a href="<?=$_CONFIG['public_url']?>creation/edit_ticketing.php?event_id=<?=$event['event_id']?>" class="btn btn-primary"><h5><?=$event['name']?></h5></a><br><br>
+        <a href="<?=$_CONFIG['public_url']?>event_administration/edit_ticketing.php?event_id=<?=$event['event_id']?>" class="btn btn-primary"><h5><?=$event['name']?></h5></a><br><br>
     <?php
 }
 
@@ -79,4 +79,18 @@ function display_fundations_events_admin($fundation)
         </div>
     </div>
     <?php
+}
+
+function insert_select_options($option_choices, $is_mandatory = 0)
+{
+    $compteur=0;
+    foreach($option_choices as $option_choice)
+    {
+        ?>
+        <option value="<?= htmlspecialchars($option_choice['choice_id']) ?>" <?=($is_mandatory==1 and $compteur==0) ? 'selected' : ''?> >
+            <?= htmlspecialchars($option_choice['name']) . '(' . htmlspecialchars($option_choice['price']) . '€)' ?>
+        </option>
+        <?php
+        $compteur++;
+    }
 }

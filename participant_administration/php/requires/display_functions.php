@@ -333,7 +333,7 @@ function display_participants_admin($event)
 {
     global $_CONFIG;
     ?>
-        <a href="<?=$_CONFIG['public_url']?>stats/participants.php?event_id=<?=$event['event_id']?>" class="btn btn-primary"><h5><?=$event['name']?></h5></a><br><br>
+        <a href="<?=$_CONFIG['public_url']?>participant_administration/participants.php?event_id=<?=$event['event_id']?>" class="btn btn-primary"><h5><?=$event['name']?></h5></a><br><br>
     <?php
 }
 function display_fundations_participants_admin($fundation)
@@ -470,4 +470,146 @@ function display_pending_description($transaction_content)
 {
     echo count($transaction_content->participant_ids) >=1 ? count($transaction_content->participant_ids) . " Places <br>" : "";
     echo count($transaction_content->option_ids) >=1 ? count($transaction_content->option_ids) . " Options <br>" : "";
+}
+
+function display_search_possibilities()
+{
+    ?>
+    - Prénom <br>
+    - Nom <br>
+    - Prénom + espace + nom <br>
+    - Promo exacte <br>
+    - Site exact <br>
+    - Identifiant de bracelet <br>
+    <?php
+}
+
+function display_participants_rows($participants)
+{
+    foreach($participants as $participant)
+    {
+        $participant = prepare_participant_displaying($participant);
+        $participant['site'] = get_site_name($participant['site_id']);
+        $participant['is_in'] = participant_has_arrived($participant['participant_id']);
+        ?>
+        <tr data-participant_id=<?=$participant['participant_id']?>>
+            <td><span class='badge badge-pill badge-success'><?=$participant['bracelet_identification']?></span></td>
+            <td><?=$participant['prenom']?></td>
+            <td><?=$participant['nom']?></td>
+            <td><span class='badge badge-pill badge-info'><?=get_promo_name($participant['promo_id'])?></span></td>
+            <?=display_options($participant)?>
+            <?=display_guest_infos($participant)?>
+            <?=display_personnal_informations($participant)?>
+            <?=display_validate_button($participant)?>
+        </tr>
+        <?php
+    }
+}
+
+function display_options($participant)
+{
+    ?>
+        <td>
+            <?php if(!empty($participant['validated_options'])) { ?>
+            <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Options du participant : " data-content="<?= create_option_text($participant['validated_options']) ?>" type="button">
+                <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
+            </button>
+            <?php } ?>
+        </td>
+    <?php
+}
+
+function display_guest_infos($participant)
+{
+    global $event_id;
+    ?> <td> <?php
+        if($participant['is_icam'] == 1)
+        {
+            $guests = get_icams_guests(array('event_id' => $_GET['event_id'], 'icam_id' => $participant['participant_id']));
+            if(!empty($guests)) { ?>
+                <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Invités :" data-content="<?= create_guests_text($guests) ?>" type="button">
+                    <?=$participant['current_promo_guest_number']?>
+                </button>
+            <?php }
+        }
+        else
+        {
+            $icam_data = get_icam_inviter_data($participant['participant_id']);
+            if(!empty($icam_data)) { ?>
+                <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-content="Invité par <?=$icam_data['prenom'] . " " . $icam_data['nom'] ?>" type="button">
+                    <span class="glyphicon glyphicon-user option_tooltip_glyph"></span>
+                </button>
+            <?php }
+        }
+    ?> </td> <?php
+}
+
+function create_guests_text($guests)
+{
+    foreach($guests as $guest)
+    {
+        echo $guest['prenom'] . ' ' . $guest['nom'] . '<br>';
+    }
+}
+
+function create_personal_informations_text($participant)
+{
+    ?>
+    <strong>Site :</strong> <span class='badge badge-pill badge-inverse'><?=$participant['site']?></span> <br>
+    <strong>Prix :</strong> <span class='badge badge-pill badge-info'><?=get_participant_option_prices($participant['participant_id']) + $participant['price']?>€</span> <br>
+    <strong>Payement :</strong> <span class='badge badge-pill badge-success'><?=$participant['payement']?></span> <br>
+    <?= isset($participant['telephone']) ? "<strong>Telephone :</strong> <span class='badge badge-pill badge-warning'>" . $participant['telephone'] . "</span><br>" : "" ?>
+    <strong>Inscription :</strong> <span class='badge badge-pill badge-error'><?=date('d/m/Y à H:i:s', date_create_from_format('Y-m-d H:i:s', $participant['inscription_date'])->getTimestamp())?></span> <br>
+    <?= isset($participant['email']) ? "<strong>Email :</strong> <span class='badge badge-pill badge-inverse'>" . $participant['email'] . "</span><br>" : "" ?>
+    <?php
+}
+
+function display_personnal_informations($participant)
+{
+    ?>
+    <td>
+        <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Informations supplémentaires" data-content="<?= create_personal_informations_text($participant) ?>" type="button">
+            <span class="glyphicon glyphicon-eye-open option_tooltip_glyph"></span>
+        </button>
+    </td>
+    <?php
+}
+
+function display_validate_button($participant)
+{
+    ?>
+    <td>
+        <?= $participant['is_in'] ?
+        '<button class="is_in option_tooltip btn btn-danger" data-container="body" type="button">✘</button>' :
+        '<button class="is_out option_tooltip btn btn-success" data-container="body" type="button">✔</button>' ?>
+    </td>
+    <?php
+}
+
+function create_option_text($option_choices)
+{
+    foreach($option_choices as $option_choice)
+    {
+        $option_message = $option_choice['name']==null ? "" : " Choix " . $option_choice['name'];
+        echo get_option_name($option_choice['option_id']) . $option_message. '<br>';
+    }
+}
+
+function display_back_to_list_button($event_id)
+{
+    global $_CONFIG;
+    ?>
+    <div class="container">
+        <a class="btn btn-primary" href="<?=$_CONFIG['public_url']?>participant_administration/participants.php?event_id=<?=$event_id?>">Retour à la liste</a>
+    </div>
+    <?php
+}
+function display_go_to_arrivals($event_id)
+{
+    global $_CONFIG;
+    ?>
+    <div class="container">
+        <a class="btn btn-primary" href="<?=$_CONFIG['public_url']?>participant_administration/entrees.php?event_id=<?=$event_id?>">Aller aux entrées</a>
+    </div>
+    <?php
 }

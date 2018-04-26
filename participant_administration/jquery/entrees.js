@@ -15,7 +15,7 @@ function participant_arrives(button_row)
     $('table .is_out, table .is_in').prop('disabled', 'disabled');
     $.get(
     {
-        url: public_url + 'entrees/php/gestion_entrees.php',
+        url: public_url + 'participant_administration/php/gestion_entrees.php',
         data: {event_id:event_id, action:'arrival', participant_id:button_row.parents('tr').data('participant_id')},
         dataType: 'json',
         success: function(data)
@@ -43,7 +43,7 @@ function participant_leaves(button_row)
     $('table .is_out, table .is_in').prop('disabled', 'disabled');
     $.get(
     {
-        url: public_url + 'entrees/php/gestion_entrees.php',
+        url: public_url + 'participant_administration/php/gestion_entrees.php',
         data: {event_id:event_id, action:'departure', participant_id:button_row.parents('tr').data('participant_id')},
         dataType: 'json',
         success: function(data)
@@ -79,7 +79,7 @@ $('input[name=recherche]').keyup(function()
     {
         $.post(
         {
-            url: public_url + 'entrees/php/creation_tableau.php?event_id=' + event_id,
+            url: public_url + 'participant_administration/php/creation_tableau.php?event_id=' + event_id,
             data: {recherche: $('input[name=recherche]').val()},
             dataType: 'html',
             success: ajax_success,

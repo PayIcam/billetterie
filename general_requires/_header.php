@@ -41,7 +41,7 @@ $route = current(explode('?', $route, 2));
 
 switch($_SERVER['REQUEST_URI'])
 {
-    case strpos($_SERVER['REQUEST_URI'], '/creation/') !== false:
+    case strpos($_SERVER['REQUEST_URI'], '/event_administration/') !== false:
         $payutcClient = getPayutcClient("GESARTICLE");
         if(isset($_SESSION['icam_informations']))
         {
@@ -49,8 +49,7 @@ switch($_SERVER['REQUEST_URI'])
             $fundations = redirect_if_no_rights();
         }
         break;
-    case strpos($_SERVER['REQUEST_URI'], '/entrees/') !== false:
-    case strpos($_SERVER['REQUEST_URI'], '/stats/') !== false:
+    case strpos($_SERVER['REQUEST_URI'], '/participant_administration/') !== false:
         $payutcClient = getPayutcClient("STATS");
         if(isset($_SESSION['icam_informations']))
         {

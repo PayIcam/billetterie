@@ -41,7 +41,7 @@ $('form').submit(function(submit)
     }
 
     var post_url = $('form').prop('action');
-    if($.trim(post_url.split('?')[0]) != $.trim(public_url + 'stats/php/update_participant.php'))
+    if($.trim(post_url.split('?')[0]) != $.trim(public_url + 'participant_administration/php/update_participant.php'))
     {
         error = true;
         add_alert('As tu joué avec ma page ?');

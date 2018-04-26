@@ -1,4 +1,5 @@
 <?php
+
 function check_update_participant_data($data, $is_icam)
 {
     $error = false;
@@ -389,4 +390,40 @@ function prepare_promo_stats($promo_stats)
     $promo_stats['pourcentage_bracelet'] = $promo_stats['promo_count']!=0 ? round(100 * $promo_stats['bracelet_count'] / $promo_stats['promo_count'], 2) . '%' : "undefined";
     $promo_stats['pourcentage_invites'] = $event_details_stats['guests_count']!=0 ? round(100 * $promo_stats['invited_guests'] / $event_details_stats['guests_count'], 2) . '%' : "undefined";
     return $promo_stats;
+}
+
+function prepare_participant_displaying($participant)
+{
+    global $event_id;
+
+    $participant['promo'] = get_promo_name($participant['promo_id']);
+    $participant['site'] = get_site_name($participant['site_id']);
+
+    $participant['promo_guest_number'] = get_promo_guest_number(array("event_id" => $event_id, "promo_id" => $participant['promo_id'], "site_id" => $participant['site_id']));
+    $guest_numbers_by_status = get_current_guest_number_by_status($participant['participant_id']);
+
+    $participant['validated_guest_number'] = 0;
+    $participant['waiting_guest_number'] = 0;
+    $participant['cancelled_guest_number'] = 0;
+    foreach($guest_numbers_by_status as $guest)
+    {
+        switch($guest['status'])
+        {
+            case 'V':
+                $participant['validated_guest_number'] = $guest['guest_number'];
+                break;
+            case 'W':
+                $participant['waiting_guest_number'] = $guest['guest_number'];
+                break;
+            case 'A':
+                $participant['cancelled_guest_number'] = $guest['guest_number'];
+                break;
+        }
+    }
+    $participant['current_promo_guest_number'] = $participant['validated_guest_number'] . "/" . $participant['promo_guest_number'];
+
+    $participant['validated_options'] = get_participant_options_and_choices(array("event_id" => $event_id, "participant_id" => $participant['participant_id']));
+    $participant['pending_options'] = get_pending_options_and_choices(array("event_id" => $event_id, "participant_id" => $participant['participant_id']));
+
+    return $participant;
 }

@@ -157,3 +157,113 @@ function get_event_payments_stats($event_id)
     $payment_stats->execute(array('event_id' => $event_id));
     return $payment_stats->fetchAll();
 }
+
+function participant_has_arrived($participant_id)
+{
+    global $db;
+    $is_in = $db->prepare('SELECT * FROM arrivals WHERE participant_id=:participant_id');
+    $is_in->execute(array('participant_id' => $participant_id));
+    return !empty($is_in->fetchAll());
+}
+
+function get_participant_event_arrival_data($ids)
+{
+    global $db;
+    $participant_data = $db->prepare('SELECT p.*, COUNT(a.participant_id) arrival FROM participants p LEFT JOIN arrivals a ON a.participant_id=p.participant_id WHERE p.event_id = :event_id and p.participant_id = :participant_id and status="V" ');
+    $participant_data->execute($ids);
+    return $participant_data->fetch();
+}
+
+function participant_arrives($ids)
+{
+    global $db;
+    $arrival = $db->prepare('INSERT INTO arrivals(participant_id, event_id) VALUES (:participant_id, :event_id)');
+    return $arrival->execute($ids);
+}
+
+function participant_leaves($ids)
+{
+    global $db;
+    $arrival = $db->prepare('DELETE FROM arrivals WHERE participant_id=:participant_id and event_id=:event_id');
+    return $arrival->execute($ids);
+}
+
+function get_arrival_number($event_id)
+{
+    global $db;
+    $arrival_number = $db->prepare('SELECT COUNT(*) FROM arrivals WHERE event_id=:event_id');
+    $arrival_number->execute(array('event_id' => $event_id));
+    return $arrival_number->fetch()['COUNT(*)'];
+}
+
+function get_participant_event_data($ids)
+{
+    global $db;
+    $participant_data = $db->prepare('SELECT * FROM participants WHERE event_id = :event_id and participant_id = :participant_id and status="V" ');
+    $participant_data->execute($ids);
+    return $participant_data->fetch();
+}
+
+function get_promo_guest_number($ids)
+{
+    global $db;
+    $promo_guest_number = $db->prepare('SELECT guest_number FROM promos_site_specifications WHERE event_id=:event_id and promo_id=:promo_id and site_id=:site_id ');
+    $promo_guest_number->execute($ids);
+    return $promo_guest_number->fetch()['guest_number'];
+}
+
+function get_current_guest_number_by_status($participant_id)
+{
+    global $db;
+    $current_guest_number = $db->prepare('SELECT status, COUNT(*) guest_number FROM icam_has_guests INNER JOIN participants ON guest_id = participant_id WHERE icam_id=:participant_id and status="V" GROUP BY status');
+    $current_guest_number->execute(array("participant_id" => $participant_id));
+    return $current_guest_number->fetchAll();
+}
+
+function get_displayed_participants($event_id, $start_lign, $rows_per_page)
+{
+    global $db;
+    $participant_data = $db->prepare('SELECT * FROM participants WHERE event_id = :event_id and status="V" ORDER BY participant_id LIMIT :start_lign,:rows_per_page');
+    $participant_data->bindParam('start_lign', $start_lign, PDO::PARAM_INT);
+    $participant_data->bindParam('rows_per_page', $rows_per_page, PDO::PARAM_INT);
+    $participant_data->bindParam('event_id', $event_id, PDO::PARAM_INT);
+    $participant_data->execute();
+    return $participant_data->fetchAll();
+}
+
+function get_current_participants_number($event_id)
+{
+    global $db;
+    $count_promo = $db->prepare('SELECT COUNT(*) current_total_quota FROM participants WHERE event_id= :event_id and status= "V"');
+    $count_promo->execute(array("event_id" => $event_id));
+    return $count_promo->fetch()['current_total_quota'];
+}
+
+function get_participant_options_and_choices($ids)
+{
+    global $db;
+    $option_query = $db->prepare('SELECT * FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id = pho.choice_id WHERE event_id=:event_id and participant_id=:participant_id and status="V" ');
+    $option_query->execute($ids);
+    return $option_query->fetchAll();
+}
+
+function get_pending_options_and_choices($ids)
+{
+    global $db;
+    $option_query = $db->prepare('SELECT * FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id = pho.choice_id WHERE event_id=:event_id and participant_id=:participant_id and status="W" ');
+    $option_query->execute($ids);
+    return $option_query->fetchAll();
+}
+
+function participant_can_have_choice($ids)
+{
+    global $db;
+    $rows_number = $db->prepare('SELECT COUNT(*) FROM option_choices oc
+        LEFT JOIN options o ON o.option_id=oc.option_id
+        LEFT JOIN promo_site_has_options psho ON psho.option_id=o.option_id and psho.event_id=o.event_id
+        LEFT JOIN promos_site_specifications pss ON pss.promo_id=psho.promo_id and pss.site_id=psho.site_id and pss.event_id=psho.event_id
+        LEFT JOIN participants p ON p.promo_id=pss.promo_id and p.site_id=pss.site_id and p.event_id=pss.event_id
+        WHERE p.participant_id=:participant_id and oc.choice_id=:choice_id');
+    $rows_number->execute($ids);
+    return $rows_number->fetch()['COUNT(*)']==1 ? true : false;
+}

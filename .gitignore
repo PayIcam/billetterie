@@ -3,7 +3,7 @@ vendor/
 composer.lock
 inscriptions/test.php
 inscriptions/reset_participants.php
-creation/test.php
-creation/reset_events.php
+event_administration/test.php
+event_administration/reset_events.php
 db_creation/event_save.sql
-stats/test.php
+participant_administration/test.php
