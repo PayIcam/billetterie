@@ -1,3 +1,12 @@
+/**
+ * L'ajout de participants se fait en Ajax, on vérifie que les données ont l'air bonnes, et on les envoie vers php/ajout_participants.php
+ *
+ * Comme d'habitude, on affiche les erreurs potentielles dans le div#alerts, on utilise add_alert pour en ajouter une
+ * La vérification n'est pas si importante en Js direct pour une fois, de toute façon, vu que ça se fait en Ajax, ça ira vite quoi qu'il soit.
+ *
+ * Les données envoyées sont toutes les données du formulaire, gr$ace à $('form').serialize() pour plus de facilité.
+ */
+
 $(document).ready(function()
 {
     $("#message_submit").hide();

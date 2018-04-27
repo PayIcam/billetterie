@@ -1,3 +1,11 @@
+/**
+ * L'ajout d'options se fait en Ajax, on vérifie que les données ont l'air bonnes, et on les envoie vers php/ajout_options.php
+ *
+ * Comme d'habitude, on affiche les erreurs potentielles dans le div#alerts, on utilise add_alert pour en ajouter une
+ *
+ * Les données envoyées sont uniquement les ids des choix des options.
+ */
+
 $(document).ready(function()
 {
     $("#message_submit").hide();
@@ -31,6 +39,10 @@ $(document).ready(function()
             return true;
         }
 
+        /**
+         * Fonction servant à vérifier que les infos sont correctes
+         * @return {boolean} [true si le form est valide]
+         */
         function check_form()
         {
             error = false;
@@ -103,8 +115,6 @@ $(document).ready(function()
 
                 function ajax_success(data)
                 {
-                    throw('on va pas envoyer');
-
                     if(data.message=="L'ajout a bien été effectué")
                     {
                         var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data.message + '</div>';
@@ -125,7 +135,6 @@ $(document).ready(function()
                         $('.waiting').hide();
                     }
                 }
-
 
                 $.post(
                 {

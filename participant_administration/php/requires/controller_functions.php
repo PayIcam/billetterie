@@ -1,16 +1,22 @@
 <?php
 
-function check_update_participant_data($data, $is_icam)
+/**
+ * Vérifier que les informations entrées sur un edit d'une participant sont bonnes
+ * @param  [tinyint] $is_icam [1 ou 0]
+ * @return [boolean]          [true si tout est bon]
+ */
+function check_update_participant_data($is_icam)
 {
     $error = false;
     $post_inputs = $is_icam == 0 ? 3:1;
-    if(count($data) == $post_inputs)
+    if(count($_POST) == $post_inputs)
     {
         if($is_icam==0)
         {
-            if(isset($data['prenom']))
+            if(isset($_POST['prenom']))
             {
-                if(count($data['prenom']) > 45)
+                $_POST['prenom'] = htmlspecialchars($_POST['prenom']);
+                if(count($_POST['prenom']) > 45)
                 {
                     $error = true;
                     add_alert('Le prénom entré est trop grand');
@@ -21,9 +27,10 @@ function check_update_participant_data($data, $is_icam)
                 $error = true;
                 add_alert('Vous avez bidouillé le formulaire, et il manque des attributs, en êtes vous fier ? ');
             }
-            if(isset($data['nom']))
+            if(isset($_POST['nom']))
             {
-                if(count($data['nom']) > 45)
+                $_POST['nom'] = htmlspecialchars($_POST['nom']);
+                if(count($_POST['nom']) > 45)
                 {
                     $error = true;
                     add_alert('Le nom entré est trop grand');
@@ -35,15 +42,15 @@ function check_update_participant_data($data, $is_icam)
                 add_alert('Vous avez bidouillé le formulaire, et il manque des attributs, en êtes vous fier ? ');
             }
         }
-        if(isset($data['bracelet_identification']))
+        if(isset($_POST['bracelet_identification']))
         {
-            $data['bracelet_identification'] = $data['bracelet_identification'] == '' ? null : $data['bracelet_identification'];
-            if(count($data['bracelet_identification']) > 25)
+            $_POST['bracelet_identification'] = $_POST['bracelet_identification'] == '' ? null : htmlspecialchars($_POST['bracelet_identification']);
+            if(count($_POST['bracelet_identification']) > 25)
             {
                 $error = true;
                 add_alert('Le bracelet_identification entré est trop grand');
             }
-            elseif(!bracelet_identification_is_available(array('bracelet_identification' => $data['bracelet_identification'], 'event_id' => $_GET['event_id'], 'participant_id' => $_GET['participant_id'])))
+            elseif(!bracelet_identification_is_available(array('bracelet_identification' => $_POST['bracelet_identification'], 'event_id' => $_GET['event_id'], 'participant_id' => $_GET['participant_id'])))
             {
                 $error = true;
                 add_alert('Ce bracelet est déjà pris.');
@@ -63,18 +70,24 @@ function check_update_participant_data($data, $is_icam)
     return !$error;
 }
 
-function check_prepare_addition_data($data, $icam_site_id)
+/**
+ * Vérifier que les infos sur un ajout de participant sont bonnes
+ * @param  [mixed] $icam_site_id [le site_id du l'Icam si c'en est un, false sinon]
+ * @return [type]               [description]
+ */
+function check_prepare_addition_data($icam_site_id)
 {
     global $promos, $sites;
 
     $error = false;
-    $data_nb_inputs = $icam_site_id === false ? 9 : 5;
+    $post_nb_inputs = $icam_site_id === false ? 9 : 5;
 
-    if(count($data)==$data_nb_inputs)
+    if(count($_POST)==$post_nb_inputs)
     {
-        if(isset($data['prenom']))
+        if(isset($_POST['prenom']))
         {
-            if(count($data['prenom']) > 45)
+            $_POST['prenom'] = htmlspecialchars($_POST['prenom']);
+            if(count($_POST['prenom']) > 45)
             {
                 $error = true;
                 add_alert_to_ajax_response('Le prénom de votre nouveau participant est trop long.');
@@ -85,9 +98,10 @@ function check_prepare_addition_data($data, $icam_site_id)
             $error = true;
             add_alert_to_ajax_response("Le prénom n'est pas défini.");
         }
-        if(isset($data['nom']))
+        if(isset($_POST['nom']))
         {
-            if(count($data['nom']) > 45)
+            $_POST['nom'] = htmlspecialchars($_POST['nom']);
+            if(count($_POST['nom']) > 45)
             {
                 $error = true;
                 add_alert_to_ajax_response('Le nom de votre nouveau participant est trop long.');
@@ -100,9 +114,10 @@ function check_prepare_addition_data($data, $icam_site_id)
         }
         if($icam_site_id === false)
         {
-            if(isset($data['telephone']))
+            if(isset($_POST['telephone']))
             {
-                if(!count($data['telephone']) > 25)
+                $_POST['telephone'] = htmlspecialchars($_POST['telephone']);
+                if(!count($_POST['telephone']) > 25)
                 {
                     $error = true;
                     add_alert_to_ajax_response('Le numéro de téléphone de votre nouveau participant est trop long.');
@@ -113,9 +128,9 @@ function check_prepare_addition_data($data, $icam_site_id)
                 $error = true;
                 add_alert_to_ajax_response("Le numéro de télephone n'est pas défini.");
             }
-            if(isset($data['email']))
+            if(isset($_POST['email']))
             {
-                if(!count($data['email']) > 255)
+                if(!count($_POST['email']) > 255)
                 {
                     $error = true;
                     add_alert_to_ajax_response("L'email de votre nouveau participant est trop long.");
@@ -127,15 +142,15 @@ function check_prepare_addition_data($data, $icam_site_id)
                 add_alert_to_ajax_response("L'email de votre participant n'est pas défini.");
             }
         }
-        if(isset($data['bracelet_identification']))
+        if(isset($_POST['bracelet_identification']))
         {
-            $data['bracelet_identification'] = $data['bracelet_identification'] == '' ? null : $data['bracelet_identification'];
-            if(count($data['bracelet_identification']) > 25)
+            $_POST['bracelet_identification'] = $_POST['bracelet_identification'] == '' ? null : htmlspecialchars($_POST['bracelet_identification']);
+            if(count($_POST['bracelet_identification']) > 25)
             {
                 $error = true;
                 add_alert_to_ajax_response("L'identifiant de bracelet de votre nouveau participant est trop long.");
             }
-            elseif(!bracelet_identification_is_available(array('bracelet_identification' => $data['bracelet_identification'], 'event_id' => $_GET['event_id'])))
+            elseif(!bracelet_identification_is_available(array('bracelet_identification' => $_POST['bracelet_identification'], 'event_id' => $_GET['event_id'])))
             {
                 $error = true;
                 add_alert_to_ajax_response('Ce bracelet est déjà pris.');
@@ -146,11 +161,11 @@ function check_prepare_addition_data($data, $icam_site_id)
             $error = true;
             add_alert_to_ajax_response("L'identifiant du bracelet n'est pas défini.");
         }
-        if(isset($data['price']))
+        if(isset($_POST['price']))
         {
-            if(is_numeric($data['price']))
+            if(is_numeric($_POST['price']))
             {
-                if(floor(100*$data['price']) != 100*$data['price'])
+                if(floor(100*$_POST['price']) != 100*$_POST['price'])
                 {
                     add_alert_to_ajax_response("Le prix est défini avec une précision plus grande que le centime, ou n'est même pas positif");
                     $error = true;
@@ -167,9 +182,9 @@ function check_prepare_addition_data($data, $icam_site_id)
             $error = true;
             add_alert_to_ajax_response("Le prix n'est pas défini.");
         }
-        if(isset($data['payement']))
+        if(isset($_POST['payement']))
         {
-            if(!in_array($data['payement'], ["Espèces", "Carte bleue", "Pumpkin", "Lydia", "Circle", "Offert", "à l'amiable", "Autre"]))
+            if(!in_array($_POST['payement'], ["Espèces", "Carte bleue", "Pumpkin", "Lydia", "Circle", "Offert", "à l'amiable", "Autre"]))
             {
                 $error = true;
                 add_alert_to_ajax_response("Le moyen de payement n'est pas dans la liste");
@@ -182,11 +197,11 @@ function check_prepare_addition_data($data, $icam_site_id)
         }
         if($icam_site_id === false)
         {
-            if(isset($data['promo']))
+            if(isset($_POST['promo']))
             {
-                if(in_array($data['promo'], $promos))
+                if(in_array($_POST['promo'], $promos))
                 {
-                    $_POST['promo_id'] = get_promo_id($data['promo']);
+                    $_POST['promo_id'] = get_promo_id($_POST['promo']);
                 }
                 else
                 {
@@ -197,13 +212,13 @@ function check_prepare_addition_data($data, $icam_site_id)
             else
             {
                 $error = true;
-                add_alert_to_ajax_response("L'identifiant du bracelet n'est pas défini.");
+                add_alert_to_ajax_response("La promo n'est pas définie.");
             }
-            if(isset($data['site']))
+            if(isset($_POST['site']))
             {
-                if(in_array($data['site'], $sites))
+                if(in_array($_POST['site'], $sites))
                 {
-                    $_POST['site_id'] = get_site_id($data['site']);
+                    $_POST['site_id'] = get_site_id($_POST['site']);
                 }
                 else
                 {
@@ -214,7 +229,7 @@ function check_prepare_addition_data($data, $icam_site_id)
             else
             {
                 $error = true;
-                add_alert_to_ajax_response("L'identifiant du bracelet n'est pas défini.");
+                add_alert_to_ajax_response("Le site n'est pas définie.");
             }
         }
         else
@@ -233,6 +248,10 @@ function check_prepare_addition_data($data, $icam_site_id)
     return !$error;
 }
 
+/**
+ * Ajustement de option_form pour ne rien vérifier.
+ * @param  [array] $option [fetch de options avec option['option_choices'] qui contient un fetchAll des option_choices associés]
+ */
 function display_option_no_checking($option)
 {
     if($option['type']=='Checkbox')
@@ -246,6 +265,10 @@ function display_option_no_checking($option)
     }
 }
 
+/**
+ * Permet de vérifier que les informations entrées sur un ajout d'options sont bonnes
+ * @return [type] [description]
+ */
 function check_prepare_option_choice_data()
 {
     $promo_site_ids = get_participant_promo_site_ids(array('event_id' => $_GET['event_id'], 'participant_id' => $_GET['participant_id']));
@@ -278,7 +301,6 @@ function check_prepare_option_choice_data()
                     }
                     else
                     {
-                        var_dump($_POST);
                         $error = true;
                         add_alert_to_ajax_response("Le moyen de payement n'est pas spécifié");
                     }
@@ -325,63 +347,11 @@ function check_prepare_option_choice_data()
     }
     return $error == true ? false : $choice_datas;
 }
-
-function check_prepare_option_addition_data($options, $participant_id)
-{
-    $promo_site_ids = get_participant_promo_site_ids(array('event_id' => $_GET['event_id'], 'participant_id' => $participant_id));
-
-    $promo_id = $promo_site_ids['promo_id'];
-    $site_id = $promo_site_ids['site_id'];
-
-    $error = false;
-    foreach($options as $option)
-    {
-        if(option_can_be_added(array('promo_id' => $promo_id, 'site_id' => $site_id, 'option_id' => $option['option_id'], 'event_id' => $_GET['event_id'])))
-        {
-            if(!participant_has_option(array('participant_id' => $participant_id, 'option_id' => $option['option_id'], 'event_id' => $_GET['event_id'])))
-            {
-                $db_option = get_option(array('option_id' => $option['option_id'], 'event_id' => $_GET['event_id']));
-                if($db_option['type']==$option['type'])
-                {
-                    if($db_option['type']=='Select')
-                    {
-                        $found=false;
-                        foreach(json_decode($db_option['specifications']) as $specification)
-                        {
-                            if($specification->name == $option['complement'])
-                            {
-                                $found=true;
-                                break;
-                            }
-                        }
-                        if(!$found)
-                        {
-                            $error=true;
-                            add_alert_to_ajax_response("Le nom de la sous-option est faux");
-                        }
-                    }
-                }
-                else
-                {
-                    $error = true;
-                    add_alert_to_ajax_response("Le type indiqué est faux.");
-                }
-            }
-            else
-            {
-                $error = true;
-                add_alert_to_ajax_response("Le participant a déjà cette option.");
-            }
-        }
-        else
-        {
-            $error = true;
-            add_alert_to_ajax_response("Vous n'etes pas censé ajouter cette option.");
-        }
-    }
-    return !$error;
-}
-
+/**
+ * Prepare seulement la définition des pourcentages des stats d'une promo
+ * @param  [array] $promo_stats
+ * @return [array] $promo_stats
+ */
 function prepare_promo_stats($promo_stats)
 {
     global $event_details_stats;
@@ -392,6 +362,11 @@ function prepare_promo_stats($promo_stats)
     return $promo_stats;
 }
 
+/**
+ * Permet de préparer les données du participant, pour afficher ses informations sur une ligne
+ * @param  [array] $participant [fetch de participant]
+ * @return [array] $participan
+ */
 function prepare_participant_displaying($participant)
 {
     global $event_id;

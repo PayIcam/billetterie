@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Controlleur de l'ajout d'options à un participant
+ *
+ * On laisse faire si l'event_id et les droits sont bons
+ *
+ * Ensuite, on initialise les variables, puis appel du template
+ *
+ * La validation des informations envoyées se fera en Ajax
+ */
+
 require dirname(__DIR__) . '/general_requires/_header.php';
 
 if($Auth->hasRole('admin'))

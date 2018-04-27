@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Page appelée en Ajax lorsqu'on met à jour un participant
+ *
+ * Vérification simple des données transmises, et mise à jour.
+ */
+
 require __DIR__ . '/../../general_requires/_header.php';
 
 require 'requires/db_functions.php';

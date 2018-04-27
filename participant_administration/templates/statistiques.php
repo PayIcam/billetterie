@@ -1,3 +1,5 @@
+<!-- Template des statistiques relatives à un évènement -->
+
 <?php set_header_navbar('Statistiques : ' . htmlspecialchars($event_details_stats['name']))?>
         <div class="container">
             <h1 class="text-center">Statistiques :  <?= htmlspecialchars($event_details_stats['name'])?></h1>

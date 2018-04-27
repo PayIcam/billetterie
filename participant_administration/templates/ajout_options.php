@@ -1,3 +1,5 @@
+<!-- Template de l'ajout d'options à un participant -->
+
 <?php set_header_navbar("Ajout d'options à un participant")?>
 
         <h1 class="text-center">Ajouter des options à <?=isset($icam) ? htmlspecialchars($icam['prenom']) . ' ' . htmlspecialchars($icam['nom']) : '' . '(' . htmlspecialchars($event['name']) . ')' ?></h1><hr><br>
@@ -59,15 +61,3 @@
         <script src="jquery/ajout_options.js"></script>
     </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-

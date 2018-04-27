@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Page appelée en Ajax lorsqu'on ajoute des participants
+ * Vérifications basiques des données, puis ajout simple des options au participant
+ *
+ * Si l'id d'un icam est précisée en Get, c'est qu'il faut lui ajouter le participant à ses invités
+ */
+
 require __DIR__ . '/../../general_requires/_header.php';
 
 require 'requires/db_functions.php';
@@ -52,7 +59,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         $site = false;
                     }
 
-                    $validation = check_prepare_addition_data($_POST, $site);
+                    $validation = check_prepare_addition_data($site);
                     $select_mandatory_options = get_select_mandatory_options(array('event_id' => $event_id, 'promo_id' => $_POST['promo_id'], 'site_id' => $_POST['site_id']));
 
                     if(!$validation)

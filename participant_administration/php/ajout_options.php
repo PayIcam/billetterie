@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Page appelée en Ajax lorsqu'on ajoute des options à un participant
+ * Vérifications basiques des données, puis ajout simple des options au participant
+ */
+
 require __DIR__ . '/../../general_requires/_header.php';
 
 require 'requires/db_functions.php';

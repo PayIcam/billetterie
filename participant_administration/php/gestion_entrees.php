@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Page appelée en Ajax lorsqu'on demande de faire entrer ou sortir quelqu'un.
+ *
+ * Le paramètre action indique ce que l'on doit modifier. On fait en fonction.
+ *
+ * S'il y a une erreur elle est transmise, et l'action demandée ne se fait pas.
+ * On renvoie également le nombre actuel d'entrées pour mettre à jour le compteur.
+ */
+
 require dirname(dirname(__DIR__)) . '/general_requires/_header.php';
 
 if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')

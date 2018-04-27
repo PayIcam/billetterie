@@ -181,14 +181,7 @@ function get_participant_previous_option_choice_status($data)
     $row = $db->prepare('SELECT * FROM participant_has_options WHERE participant_id=:participant_id and choice_id=:choice_id and event_id=:event_id');
     $row->execute($data);
     $row = $row->fetch();
-    if(empty($row))
-    {
-        return false;
-    }
-    else
-    {
-        return $row['status'];
-    }
+    return empty($row) ? false : $row['status'];
 }
 
 function update_participant_option_to_waiting($data)

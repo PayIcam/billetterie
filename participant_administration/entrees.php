@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Controlleur des entrées. Rapides initialisations, puis appel du template des entrées
+ *
+ * Toutes les actions de la apge passent par l'Ajax : recherche, et entrée/sortie de participants
+ */
+
 require dirname(__DIR__) . '/general_requires/_header.php';
 
 if(isset($_GET['event_id']))

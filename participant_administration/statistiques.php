@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Controlleur de la page de statistiques
+ *
+ * On vérifie que l'évènement et les droits de stats sont bons, sinon on abort
+ * On définit les données de stats
+ * Puis on appelle le template
+ */
+
 require dirname(__DIR__) . '/general_requires/_header.php';
 
 require 'php/requires/db_functions.php';

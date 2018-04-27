@@ -1,3 +1,5 @@
+<!-- Template de la liste des participants à un évèneent. Possibilité de rechercher parmi eux, et de faire des opérations sur ces particicpants -->
+
 <?php set_header_navbar('Liste des participants : ' . $event['name'])?>
         <div class="container all_index">
 

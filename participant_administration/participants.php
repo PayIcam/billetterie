@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Controlleur de la liste des participants
+ *
+ * Si l'id de l'évènement est bonne, et que les droits aussi, on laisse faire
+ * On récupère la liste de participants à afficher selon, la recherche, la page, et le nombre de lignes.
+ * On appelle ensuite directmeent le template
+ */
+
 require dirname(__DIR__) . '/general_requires/_header.php';
 
 require 'php/requires/db_functions.php';

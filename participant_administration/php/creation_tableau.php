@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Page appelée en Ajax lorsqu'on demande à créer le tableau des entrées. On affiche les 15 permiers résultats si c'est une recherche, et les 25 permiers participants, si aucune recherche n'est définie
+ */
+
 require dirname(dirname(__DIR__)) . '/general_requires/_header.php';
 
 if(!isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')

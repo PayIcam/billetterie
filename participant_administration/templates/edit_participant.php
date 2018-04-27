@@ -1,3 +1,5 @@
+<!-- Template de l'edit des informations d'un participant. Il est possible de changer le numéro de bracelet, et de changer le nom et prénom des invités -->
+
 <?php set_header_navbar("Edition d'un participant")?>
 
         <h1 style="text-align: center">Editer <span class="prenom"><?=htmlspecialchars($participant['prenom'])?></span> <span class="nom"><?=htmlspecialchars($participant['nom'])?></span> (<?=htmlspecialchars($event['name'])?>)</h1><hr><br>

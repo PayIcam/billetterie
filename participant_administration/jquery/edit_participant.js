@@ -1,3 +1,11 @@
+/**
+ * L'edit de participants se fait en Ajax, on vérifie que les données ont l'air bonnes, et on les envoie vers php/update_participants.php
+ *
+ * Comme d'habitude, on affiche les erreurs potentielles dans le div#alerts, on utilise add_alert pour en ajouter une
+ *
+ * Les données envoyées sont simplement nom, prénom et bracelet. Si c'est un Icam, il ne va pas trouver ni le nom, ni le prénom, et ne les enverra donc pas.
+ */
+
 $('form').submit(function(submit)
 {
     function add_alert(message, alert_type="danger")

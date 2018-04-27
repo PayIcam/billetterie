@@ -1,3 +1,5 @@
+<!-- Template des entrées d'un évènement. L'immense partie se fait en Ajax, c'est pour cela qu'on trouve aussi peu d'éléments ici -->
+
 <?php set_header_navbar($title) ?>
 
         <div class="container">

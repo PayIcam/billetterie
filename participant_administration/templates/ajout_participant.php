@@ -1,3 +1,5 @@
+<!-- Template de l'ajout de participants -->
+
 <?php set_header_navbar("Ajout d'un participant")?>
 
         <h1 style="text-align: center">Ajouter un participant <?=isset($icam) ? "à " . htmlspecialchars($icam['prenom']) . ' ' . htmlspecialchars($icam['nom']) : '' . '(' . htmlspecialchars($event['name']) . ')' ?></h1><hr><br>

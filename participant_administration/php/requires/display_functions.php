@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Affiche juste le select permettant de choisir le nombre de lignes à avoir par page
+ * @param  [int] $rows_per_page [nombre de lignes actuel, afin de sélectionner le chjoix correspondant]
+ */
 function change_number_rows($rows_per_page)
 {
     global $event_id;
@@ -22,6 +26,13 @@ function change_number_rows($rows_per_page)
     <?php
 }
 
+/**
+ * On utilise cette foncion pour afficher l'affichage des boutons de changements de page
+ * La recherche est transmise en POST, ceci fait que les retours en arrière sont légèrement moches
+ * Pour que ça ne soit pas le cas s'il n'y a pas de recherche, on met un lien, sinon on met la recherche en POST, et on redirige vers la bonne page
+ * @param  [string] $link [lien vers lequel rediriger, avec le numéro de la page & le nombre de lignes si rempli]
+ * @param  [string] $sign [Texte du bouton]
+ */
 function create_link_or_form($link, $sign)
 {
     ?>
@@ -47,6 +58,13 @@ function create_link_or_form($link, $sign)
     <?php
 }
 
+/**
+ * Fonction qui permet d'afficher les boutons de changements de page, et seulement ceux nécessaires.
+ * On va d'abord regarer s'il faut chaque bouton, et si c'est le cas, on l'affiche, grâce à la bonne des 4 fonctions, qui appelerons avec les bons paramètres create_link_or_form définie juste au dessus
+ * @param  [int] $current_page
+ * @param  [int] $rows_per_page
+ * @param  [int] $total_number_pages
+ */
 function change_pages($current_page, $rows_per_page, $total_number_pages)
 {
     if(!function_exists('next_page')) {
@@ -105,18 +123,29 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
     }
 }
 
-function display_liste_head($specification="", $id=true, $status=false, $personnal_infos=true, $options=true, $edit=true, $additions=true, $bracelet=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
-{
 /**
  *
  * Cette fonction va créer la structure du tableau.
  *
- * Elle marche en ne sécifiant aucun argument, alors tout sera affiché
- * Sinon, spécifier des arguements permet d'enlever un champ particulier
+ * Elle marche en ne spécifiant aucun argument, alors tout sera affiché
+ * Sinon, spécifier des arguements permet d'enlever un champ particulier, ou de l'ajouter
  *
  * En particulier, certains arguments permettent de ne pas tout retapper, tout étant géré dans la fonction
  *
+ * @param  string  $specification     [default : "", sinon peux prendre les valeurs dans ['info_icam', 'info_invite', 'link_icam', 'link_invite'] ]
+ * @param  boolean $id                [default : true]
+ * @param  boolean $status            [default : false]
+ * @param  boolean $personnal_infos   [default : true]
+ * @param  boolean $options           [default : true]
+ * @param  boolean $edit              [default : true]
+ * @param  boolean $additions         [default : true]
+ * @param  boolean $bracelet          [default : true]
+ * @param  boolean $date_payement     [default : false]
+ * @param  boolean $pending_indicator [default : true]
+ * @param  boolean $guest_info        [default : true]
  */
+function display_liste_head($specification="", $id=true, $status=false, $personnal_infos=true, $options=true, $edit=true, $additions=true, $bracelet=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
+{
     global $Auth;
     if(!$Auth->hasRole('super-admin'))
     {
@@ -171,6 +200,10 @@ function display_liste_head($specification="", $id=true, $status=false, $personn
     <?php
 }
 
+/**
+ * Affiche le bouton permettant d'éditer un participant
+ * @param  [array] $participant
+ */
 function link_to_edit_reservation($participant)
 {
     $event_id = $_GET['event_id'];
@@ -182,6 +215,12 @@ function link_to_edit_reservation($participant)
     </td>
     <?php
 }
+/**
+ * Affiche les 2 boutons d'ajout d'options, ou d'invités si voulu.
+ * On affiche le bouton d'ajout d'options si le participant ne les a pas déjà toutes
+ * On affiche le bouton d'ajout d'invités, si c'est un Icam.
+ * @param  [array] $participant
+ */
 function links_to_various_addition($participant)
 {
     $event_id = $_GET['event_id'];
@@ -201,6 +240,10 @@ function links_to_various_addition($participant)
     <?php
 }
 
+/**
+ * Affiche seulement la promo, mais avec une classe particulière, pour y voir plus clair (jaune invités / vert graduated icam / bleu icam student)
+ * @param  [array] $promo [fetch de promos]
+ */
 function display_promo($promo)
 {
     $promo_still_student = get_promo_status($promo);
@@ -210,6 +253,27 @@ function display_promo($promo)
     <?php
 }
 
+/**
+ *
+ * Cette fonction va créer le corps du tableau
+ *
+ * Elle marche en ne spécifiant aucun argument, alors tout sera affiché
+ * Sinon, spécifier des arguements permet d'enlever un champ particulier, ou de l'ajouter
+ *
+ * En particulier, certains arguments permettent de ne pas tout retapper, tout étant géré dans la fonction
+ *
+ * @param  string  $specification     [default : "", sinon peux prendre les valeurs dans ['info_icam', 'info_invite', 'link_icam', 'link_invite'] ]
+ * @param  boolean $id                [default : true]
+ * @param  boolean $status            [default : false]
+ * @param  boolean $personnal_infos   [default : true]
+ * @param  boolean $options           [default : true]
+ * @param  boolean $edit              [default : true]
+ * @param  boolean $additions         [default : true]
+ * @param  boolean $bracelet          [default : true]
+ * @param  boolean $date_payement     [default : false]
+ * @param  boolean $pending_indicator [default : true]
+ * @param  boolean $guest_info        [default : true]
+ */
 function display_participant_info($participant, $specification="", $id=true, $status=false, $options=true, $edit=true, $additions=true, $bracelet=true, $personnal_infos=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
 {
     global $Auth;
@@ -264,6 +328,11 @@ function display_participant_info($participant, $specification="", $id=true, $st
     <?php
 }
 
+/**
+ * Cette fonction permet d'afficher une seule ligne sur les infos d'un participant. Typiquement, elle est appelée dans les pages style ajout_options, ajout_invites à un Icam & edit_participant
+ * @param  [array] $participant   [ce qui sort de prepare_participant_displaying]
+ * @param  string $specification [default : "", sinon peux prendre les valeurs dans ['info_icam', 'info_invite', 'link_icam', 'link_invite'] ]
+ */
 function one_row_participant_table($participant, $specification="")
 {
     ?>
@@ -282,6 +351,10 @@ function one_row_participant_table($participant, $specification="")
     <?php
 }
 
+/**
+ * Affiche un checkbox sans vérifier quoi que ce soit
+ * @param  [array] $option [fetch de options avec un fetch du checkbox dans $option['option_choices'] ]
+ */
 function checkbox_form_basic($option)
 {
     ?>
@@ -298,6 +371,11 @@ function checkbox_form_basic($option)
     </div>
     <?php
 }
+
+/**
+ * Affiche un checkbox sans vérifier quoi que ce soit
+ * @param  [array] $option [fetch de options avec un fetchAll des choix du select dans $option['option_choices'] ]
+ */
 function select_form_basic($option)
 {
     ?>
@@ -317,6 +395,10 @@ function select_form_basic($option)
     <?php
 }
 
+/**
+ * Ajoute toutes les options possibles à un select
+ * @param  [array] $option [fetch de options avec un fetchAll des choix du select dans $option['option_choices'] ]
+ */
 function insert_select_options_no_checking($option)
 {
     foreach($option['option_choices'] as $option_choice)
@@ -329,13 +411,10 @@ function insert_select_options_no_checking($option)
     }
 }
 
-function display_participants_admin($event)
-{
-    global $_CONFIG;
-    ?>
-        <a href="<?=$_CONFIG['public_url']?>participant_administration/participants.php?event_id=<?=$event['event_id']?>" class="btn btn-primary"><h5><?=$event['name']?></h5></a><br><br>
-    <?php
-}
+/**
+ * Permet d'ajouter tous les liens vers les listes de participants des events
+ * @param  [object] $fundation
+ */
 function display_fundations_participants_admin($fundation)
 {
     ?>
@@ -345,7 +424,7 @@ function display_fundations_participants_admin($fundation)
             <?php
             foreach(get_fundations_events($fundation->fun_id) as $event)
             {
-                display_participants_admin($event);
+                ?><a href="<?=$_CONFIG['public_url']?>participant_administration/participants.php?event_id=<?=$event['event_id']?>" class="btn btn-primary"><h5><?=$event['name']?></h5></a><br><br><?php
             }
             ?>
         </div>
@@ -353,6 +432,10 @@ function display_fundations_participants_admin($fundation)
     <?php
 }
 
+/**
+ * Affiche les stats sur les promos
+ * @param  [array] $promos_data [stats sur la promo]
+ */
 function display_promo_stats($promos_data)
 {
     foreach($promos_data as $promo_data)
@@ -374,6 +457,11 @@ function display_promo_stats($promos_data)
     }
 }
 
+/**
+ * Affiche les stats des events
+ * @param  [array] $payments_stats [stats sur les moyens de payement de l'event]
+ * @param  [int] $total_number   [nombre de participants actuel total]
+ */
 function display_payments_stats($payments_stats, $total_number)
 {
     foreach($payments_stats as $payment_stats)
@@ -389,6 +477,11 @@ function display_payments_stats($payments_stats, $total_number)
     }
 }
 
+/**
+ * Affiche les stats des 7 derniers jours
+ * @param  [array] $days_stats [stats sur les 7 derniers jours]
+ * @param  [int] $total_number   [nombre de participants actuel total]
+ */
 function display_days_stats($days_stats, $total_number)
 {
     foreach($days_stats as $day_stats)
@@ -404,6 +497,13 @@ function display_days_stats($days_stats, $total_number)
     }
 }
 
+/**
+ * Fonction permettant de mettre une couleur particulière sur un pourcentage
+ * Il est appelée juste au moement d'écrire la classe de la cellule
+ * Dans l'ordre croissant : rouge / jaune / gris / bleu / vert
+ * @param  [int] $pourcentage
+ * @param  [int] $number_rows [en théorie le nombre de lignes, afin de pondérer le pourcentage par raport à la moyenne. En soit, il est possible de mettre n'importe quoi afin d'ajuster certaines couleurs]
+ */
 function display_pourcentage_style($pourcentage, $number_rows)
 {
     switch ($pourcentage)
@@ -426,6 +526,10 @@ function display_pourcentage_style($pourcentage, $number_rows)
     }
 }
 
+/**
+ * [Bouton permettant d'afficher s'il y a des réservations en attente. S'il est affiché, il est rouge, et on a un léger détail si on clique dessus]
+ * @param  [array] $participant
+ */
 function display_pending_reservations($participant)
 {
     ?>
@@ -466,12 +570,19 @@ function display_pending_reservations($participant)
     <?php
 }
 
+/**
+ * Ecrit le texte affiché quand on clique sur le bouton transaction en attente
+ * @param  [object] $transaction_content [Champ transactions.liste_places_options déparsé du JSON]
+ */
 function display_pending_description($transaction_content)
 {
     echo count($transaction_content->participant_ids) >=1 ? count($transaction_content->participant_ids) . " Places <br>" : "";
     echo count($transaction_content->option_ids) >=1 ? count($transaction_content->option_ids) . " Options <br>" : "";
 }
 
+/**
+ * Affiche juste les possibilités de recherche dans une fonction pour ne pas saturer une ligne, vu que c'est dans un attribut d'un bouton
+ */
 function display_search_possibilities()
 {
     ?>
@@ -484,6 +595,10 @@ function display_search_possibilities()
     <?php
 }
 
+/**
+ * Affiche les lignes du tableau sur les entrées
+ * @param  [array] $participants [fetchALl de participants]
+ */
 function display_participants_rows($participants)
 {
     foreach($participants as $participant)
@@ -506,6 +621,10 @@ function display_participants_rows($participants)
     }
 }
 
+/**
+ * Permet d'afficher le bouton qui indique les options prises
+ * @param  [array] $participant
+ */
 function display_options($participant)
 {
     ?>
@@ -519,6 +638,10 @@ function display_options($participant)
     <?php
 }
 
+/**
+ * Permet d'afficher le bouton qui indique qui on invite, ou qui nous a invité
+ * @param  [array] $participant
+ */
 function display_guest_infos($participant)
 {
     global $event_id;
@@ -544,6 +667,10 @@ function display_guest_infos($participant)
     ?> </td> <?php
 }
 
+/**
+ * Crée le Texte des invités d'un Icam
+ * @param  [array] $guests [ce qui sort de la fonction get_icam_guests]
+ */
 function create_guests_text($guests)
 {
     foreach($guests as $guest)
@@ -552,6 +679,10 @@ function create_guests_text($guests)
     }
 }
 
+/**
+ * Permet de créer le texte sur les infos personnelles, dans un seul endroit
+ * @param  [array] $participant
+ */
 function create_personal_informations_text($participant)
 {
     ?>
@@ -564,6 +695,10 @@ function create_personal_informations_text($participant)
     <?php
 }
 
+/**
+ * Crée le bouton des infos personnlles, cliquer pour les voir s'afficher
+ * @param  [type] $participant
+ */
 function display_personnal_informations($participant)
 {
     ?>
@@ -575,6 +710,10 @@ function display_personnal_informations($participant)
     <?php
 }
 
+/**
+ * Crée le bouton permettant de faire entrer ou sortir un participant
+ * @param  [type] $participant
+ */
 function display_validate_button($participant)
 {
     ?>
@@ -586,6 +725,10 @@ function display_validate_button($participant)
     <?php
 }
 
+/**
+ * Créé le texte sur les option, permettant de savoir quelles options on a pris.
+ * @param  [type] $option_choices
+ */
 function create_option_text($option_choices)
 {
     foreach($option_choices as $option_choice)
@@ -595,6 +738,10 @@ function create_option_text($option_choices)
     }
 }
 
+/**
+ * Permet de créer le lien amenant à la liste des participants de l'évènement
+ * @param  int $event_id
+ */
 function display_back_to_list_button($event_id)
 {
     global $_CONFIG;
@@ -604,6 +751,10 @@ function display_back_to_list_button($event_id)
     </div>
     <?php
 }
+/**
+ * Permet de créer le lien amenant aux entrées de l'évènement
+ * @param  int $event_id
+ */
 function display_go_to_arrivals($event_id)
 {
     global $_CONFIG;
