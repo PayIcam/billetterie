@@ -1,3 +1,5 @@
+<!-- Template du formulaire général de l'administration d'un évènement, appelé par les 2 controlleurs d'ajout et d'edition de billetterie. -->
+
 <?php set_header_navbar(isset($event) ? "Edition d'une billetterie" : "Création d'une billetterie")?>
     <div class="container">
         <div class="jumbotron text-center">

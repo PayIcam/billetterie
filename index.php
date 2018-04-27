@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Controlleur de l'Index permettant de montrer aux participants à quels évènements ils peuvent s'inscrire.
+ */
+
 require __DIR__ . '/general_requires/_header.php';
 
 if(isset($_SESSION['REQUEST_URI']))

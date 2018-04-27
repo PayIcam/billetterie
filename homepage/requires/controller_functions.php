@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Fonction controlleur permettant à partir des ids d'évènements, de tester ceux qui devraient être affichés, et dans ce cas les afficher, et ne rien faire sinon
+ * @param  [array] $events_id_accessible
+ */
 function handle_ticketings_displayed($events_id_accessible)
 {
     $email = $_SESSION['icam_informations']->mail;
@@ -11,7 +15,7 @@ function handle_ticketings_displayed($events_id_accessible)
         $event_id = $event_id['event_id'];
         $event = get_event_details($event_id);
 
-        $icam_has_reservation = participant_has_its_place(array("event_id" => $event_id, "promo_id" => $promo_id, "site_id" => $site_id, "email" => $email));
+        $icam_has_reservation = icam_has_its_place(array("event_id" => $event_id, "promo_id" => $promo_id, "site_id" => $site_id, "email" => $email));
         $ticketing_state = get_ticketing_state($event, $promo_id, $site_id, $email, $icam_has_reservation);
 
         if(in_array($ticketing_state, array('open', 'coming soon', 'ended not long ago and reservation')))

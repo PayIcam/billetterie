@@ -1,3 +1,17 @@
+/**
+ * Cette page contient la fonction à appeler au moment de submit le formulaire.
+ * Le principe est le même que dans toutes mes pages, notamment dans event_administration ou je suis rentré dans les détails.
+ * - Utilisation de fonctions pour gérer les grandes parties, et "peu" de "programme principal" à la fin
+ * - Vérification du formulaire, annulation à la moindre erreur, affichage de l'erreur
+ * - Préparation des informations à envoyer en Ajax, en créant peu d'objets à partir de tous les champs, dans lesquels tout est déjà rangé
+ * - Envoi en Ajax de la requête, cette fois ci en JSON, parce que je dois récupérer des infos supplémentaires (url de la transaction pour rediriger vers le payement)
+ * - Empécher de faire plusieurs Ajax en même temps, et affichage d'un message demandant de patienter
+ * - Afficher les erreurs trouvées en Php s'il y en a, sinon, afficher le message de succcès et rediriger vers le moyen de payement
+ */
+
+/**
+ * Fonction gérant tout letraitement à faire sur un submit pour les premières inscriptions.
+ */
 function submit_inscriptions(submit)
 {
     function add_alert(message, alert_type="danger")
@@ -143,46 +157,11 @@ function submit_inscriptions(submit)
         add_alert('La requête Ajax permettant de submit les informations et ajouter les participants a échoué');
     }
 
-    function ajax_success(data)
-    {
-        if(data.message=='Votre réservation a bien été prise en compte ! <br>Vous allez être redirigé pour payer !')
-        {
-            var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data.message + '</div>';
-            $("#alerts").append(message_displayed);
-
-            $('form').off('submit').submit(function(submit)
-            {
-                submit.preventDefault();
-            });
-            setTimeout(function()
-            {
-                document.location.href = data.transaction_url;
-            }, 1000);
-        }
-        else
-        {
-            $('#message_submit').hide();
-            $("#button_submit_form").prop('disabled', '');
-            $("#alerts").append(data.message);
-        }
-    }
-
-    $.post(
-    {
-        url: post_url,
-        data: {icam_informations: json_icam_data, guests_informations: json_guests_data, total_transaction_price: parseFloat($("#total_price").text())},
-        dataType: 'json',
-        success: ajax_success,
-        error: error_ajax
-    });
-
     // function ajax_success(data)
     // {
-    //     console.log(data);
-    //     if(data=='Votre réservation a bien été prise en compte ! <br>Vous allez être redirigé pour payer !')
+    //     if(data.message=='Votre réservation a bien été prise en compte ! <br>Vous allez être redirigé pour payer !')
     //     {
     //         var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data.message + '</div>';
-    //         console.log(message_displayed);
     //         $("#alerts").append(message_displayed);
 
     //         $('form').off('submit').submit(function(submit)
@@ -198,7 +177,7 @@ function submit_inscriptions(submit)
     //     {
     //         $('#message_submit').hide();
     //         $("#button_submit_form").prop('disabled', '');
-    //         $("#alerts").append(data);
+    //         $("#alerts").append(data.message);
     //     }
     // }
 
@@ -206,10 +185,45 @@ function submit_inscriptions(submit)
     // {
     //     url: post_url,
     //     data: {icam_informations: json_icam_data, guests_informations: json_guests_data, total_transaction_price: parseFloat($("#total_price").text())},
-    //     dataType: 'html',
+    //     dataType: 'json',
     //     success: ajax_success,
     //     error: error_ajax
     // });
+
+    function ajax_success(data)
+    {
+        console.log(data);
+        if(data=='Votre réservation a bien été prise en compte ! <br>Vous allez être redirigé pour payer !')
+        {
+            var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data.message + '</div>';
+            console.log(message_displayed);
+            $("#alerts").append(message_displayed);
+
+            $('form').off('submit').submit(function(submit)
+            {
+                submit.preventDefault();
+            });
+            setTimeout(function()
+            {
+                document.location.href = data.transaction_url;
+            }, 1000);
+        }
+        else
+        {
+            $('#message_submit').hide();
+            $("#button_submit_form").prop('disabled', '');
+            $("#alerts").append(data);
+        }
+    }
+
+    $.post(
+    {
+        url: post_url,
+        data: {icam_informations: json_icam_data, guests_informations: json_guests_data, total_transaction_price: parseFloat($("#total_price").text())},
+        dataType: 'html',
+        success: ajax_success,
+        error: error_ajax
+    });
 
     submit.preventDefault();
 }

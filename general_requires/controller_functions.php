@@ -1,11 +1,21 @@
 <?php
 
-//Possible qu'il y ait une erreur à cause de Php, qui a des problèmes avec la précision des float............
+//Possible qu'il y ait une erreur à cause de Php, qui a des problèmes avec la précision des float...
 function is_an_integer($number)
 {
     return (floor($number) == $number) && $number>=0;
 }
 
+/**
+ * Cette fonction permet de déterminer l'état de la billetterie d'un évènement.
+ * L'état est renvoyé en chaine de caractères parmi un choix possible
+ * @param  [array] $event                [Les informations à propos de l'évènement, obtenues par un SELECT * de la table events]
+ * @param  [int or string] $promo_id             [L'id de la promotion de l'utilisateur]
+ * @param  [int or string] $site_id              [L'id du site de l'utilisateur]
+ * @param  [string] $email                [L'email de l'utilisateur]
+ * @param  [boolean] $icam_has_reservation
+ * @return [string]                       [in ['open','coming in some time', 'coming soon', 'ended long ago', 'ended and no reservation', 'ended not long ago and reservation']]
+ */
 function get_ticketing_state($event, $promo_id, $site_id, $email, $icam_has_reservation)
 {
     $event_id = $event['event_id'];
@@ -40,6 +50,10 @@ function get_ticketing_state($event, $promo_id, $site_id, $email, $icam_has_rese
     return 'open';
 }
 
+/**
+ * Redirection to homepage if parameter is false
+ * @param  [boolean] $is_admin
+ */
 function redirect_if_not_admin($is_admin)
 {
     global $_CONFIG;
@@ -50,6 +64,9 @@ function redirect_if_not_admin($is_admin)
     }
 }
 
+/**
+ * Redirection to homepage if user doesn't have rights on the service
+ */
 function redirect_if_no_rights()
 {
     global $payutcClient, $_CONFIG;
@@ -74,6 +91,12 @@ function redirect_if_no_rights()
     }
 }
 
+/**
+ * Checks whether the user has rights on the fundation or not on this service
+ * @param  [int]  $fundation_id
+ * @param  boolean $death        [if true, then stops the script if user doesn't have rights. Else, add]
+ * @return [boolean]                [if $death==false returns true if there is an error, false if not]
+ */
 function check_user_fundations_rights($fundation_id, $death=true)
 {
     global $fundations, $error, $ajax_json_response;
@@ -83,13 +106,14 @@ function check_user_fundations_rights($fundation_id, $death=true)
         $error_message = "Vous n'avez pas les droits sur cette fondation";
         if($death)
         {
-            set_alert_style('Erreur droits de fondation');
             if(isset($ajax_json_response))
             {
                 add_alert_to_ajax_response($error_message);
+                echo json_encode($ajax_json_response);
             }
             else
             {
+                set_alert_style('Erreur droits de fondation');
                 add_alert($error_message);
             }
             die();
@@ -104,7 +128,11 @@ function check_user_fundations_rights($fundation_id, $death=true)
             {
                 add_alert($error_message);
             }
-            $error = true;
+            return true;
         }
+    }
+    elseif($death==false)
+    {
+        return false;
     }
 }

@@ -1,3 +1,6 @@
+/**
+ * Fonction faisant toute la gestion du submit : vérification des champs, puis préparation des données, puis envoi en Ajax
+ */
 function check_then_submit_form(event)
 {
     function add_alert(message, alert_type="danger")
@@ -5,6 +8,10 @@ function check_then_submit_form(event)
         var message_displayed = '<div class="alert alert-'+alert_type+' alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Attention ! </strong>' + message + '</div>'
         $("#erreurs_submit").append(message_displayed);
     }
+    /**
+     * Fonction qui va déterminer si les infos sont les bonnes
+     * @return {boolean} [true si les infos du form est valide]
+     */
     function check_form()
     {
         var form_is_correct = true;
@@ -140,6 +147,10 @@ function check_then_submit_form(event)
         return form_is_correct;
     }
 
+    /**
+     * La fonction permet de récupérer toutes les infos sur l'évènement et de tout mettre dans un object JS
+     * @return {object} [l'objet contenant les infos de l'event]
+     */
     function get_event_infos()
     {
         var name = $('input[name=event_name]').val();
@@ -153,6 +164,10 @@ function check_then_submit_form(event)
         var event_json = {name: name, description: description, quota: quota, ticketing_start_date: ticketing_start_date, ticketing_end_date: ticketing_end_date, is_active: is_active, fundation_id: fundation_id};
         return event_json;
     }
+    /**
+     * La fonction permet de récupérer toutes les infos sur l'accessibilité de l'event (promos ayant accès) et de tout mettre dans un object JS
+     * @return {object} [l'objet contenant les infos de l'event]
+     */
     function get_accessibility_infos()
     {
         var rows = [];
@@ -169,8 +184,15 @@ function check_then_submit_form(event)
         });
         return rows;
     }
+    /**
+     * La fonction permet de récupérer toutes les infos sur les options de l'event et de tout mettre dans un object JS
+     * @return {object} [l'objet contenant les infos de l'event]
+     */
     function get_options_infos()
     {
+        /**
+         * Permet de créer les infos sur les choix du select possible
+         */
         function get_select_infos(rows)
         {
             var select_options = [];
@@ -186,6 +208,9 @@ function check_then_submit_form(event)
             });
             return select_options;
         }
+        /**
+         * Permet de créer les infos sur l'accessibilité d'une option
+         */
         function get_option_accessibility_info(rows)
         {
             var promos_have_option = [];
@@ -258,31 +283,27 @@ function check_then_submit_form(event)
         return true;
     }
 
-    $("#erreurs_submit").empty();
+    $("#erreurs_submit").empty(); //On vide les erreurs s'il y en avait qui restait d'un précédent Ajax
 
     if(check_urls())
     {
         if(check_form())
         {
+            //Tout est bon, il ne reste plus qu'à préparer les données
+
             $("#message_submit").show();
-            $('.waiting').show();
+            $('.waiting').show();//On affiche un petit message montrant que la modification est en cours
 
             var event_data = get_event_infos();
-            var event_data_json = JSON.stringify(event_data);
+            var event_data_json = JSON.stringify(event_data);//On récupère les données de l'event, que l'on met sous format JSON, pour le passer en text
 
             var event_accessibility = get_accessibility_infos();
-            var event_accessibility_json = JSON.stringify(event_accessibility);
-            var event_accessibility_input = $("<input type='hidden' name='event_accessibility_json'>");
-            event_accessibility_input.val(event_accessibility_json);
-            $("#input_additions").append(event_accessibility_input);
+            var event_accessibility_json = JSON.stringify(event_accessibility);//Pareil pour l'accessiblité
 
             if($("input:radio[name=options]:checked").val()==1)
             {
                 var option_details = get_options_infos();
-                var option_details_json = JSON.stringify(option_details);
-                var option_details_input = $('<input type="hidden" name="option_details_json" >');
-                option_details_input.val(option_details_json);
-                $("#input_additions").append(option_details_input);
+                var option_details_json = JSON.stringify(option_details);//Pareil pour les options
             }
             else
             {
@@ -293,7 +314,9 @@ function check_then_submit_form(event)
 
             function ajax_success(data)
             {
+                //On cache le message disant qu'on est en attente
                 $('.waiting').hide();
+                //Si les infos envoyées correspondent au message envoyé en cas de succès par le php en Ajax
                 if(data=='Les informations ont bien été pris en compte !' | data == 'Les modifications ont bien été pris en compte !')
                 {
                     var message_displayed = '<div class="alert alert-success alert-dismissible">' + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + '<strong>Parfait ! </strong>' + data + '</div>';
@@ -301,22 +324,27 @@ function check_then_submit_form(event)
                     console.log(message_displayed);
                     $('form').off('submit').submit(function(submit)
                     {
+                        //On empèche de resubmit le form vu que tout est bon
                         submit.preventDefault();
                     });
                     setTimeout(function()
                     {
+                        //Et on redirige vers la page d'accueil de l'administration
                         document.location.href = public_url + 'event_administration';
                     }, 1000);
                 }
                 else
                 {
+                    //Sinon, le message n'est pas le bon, c'est un message d'erreur, on l'affiche
                     $("#erreurs_submit").append(data);
+                    //On permet de submit quelque chose
                     $("#submit_form").prop('disabled', '');
                 }
             }
 
             function error_ajax(jqXHR, textStatus, errorThrown)
             {
+                //S'il y a une erreur Ajax, on met dans la console les erreurs rencontrées, et on affiche un message d'erreur, disant que l'Ajax a échoué
                 console.log(jqXHR);
                 console.log();
                 console.log(textStatus);
@@ -327,8 +355,11 @@ function check_then_submit_form(event)
                 $('.waiting').hide();
             }
 
+            //On ne veux pas envoyer plusieurs requetes Ajax en même temps alors qu'il y a a déjà une en cours
             $("#submit_form").prop('disabled', 'disabled');
 
+            //On envoie en post, les infos nécessaires. Le retour attendu est html
+            //Les données sont envoyées sous forme de 3 objets, contenant des informations spécifiques à chaque fois.
             $.post(
             {
                 url: post_url,
@@ -337,6 +368,8 @@ function check_then_submit_form(event)
                 success: ajax_success,
                 error: error_ajax,
             });
+
+            //On ne veux pas envoyer le formulauire, on fait donc un preventDefault pour empécher de le submit.
             event.preventDefault();
         }
         else

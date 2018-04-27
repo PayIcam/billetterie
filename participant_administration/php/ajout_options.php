@@ -18,7 +18,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                 if($Auth->hasRole('admin'))
                 {
                     $ajax_json_response = array("message" => "");
-                    check_user_fundations_rights(get_fundation_id($event_id), false);
+                    $error = check_user_fundations_rights(get_fundation_id($event_id));
 
                     if(isset($_GET['participant_id']))
                     {

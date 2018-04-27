@@ -1,4 +1,10 @@
 /**
+ * C'est ce fichier qui détaille la majorité du traitement qu'il doit se produire sur l'évènement.
+ * Tout découle de la fonction initialisation_formulaire, qui appelle tout ce qui est nécessaire.
+ */
+
+
+/**
  * Cette fonction a pour but d'initialiser le formulaire.
  * Il faut donc enlever les évènements par défault non souhaités, et cacher tous les éléments html définis, mais qui ne doivent apparaitre que sur des éléments particulier.
  */

@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Page appelée si l'Icam décide d'annuler une transaction en attente, pour un event spécifique
+ * On sait de quel Icam il s'agit avec son mail, contenu dans la session
+ */
+
 require __DIR__ . '/../../general_requires/_header.php';
 
 require 'requires/db_functions.php';

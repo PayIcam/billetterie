@@ -86,6 +86,9 @@ button[class='btn option_tooltip']
 }
 
 
+/**
+ * I'm using Bootstrap 3 which does not use B4 classes for the badges, so I added them manually from the Internet
+ */
 .badge-error {
   background-color: #b94a48;
 }

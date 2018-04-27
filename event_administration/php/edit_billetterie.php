@@ -16,6 +16,8 @@ if(!empty($_POST))
 
     $event_id=$_GET['event_id'];
 
+    // Avant de faire quelque traitement qu'il soit, il faut vérifier tout le formulaire.
+    // S'il y a la moindre erreur, le script s'arrète, et une erreur est affichée indiquant l'origine du problème.
     check_and_prepare_data();
 
     $scoobydoo_infos = get_scoobydoo_event_infos($event_id);
@@ -50,6 +52,7 @@ if(!empty($_POST))
         $found=0;
         foreach($previous_event_accessibilty as $key => $previous_promo)
         {
+            //On mets à jour chacune des anciennes promos.
             if($promo_data->promo_id == $previous_promo['promo_id'] && $promo_data->site_id == $previous_promo['site_id'])
             {
                 $payutcClient->setProduct(array(
@@ -78,6 +81,7 @@ if(!empty($_POST))
                 break;
             }
         }
+        //Si on trouve pas la promo, dans les promos déjà entrées, c'est qu'elle n'existait pas, on la crée donc.
         if($found==0)
         {
             $scoobydoo_article_id = $payutcClient->setProduct(array(
@@ -104,22 +108,25 @@ if(!empty($_POST))
         }
     }
 
-    delete_previous_option_accessibility($event_id);
-
+    //On veux supprimer les anciennes promos, pas mises à jour, c'est donc qu'on n'en veux plus.
     foreach($previous_event_accessibilty as $promo)
     {
+        //Mais il faut regarder si la promo a déjà eu des participants.
         if(can_delete_promo(array('event_id' => $event_id, 'promo_id' => $promo['promo_id'], 'site_id' => $promo['site_id'])))
         {
+            //S'il n'y en a pas, on supprime la ligne de la base de données sans remords.
             delete_specification_details(array("event_id" => $event_id, "promo_id" => $promo['promo_id'], "site_id" => $promo['site_id']));
             $payutcClient->deleteProduct(array("obj_id" => $promo['scoobydoo_article_id'], "fun_id" => $fundation_id));
         }
         else
         {
+            //Sinon, on utilise le champ is_removed, qu'on met à 1. Les participants qui ont déjà leur place n'auront pas de problème, vu que la promo est juste désactivée.
             remove_promo(array('event_id' => $event_id, 'promo_id' => $promo['promo_id'], 'site_id' => $promo['site_id']));
         }
     }
 
-    //options & its accessibilities
+    //On supprimer toutes les accessibilités précédentes des options. En effet, rien d'important n'est stocké dedans, on remettra juste les promos qui sont demandées.
+    delete_previous_option_accessibility($event_id);
 
     $previous_options = get_current_options($event_id);
 
@@ -182,7 +189,7 @@ if(!empty($_POST))
                         {
                             $previous_option_choices_update_data = array();
                             $previous_option_choices_addition_data = array();
-                            if(isset($select_option->choice_id))
+                            if(isset($select_option->choice_id))//Ce choix existait déjà, il faut juste le MAJ
                             {
                                 $article_id = get_choice_article_id($select_option->choice_id);
 
@@ -223,7 +230,7 @@ if(!empty($_POST))
                                     'quota' => $select_option->quota,
                                     );
                             }
-                            else
+                            else//Ce choix n'existait pas encore, il faut le créer
                             {
                                 $article_id = $payutcClient->setProduct(array(
                                     "name" => $event->name . " Option " . $option->name . " Choix " . $select_option->name,
@@ -250,7 +257,7 @@ if(!empty($_POST))
                         $previous_choices = get_previous_choices($option->option_id, $updated_choice_ids);
                         foreach($previous_choices as $previous_choice)
                         {
-                            die();
+                            // Même genre qu'au dessus, on peux pas supprimer définitivement si des participants ont pris la sous-option
                             if(can_delete_option_choice(array('event_id' => $event_id, 'choice_id' => $choice_id)))
                             {
                                 $payutcClient->deleteProduct(array("obj_id" => $previous_choice->scoobydoo_article_id, "fun_id" => $fundation_id));
@@ -353,8 +360,10 @@ if(!empty($_POST))
             insert_option_accessibility($option_accessibility);
         }
     }
+    //On a unset chaque option déjà mise à jour, on se retrouve ici avec juste les options supprimées.
     foreach($previous_options as $previous_option)
     {
+        //Comme d'hab on supprime tout que si personne n'a pris l'option, sinon, on la désactive juste
         if(can_delete_option(array('event_id' => $previous_option['event_id'], 'option_id' => $previous_option['option_id'])))
         {
             $option_choices = get_option_choices($previous_option['option_id']);

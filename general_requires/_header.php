@@ -1,23 +1,32 @@
 <?php
 
+/*Cette page est le middleware de mon application.
+Toutes les pages appelées vont elles-mêmes l'appeler, afin d'initialiser les bonnes choses.
+
+On retrouve notamment l'initialisation de :
+- La varaible de config $_CONFIG, prenant ses infos de config.php
+- La varaible de session $_SESSION, remplie au fur et à mesure
+- La variable d'Authentification, apportant quelques infos utiles sur le User connecté : $Auth, de la Classe Auth.php
+- Le PayutcJsonClient, avec la variable $payUtcClient, initialisé selon la page appelée au service souhaité
+
+De plus, on vérifie à chaque fois que l'on est bien connecté. Si ce n'est pas le cas, on est redirigé vers Le Cas pour se faire. Si c'est le cas, on laisse faire, et on affiche la page.
+
+*/
+
 session_start();
 
-$rootPath = dirname(__DIR__).'/';
-require $rootPath. 'vendor/autoload.php';
+$rootPath = dirname(__DIR__) . '/';
+require $rootPath . 'vendor/autoload.php';
 
-require $rootPath. 'general_requires/db_functions.php';
-require $rootPath. 'general_requires/display_functions.php';
-require $rootPath. 'general_requires/controller_functions.php';
+require $rootPath . 'general_requires/db_functions.php';
+require $rootPath . 'general_requires/display_functions.php';
+require $rootPath . 'general_requires/controller_functions.php';
 
 $_CONFIG = require $rootPath. '/config.php';
 $confSQL = $_CONFIG['ticketing'];
 
 $DB = new \CoreHelpers\DB($confSQL['sql_host'],$confSQL['sql_user'],$confSQL['sql_pass'],$confSQL['sql_db']);
 $db = $DB->db;
-
-///////////////////////////
-// Autre initialisations //
-///////////////////////////
 
 /**
  * Cette fonction permet de se connecter au JSON client
@@ -34,7 +43,6 @@ function getPayutcClient($service)
         "PayIcam Json PHP Client",
         $_SESSION['payutc_cookie'] ?? "");
 }
-// routes //
 
 $route = str_replace($_CONFIG['base_path'], '', $_SERVER['REQUEST_URI']);
 $route = current(explode('?', $route, 2));
@@ -67,11 +75,9 @@ $status = $payutcClient->getStatus();
 $casUrl = $payutcClient->getCasUrl()."login?service=".urlencode($_CONFIG['public_url']."login.php");
 $logoutUrl = $payutcClient->getCasUrl()."logout?service=".urlencode($_CONFIG['public_url']."login.php");
 
-// Sécurité que des icam
 $icam_informations = null;
 
-// On lance la class Auth
 $Auth = new \CoreHelpers\Auth();
 
-// On valide que l'on est connecté, & que l'on est bien un icam etc...
+// Vérifier que l'on est connecté, que l'application est connectée, etc ...
 require $rootPath. 'general_requires/validate_auth.php';

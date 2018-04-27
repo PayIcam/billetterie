@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * A utiliser quand on insère les promos ajoutées dans l'edit de l'évènement.
+ * La classe est utilisée pour afficher en success celles qui sont validées, et en error celles qui sont enlevées.
+ * @param  array $promos_specifications [fetchAll de la table pss]
+ * @param  string $class                 [n'importe quel theme BS de couleur pour les rows]
+ */
 function insert_event_accessibility_rows($promos_specifications, $class="")
 {
     static $numero = 1;
@@ -20,6 +26,10 @@ function insert_event_accessibility_rows($promos_specifications, $class="")
     }
 }
 
+/**
+ * Même délire qu'au dessus mais pour les promos qui ont accès à l'évent
+ * @param  array $promo_options [fetchAll de promo_site_has_options]
+ */
 function insert_option_accessibility_rows($promo_options)
 {
     $numero = 1;
@@ -37,6 +47,10 @@ function insert_option_accessibility_rows($promo_options)
     }
 }
 
+/**
+ * Encore pareil, mais il s'agit ici de renseigner les rows pour les choix des selects
+ * @param  array $option_choices [fetchAll de option_choices]
+ */
 function insert_option_select_rows($option_choices)
 {
     $numero = 1;
@@ -55,16 +69,9 @@ function insert_option_select_rows($option_choices)
     }
 }
 
-function display_event_admin($event)
-{
-    global $_CONFIG;
-    ?>
-        <a href="<?=$_CONFIG['public_url']?>event_administration/edit_ticketing.php?event_id=<?=$event['event_id']?>" class="btn btn-primary"><h5><?=$event['name']?></h5></a><br><br>
-    <?php
-}
-
 function display_fundations_events_admin($fundation)
 {
+    global $_CONFIG;
     ?>
     <div class="col-sm-4">
         <a data-toggle="collapse" href="#button_links_<?=$fundation->fun_id?>" role="button" aria-expanded="false" aria-controls="#button_links_<?=$fundation->fun_id?>"><h2><?=htmlspecialchars($fundation->name)?></h2></a>
@@ -73,7 +80,7 @@ function display_fundations_events_admin($fundation)
             <?php
             foreach(get_fundations_events($fundation->fun_id) as $event)
             {
-                display_event_admin($event);
+                ?><a href="<?=$_CONFIG['public_url']?>event_administration/edit_ticketing.php?event_id=<?=$event['event_id']?>" class="btn btn-primary"><h5><?=$event['name']?></h5></a><br><br><?php
             }
             ?>
         </div>
@@ -81,6 +88,10 @@ function display_fundations_events_admin($fundation)
     <?php
 }
 
+/**
+ * Fonction qui permet d'ajouter les choix dans un select,
+ * @param  array $option_choices [fetchAll de option_choices]
+ */
 function insert_select_options($option_choices, $is_mandatory = 0)
 {
     $compteur=0;

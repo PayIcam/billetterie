@@ -15,7 +15,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
             $event_id = $_GET['event_id'];
             if(event_id_is_correct($event_id))
             {
-                check_user_fundations_rights(get_fundation_id($event_id), false);
+                check_user_fundations_rights(get_fundation_id($event_id));
 
                 $participant = get_participant_event_data(array('event_id' => $event_id, 'participant_id' => $_GET['participant_id']));
                 if(!empty($participant))

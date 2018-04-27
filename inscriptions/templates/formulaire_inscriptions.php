@@ -1,3 +1,5 @@
+<!-- Template de la page des de gestion des réservations. Il est appelé soit par inscriptions.php, soit par edit_reservation.php -->
+
 <?php set_header_navbar(isset($icam_event_data) ? 'Edition de votre réservation : ' . $event['name'] : 'Inscriptions' . ' : ' . $event['name'])?>
     <div id="presentation" class="container">
         <div class="jumbotron">
@@ -46,6 +48,7 @@
             </div>
         </div>
         <br><br>
+        <!-- Si le ticketing_state n'indique pas que la billetterie est ouverte, c'est qu'on peux juste voir ses réservations, parce que la billetterie a fermé il y a peu. On ne peux par contre RIEN changer -->
         <?php if($ticketing_state=='open') { ?>
         <div id="recapitulatif" class="container">
             <h3> Récapitulatif du coût de vos nouvelles réservations : <span id="total_price" class="badge" style="background-color:#428bca; font-size:0.8em;"> <?= isset($icam_event_data) ? 0 : htmlspecialchars($promo_specifications['price'])?>€ </span> </h3>
@@ -70,6 +73,7 @@
         <?php } ?>
     </form>
     <div id="alerts">
+        <!-- Les potentiels alerts présents ici indiquent que les quotas sont trop remplis pour que tous les invités possibles à la promo soient proposés -->
         <?= isset($_SESSION['alert_errors']) ? add_alert($_SESSION['alert_errors'], 'warning') : ""; unset($_SESSION['alert_errors']) ?>
     </div>
     <script>

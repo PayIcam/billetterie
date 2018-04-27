@@ -1,3 +1,5 @@
+<!-- Template (très basique) de l'index de l'administration des participants, servant à rediriger vers l'action souhaitée -->
+
 <?php set_header_navbar("Administration")?>
         <div class="container jumbotron" style="width: 70%; margin-top:0.5%">
             <h1 class="text-center">Administration des billetteries</h1><br><hr>

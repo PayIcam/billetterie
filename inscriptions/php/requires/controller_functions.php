@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Permet de créer le formulaire traitant des options, et vérifier qu'il faut bien les afficher
+ * Il s'agit de déterminer quelle fonction appeler avec quels paramètres
+ *
+ * @param  [array]  $option         [fetch de la table options]
+ * @param  [int]  $promo_id
+ * @param  [int]  $site_id
+ * @param  integer $participant_id [Si on ne met rien, on va direct dans le else, vu que $already_defined_option renvoie false]
+ */
 function option_form($option, $promo_id, $site_id, $participant_id=-1)
 {
     global $ticketing_state;
@@ -43,14 +52,23 @@ function option_form($option, $promo_id, $site_id, $participant_id=-1)
     }
 }
 
+/**
+ * Fonction permettant de s'occuper de l'ajout à la base de données des options d'un participant.
+ * En plus, est rempli l'array $option_articles, qui permettra de préciser quelles options sont à payer dans la transaction.
+ *
+ * @param  $event_id
+ * @param  $participant_id
+ * @param  [object] $options        [Objet récupéré en POST par l'Ajax du formulaire d'inscription/edition]
+ */
 function participant_options_handling($event_id, $participant_id, $options)
 {
     global $options_articles, $transaction_linked_purchases;
     foreach($options as $option)
     {
         $article_id = get_option_article_id($option->choice_id);
-        $previous_status = get_participant_previous_option_choice_status(array('event_id' => $event_id, 'participant_id' => $participant_id, 'choice_id' => $option->choice_id));
 
+        //Il est possible qu'il y ait déjà une option qui ait été prise par le participant, mais annulée. Dans ce cas, on ne peux en créer une autre. Il faut mettre à jour celle ci.
+        $previous_status = get_participant_previous_option_choice_status(array('event_id' => $event_id, 'participant_id' => $participant_id, 'choice_id' => $option->choice_id, 'payement' => 'PayIcam'));
         if($previous_status!==false)
         {
             update_participant_option_to_waiting(array("event_id" => $event_id, "participant_id" => $participant_id, "choice_id" => $option->choice_id, "price" => $option->price));
@@ -79,6 +97,10 @@ function participant_options_handling($event_id, $participant_id, $options)
     }
 }
 
+/**
+ * Afin d'avoir false si c'est une chaine vide qui est reçue, j'utilise cette fonction
+ * @param  [json parsed string] $data
+ */
 function json_decode_particular($data)
 {
     if($data == '')
@@ -92,6 +114,18 @@ function json_decode_particular($data)
     return $data;
 }
 
+/**
+ * Fonction qui permet de calculer le nombre d'invités qu'il faut afficher sur la page d'inscription ou d'edit
+ * Il faut savoir le nombre possible de participants, afin de ne pas dépasser les quotas
+ * On réduit tout d'abord le compte (si nécessaire) avec le quota de l'évènement, et ensuite, avec le quota des Invités.
+ *
+ * @param  array  $promo_specifications        [promo de l'Icam]
+ * @param  array  $guests_specifications       [promo des invités]
+ * @param  $current_participants_number
+ * @param  $total_quota
+ * @param  integer $previous_guests_number      [Précisé uniquement si on est sur un edit, et qu'il y a des anciens invités]
+ * @return [int]                               [le nombre d'invités qu'il doit y avoir dans le formulaire d'edit/inscriptions]
+ */
 function number_of_guests_to_be_displayed($promo_specifications, $guests_specifications, $current_participants_number, $total_quota, $previous_guests_number=0)
 {
     $temporary_guest_number = min($promo_specifications['guest_number']-$previous_guests_number, $total_quota-$current_participants_number);
@@ -118,9 +152,22 @@ function number_of_guests_to_be_displayed($promo_specifications, $guests_specifi
     return $actual_guest_number;
 }
 
+/**
+ * Fonction permettant de vérifier que les champs des options rentrées par le participant sont bonnes
+ * En même temps, on ajuste les champs, et on diminue la variable $left_to_pay à chaque fois que l'on tombe sur un prix. Le but est d'arriver à 0
+ *
+ * @param  [object] $participant_data
+ * @param  [string] $participant_type ['icam' ou 'guest']
+ * @param  [int] $event_id         [description]
+ * @param  [int] $site_id          [description]
+ * @param  [int] $promo_id         [description]
+ * @param  [boolean] $error            [la valeur au moment ou la fonction est appelée de $error]
+ * @param  [int] $left_to_pay      [Ce qu'il reste à payer]
+ * @return [array]                   [array('error' => , 'left_to_pay' => , 'participant_data' => )]
+ */
 function check_participant_options($participant_data, $participant_type, $event_id, $site_id, $promo_id, $error, $left_to_pay)
 {
-    foreach($participant_data->options as $option)
+    foreach($participant_data->options as &$option)
     {
         if(!is_object($option))
         {
@@ -141,7 +188,7 @@ function check_participant_options($participant_data, $participant_type, $event_
             else
             {
                 add_alert_to_ajax_response($participant_type . " : L'identifiant de l'option n'a pas été transmis <br>");
-                return ["error" => true, "left_to_pay" => false];
+                return ["error" => true, "left_to_pay" => false, 'participant_data' => $participant_data];
             }
             if(!promo_has_option(array("event_id" => $event_id, "option_id" => $option_id, "site_id" => $site_id, "promo_id" => $promo_id)))
             {
@@ -154,13 +201,13 @@ function check_participant_options($participant_data, $participant_type, $event_
                 if(!is_correct_choice_id(array('choice_id' => $choice_id, 'option_id' => $option_id)))
                 {
                     add_alert_to_ajax_response($participant_type . " : Ce choix n'existe pas <br>");
-                    return ["error" => true, "left_to_pay" => false];
+                    return ["error" => true, "left_to_pay" => false, 'participant_data' => $participant_data];
                 }
             }
             else
             {
                 add_alert_to_ajax_response($participant_type . " : L'identifiant du choix n'a pas été transmis <br>");
-                return ["error" => true, "left_to_pay" => false];
+                return ["error" => true, "left_to_pay" => false, 'participant_data' => $participant_data];
             }
 
             $option_db_data = get_option(array("event_id" => $event_id, "option_id" => $option_id));
@@ -191,7 +238,7 @@ function check_participant_options($participant_data, $participant_type, $event_
                         if(empty($choice_data))
                         {
                             add_alert_to_ajax_response($participant_type . " : ". $option_db_data['name'] . " : Les informations relatives ont choix sont vides. Ce choix n'est pas un choix de checkbox<br>");
-                            return ["error" => true, "left_to_pay" => false];
+                            return ["error" => true, "left_to_pay" => false, 'participant_data' => $participant_data];
                         }
                         if(isset($option->name))
                         {
@@ -204,6 +251,8 @@ function check_participant_options($participant_data, $participant_type, $event_
                                         if($left_to_pay!=false)
                                         {
                                             $left_to_pay-=$option->price;
+                                            $option->name = htmlspecialchars($option->name);
+                                            $option->price = htmlspecialchars($option->price);
                                         }
                                     }
                                     else
@@ -237,7 +286,7 @@ function check_participant_options($participant_data, $participant_type, $event_
                         if(empty($choice_data))
                         {
                             add_alert_to_ajax_response($participant_type . " : ". $option_db_data['name'] . " : Les informations relatives ont choix sont vides. Ce choix n'est pas un choix de select<br>");
-                            return ["error" => true, "left_to_pay" => false];
+                            return ["error" => true, "left_to_pay" => false, 'participant_data' => $participant_data];
                         }
 
                         $select_option_quota = $choice_data['quota']==null ? INF : $choice_data['quota'];
@@ -256,6 +305,7 @@ function check_participant_options($participant_data, $participant_type, $event_
                                     if($choice_data['is_removed']==0)
                                     {
                                         $left_to_pay-=$option->price;
+                                        $option->price = htmlspecialchars($option->price);
                                     }
                                     else
                                     {
@@ -291,10 +341,18 @@ function check_participant_options($participant_data, $participant_type, $event_
             }
         }
     }
-    return ["error" => $error, "left_to_pay" => $left_to_pay];
+    return ["error" => $error, "left_to_pay" => $left_to_pay, 'participant_data' => $participant_data];
 }
 
-function is_correct_participant_data($participant_data, $participant_type, $promo_specifications, $participant_action='addition')
+/**
+ * Permet de vérifier l'ensemble des infos transmises à propos d'un participant. Les champs nécessaires sont aussi parsés en htmlspecialchars
+ * @param  [array]  $participant_data     [données reçues du formulaire d'inscriptions / edit]
+ * @param  [string]  $participant_type     ['icam' ou 'guest']
+ * @param  [array]  $promo_specifications [fetch de pss sur la promo correspondante]
+ * @param  string  $participant_action   ['addition' ou 'update']
+ * @return array                       [array('correct' => , 'participant_data' => )]
+ */
+function check_participant_data($participant_data, $participant_type, $promo_specifications, $participant_action='addition')
 {
     if(!in_array($participant_action, ['addition', 'update']))
     {
@@ -465,6 +523,10 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
                         add_alert_to_ajax_response($participant_type . " : Pourquoi avez vous besoin d'autant de caractères pour un simple numéro de téléphone ?<br>");
                         $error = true;
                     }
+                    else
+                    {
+                        $participant_data->telephone = htmlspecialchars($participant_data->telephone);
+                    }
                 }
                 else
                 {
@@ -474,23 +536,46 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
             }
             elseif($participant_type=='guest')
             {
-                if(!is_string($participant_data->prenom))
+                if(isset($participant_data->prenom))
                 {
-                    add_alert_to_ajax_response($participant_type . " : Le prénom n'est pas une chaine de caractères <br>");
+                    if(!is_string($participant_data->prenom))
+                    {
+                        add_alert_to_ajax_response($participant_type . " : Le prénom n'est pas une chaine de caractères <br>");
+                        $error = true;
+                    }
+                    elseif(count($participant_data->prenom)>45)
+                    {
+                        add_alert_to_ajax_response($participant_type . " : Le prenom a-t-il besoin d'être si long ?<br>");
+                    }
+                    else
+                    {
+                        $participant_data->prenom = htmlspecialchars($participant_data->prenom);
+                    }
+                }
+                else
+                {
+                    add_alert_to_ajax_response($participant_type . " : Le prénom d'un des invités n'est pas transmis <br>");
                     $error = true;
                 }
-                elseif(count($participant_data->prenom)>45)
+                if(isset($participant_data->nom))
                 {
-                    add_alert_to_ajax_response($participant_type . " : Le prenom a-t-il besoin d'être si long ?<br>");
+                    if(!is_string($participant_data->nom))
+                    {
+                        add_alert_to_ajax_response($participant_type . " : Le nom n'est pas une chaine de caractères <br>");
+                        $error = true;
+                    }
+                    elseif(count($participant_data->nom)>45)
+                    {
+                        add_alert_to_ajax_response($participant_type . " : Le nom a-t-il besoin d'être si long ?<br>");
+                    }
+                    else
+                    {
+                        $participant_data->nom = htmlspecialchars($participant_data->nom);
+                    }
                 }
-                if(!is_string($participant_data->nom))
+                else
                 {
-                    add_alert_to_ajax_response($participant_type . " : Le nom n'est pas une chaine de caractères <br>");
-                    $error = true;
-                }
-                elseif(count($participant_data->nom)>45)
-                {
-                    add_alert_to_ajax_response($participant_type . " : Le nom a-t-il besoin d'être si long ?<br>");
+                    $participant_data->nom = htmlspecialchars($participant_data->nom);
                 }
             }
 
@@ -506,6 +591,7 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
                     $res = check_participant_options($participant_data, $participant_type, $event_id, $site_id, $promo_id, $error, $left_to_pay);
                     $error = $res['error'];
                     $left_to_pay = $res['left_to_pay'];
+                    $participant_data = $res['participant_data'];
                 }
             }
             else
@@ -537,7 +623,7 @@ function is_correct_participant_data($participant_data, $participant_type, $prom
             }
         }
     }
-    return !$error;
+    return array('correct' => !$error, 'participant_data' => $participant_data);
 }
 
 function prevent_displaying_on_wrong_ticketing_state($ticketing_state)
@@ -602,7 +688,7 @@ function check_if_event_should_be_displayed($event,$promo_id, $site_id, $email)
         die();
     }
 
-    $icam_has_reservation = participant_has_its_place(array("event_id" => $event_id, "promo_id" => $promo_id, "site_id" => $site_id, "email" => $email));
+    $icam_has_reservation = icam_has_its_place(array("event_id" => $event_id, "promo_id" => $promo_id, "site_id" => $site_id, "email" => $email));
     $ticketing_state = get_ticketing_state($event, $promo_id, $site_id, $email, $icam_has_reservation);
 
     prevent_displaying_on_wrong_ticketing_state($ticketing_state);
@@ -610,14 +696,20 @@ function check_if_event_should_be_displayed($event,$promo_id, $site_id, $email)
     return $ticketing_state;
 }
 
+/**
+ * [Permet de mettre à jour le statut d'une réservation, au statut indiqué en paramètre]
+ * @param  [string] $status              ["V", "A"]
+ * @param  [array] $pending_reservation [fetch de transaction, sur une transaction normalement "W"]
+ */
 function update_reservation_status($status, $pending_reservation)
 {
     $update = false;
+    // Les articles de la transaction sont contenus dans un objet JSON parsé en txt. Il y a soit un participant_id => event, soit des options
     $list_purchases = json_decode($pending_reservation['liste_places_options']);
     foreach($list_purchases->participant_ids as $participant_id)
     {
-        $should_update = participant_has_pending_event(array("event_id" => $pending_reservation['event_id'], "participant_id" => $participant_id));
-        if($should_update)
+        //On vérifie bien que la réservation est en attente
+        if(participant_has_pending_event(array("event_id" => $pending_reservation['event_id'], "participant_id" => $participant_id)))
         {
             $update=true;
             update_participant_status(array("participant_id" => $participant_id, "status" => $status));
@@ -625,19 +717,23 @@ function update_reservation_status($status, $pending_reservation)
     }
     foreach($list_purchases->option_ids as $ids)
     {
-        $should_update = participant_has_specific_pending_option(array("event_id" => $pending_reservation['event_id'], "participant_id" => $ids->participant_id, "choice_id" => $ids->choice_id));
-        if($should_update)
+        if(participant_has_specific_pending_option(array("event_id" => $pending_reservation['event_id'], "participant_id" => $ids->participant_id, "choice_id" => $ids->choice_id)))
         {
             $update=true;
             update_option_status(array("participant_id" => $ids->participant_id, "status" => $status, "choice_id" => $ids->choice_id));
         }
     }
-    if($update)
+    if($update)//A la fin, s'il y a eu une maj, on met la transaction à jour
     {
         update_transaction_status(array("transaction_id" => $pending_reservation['transaction_id'], "status" => $status));
     }
 }
 
+/**
+ * [Fonction controlleur permettant de déterminer si l'utilisateur a des options, et dans ce cas arréter le fonctionnement normal et lui mettre une erreur ]
+ * @param  [string] $login    [email de l'utilisateur (icam)]
+ * @param  [int] $event_id
+ */
 function handle_pending_reservations($login, $event_id)
 {
     global $ajax_json_response;

@@ -1,6 +1,14 @@
+/**
+ * Les fonctions de ce ficher Javascript sont appelées lors de l'edit d'un évènement, afin d'ajouter le comportement Javascript à avoir sur les données de l'évènement que l'on écrit depuis la base de données, et qui ne sont donc pas comprises dans le traitement des fichiers précédents.
+ */
+
+/**
+ * Cette fonction ajoute tout le fonctionnement à l'évènement, sans compter les options.
+ * Il s'agit surtout d'ajouter le traitement JS de l'accessibilité de l'évènement aux lignes ajoutées puisque les promos existent, et ont déjà des particularités.
+ */
 function edit_no_options_action()
 {
-    $("#basic_availability input:radio:checked").change();//Utilise l'évènement change donnés aux radios pour ajouter ce qui se passe de base.
+    $("#basic_availability input:radio:checked").change();//Utilise l'évènement change donné aux radios pour ajouter ce qui se passe de base.
     $("#basic_availability #specification_table tbody tr").each(function()//Ajoute ensuite un input sur un clic dans le tableau d'accessibilité
     {
         $(this).children(":nth-child(4)").click(function()
@@ -27,12 +35,14 @@ function edit_no_options_action()
             });
         });
 
+        // Il ne faut pas que la promo Invités aient d'Invités (même si ça ne ferait rien s'ils en avaient, ce n'est pas propre)
         if($(this).children(":nth-child(3)").text() == 'Invités')
         {
             $(this).children(":nth-child(6)").off('click');
         }
     });
 
+    // Il est possible de réactiver une promo qui a des participants, mais qu'on a supprimée avant. Alors, on change les classes, pour qu'elle soit comme les autres lignes.
     $("#basic_availability #specification_table .removed").children(":nth-child(7)").html('<button type="button" class="btn btn-success creation_button_icons"><span class="glyphicon glyphicon-ok"></span></button>').children().click(function()
     {
         var confirm_restoration = window.confirm("Voulez vous vraiment réactiver cette promo ? ");
@@ -51,10 +61,16 @@ function edit_no_options_action()
     });
 }
 
+/**
+ * Ici, on ajoute le traitement sur les options.
+ * J'ai fait une deuxième option, puisque tous les évènements n'ont pas nécessairement d'options, il n'est donc pas besoin d'appeler tout le temps cette fonction.
+ */
 function edit_options_action()
 {
+    //Il n'est plus possible de changer le type des options, on enlève l'évènement qui gérait ça. (Au cas ou quelqu'un de mal intentionné enlève le disabled présent sur cet input en frontend, et veuille faire des bêtises)
     $("#options input[class=option_type_input]").off('change');
 
+    //Ce qui suit est juste de l'adaptation de ce qui était déjà fait, si vous l'aviez compris sur l'autre page, vous le comprendrez ici.
     $("#options .panel-default").each(function()
     {
         if($(this).find("input:radio[class=option_type_input]:checked").val()=='Checkbox')
@@ -65,6 +81,7 @@ function edit_options_action()
         {
             $(this).find(".checkbox_type").hide();
 
+            // On transforme les champs du tableau en inputs en cliquant dessus. Sur un Blur, on les repasse avec la nouvelle valeur en ligne de tableau normale.
             $(this).find(".select_table tbody tr").each(function()
             {
                 $(this).children(':nth-child(2)').click(function()

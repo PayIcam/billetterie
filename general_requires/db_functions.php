@@ -14,6 +14,11 @@ function connect_to_db($conf)
     }
 }
 
+/**
+ * Checks whether the event_id is correct. Returns false if its not, with an error message corresponding to the problem
+ * @param  $event_id
+ * @return boolean
+ */
 function event_id_is_correct($event_id)
 {
     global $ajax_json_response;
@@ -138,12 +143,17 @@ function get_event_details($event_id)
 function get_promos_events($ids)
 {
     global $db;
-    $promos = $db->prepare('SELECT promos_site_specifications.event_id FROM promos_site_specifications JOIN events on events.event_id = promos_site_specifications.event_id WHERE promo_id=:promo_id and site_id=:site_id and events.is_active=1 and promos_site_specifications.is_removed=0');
+    $promos = $db->prepare('SELECT promos_site_specifications.event_id FROM promos_site_specifications LEFT JOIN events on events.event_id = promos_site_specifications.event_id WHERE promo_id=:promo_id and site_id=:site_id and events.is_active=1 and promos_site_specifications.is_removed=0');
     $promos->execute($ids);
     return $promos->fetchAll();
 }
 
-function participant_has_its_place($identification_data)
+/**
+ * Checks whether the current user has a place for the event or not
+ * @param  [array] $identification_data [array('event_id' => , 'promo_id' => , 'site_id' => , 'email' => )]
+ * @return boolean
+ */
+function icam_has_its_place($identification_data)
 {
     global $db;
     $icam_data = $db->prepare('SELECT participant_id, prenom, nom, is_icam, email, telephone, event_id, site_id, promo_id FROM participants WHERE email = :email and event_id = :event_id and promo_id = :promo_id and site_id = :site_id and status = "V" ');
@@ -152,6 +162,12 @@ function participant_has_its_place($identification_data)
     return !empty($icam_data);
 }
 
+/**
+ * Get pending reservations corresponding to the parameters. Gets all pending_reservations for all users on all events if nothing specified
+ * @param  mixed $event_id [event_id of the event you wanna get the pending reservations]
+ * @param  mixed $login    [email of the participant you wanna get the pending reservations]
+ * @return [array of arrays]            [All the pending reservations there are corresponding to the parameters]
+ */
 function get_pending_reservations($event_id=false, $login=false)
 {
     global $db;
@@ -317,10 +333,22 @@ function get_event_site_names($event_id)
     return $promos->fetchAll();
 }
 
+/**
+ * Will return the participants corresponding to the research, and its number. Many choices possible for the search
+ * @param  [string] $recherche     [the search criteria]
+ * @param  [int] $start_lign    [line at which you want to start the research (specific page)]
+ * @param  [int] $rows_per_page [number of rows which should be displayed]
+ * @return [array of arrays]                [all the participants corresponding to the search]
+ */
 function determination_recherche($recherche, $start_lign, $rows_per_page)
 {
     global $db, $recherche_bdd;
     $event_id = $_GET['event_id'];
+
+    /*
+    First, 4 different Regex are created, getting all the promo names, the site names, the promo & site names and the payement names.
+    This will permit to search these specific names, and get an appropriate response
+     */
 
     $promo_names = array_column(get_event_promo_names($event_id), 'promo_name');
     $promo_search_regex = '#(';
@@ -366,6 +394,7 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
 
     switch ($recherche)
     {
+        //gets participants with the telephone number corresponding to the search
         case (preg_match("#^0[1-68]([-. ]?[0-9]{2}){4}$#", $recherche)==1):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and telephone = :telephone and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $recherche_bdd->bindParam('telephone', $recherche);
@@ -374,6 +403,7 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
             break;
 
+        //gets every participant who has pending_reservations
         case('pending_reservations'):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE participant_id IN(SELECT icam_id FROM transactions INNER JOIN events ON events.event_id = transactions.event_id WHERE status = "W" and transactions.event_id= :event_id) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE participant_id IN(SELECT icam_id FROM transactions INNER JOIN events ON events.event_id = transactions.event_id WHERE status = "W" and transactions.event_id= :event_id)');
@@ -381,6 +411,7 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
             break;
 
+        //gets participants corresponding to the promo/site entered
         case (preg_match($promo_site_search_regex, $recherche) == 1):
             $recherche = explode(' ', $recherche);
             $promo_id = get_promo_id($recherche[0]);
@@ -394,6 +425,7 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
             break;
 
+        //gets participants corresponding to the promo entered
         case (preg_match($promo_search_regex, $recherche) == 1):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and promo_id = :promo_id and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $promo_id = get_promo_id($recherche);
@@ -403,6 +435,7 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
             break;
 
+        //gets participants corresponding to the site entered
         case (preg_match($site_search_regex, $recherche) == 1):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and site_id = :site_id and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $site_id = get_site_id($recherche);
@@ -412,6 +445,7 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
             break;
 
+        //gets participants corresponding to the payment entered
         case(preg_match($option_search_regex, $recherche) ==1):
             $recherche_bdd = $db->prepare('SELECT * FROM participants p WHERE p.event_id = :event_id and status="V" and participant_id IN(SELECT DISTINCT participant_id FROM participant_has_options LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE oc.option_id=:option_id) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $option_id = get_option_id($recherche);
@@ -421,6 +455,7 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
             break;
 
+        //gets participants corresponding to the bracelet_identification entered
         case(preg_match("#^[0-9]{1,4}$#", $recherche)==1):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and bracelet_identification = :bracelet_identification and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $recherche_bdd->bindParam('bracelet_identification', $recherche);
@@ -429,62 +464,73 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
             break;
 
+        //gets all the icams
         case (preg_match("#^icam[s]?$#i", $recherche)==1):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and is_icam = 1 and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $count_recherche = count_current_icam($event_id);
             break;
 
+        //gets all the icam students
         case (preg_match("#^icam[s]? student[s]?$#i", $recherche)==1):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and is_icam = 1 and event_id = :event_id and promo_id IN (SELECT promo_id FROM promos WHERE status="V" and still_student=1) ORDER BY participant_id LIMIT :start_lign, :rows_per_page ');
             $count_recherche = count_current_icam_student($event_id);
             break;
 
+        //gets all graduated icam students
         case (preg_match("#^icam[s]? (graduated|diplom[eé][s]?){1}$#i", $recherche)==1):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and is_icam = 1 and event_id = :event_id and promo_id IN (SELECT promo_id FROM promos WHERE status="V" and still_student=0) ORDER BY participant_id LIMIT :start_lign, :rows_per_page ');
             $count_recherche = count_current_icam_student($event_id, false);
             break;
 
+        //gets those who are not icam (very similar to 'Invités')
         case (preg_match("#^exterieur|extérieur$#i", $recherche)==1):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and is_icam = 0 and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $count_recherche = count_current_icam($event_id, false);
             break;
 
+        //gets participants who have entered their phone number
         case (preg_match("#^telephone$|^téléphone$#i", $recherche)==1):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and telephone IS NOT NULL and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $count_recherche = count_current_telephone($event_id);
             break;
 
+        //gets participants who have not entered their phone number
         case (preg_match("#^no[t]? telephone|no[t]? téléphone$#i", $recherche)==1):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and is_icam = 1 and telephone IS NULL and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $count_recherche = count_current_telephone($event_id, false);
             break;
-
+        //gets participants who have their bracelet_identication filled in
         case (preg_match("#^bracelet$#i", $recherche)==1):
             $recherche_bdd =$db->prepare('SELECT * FROM participants WHERE status="V" and bracelet_identification IS NOT NULL and event_id = :event_id or bracelet_identification !="" ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $count_recherche = count_current_bracelet($event_id);
             break;
 
+        //gets participants who don't have their bracelet_identication filled in
         case (preg_match("#^no[t]? bracelet$#i", $recherche)==1):
             $recherche_bdd =$db->prepare('SELECT * FROM participants WHERE status="V" and bracelet_identification IS NULL and event_id = :event_id or bracelet_identification="" ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $count_recherche = count_current_bracelet($event_id, false);
             break;
 
+        //gets participants who have payed for their place
         case (preg_match("#^payed$#i", $recherche)==1):
             $recherche_bdd =$db->prepare('SELECT * FROM participants WHERE status="V" and price !=0 and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $count_recherche = count_payed($event_id);
             break;
 
+        //gets participants who have not payed for their place
         case (preg_match("#^no[t]? payed$#i", $recherche)==1):
             $recherche_bdd =$db->prepare('SELECT * FROM participants WHERE status="V" and price=0 and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $count_recherche = count_payed($event_id, false);
             break;
 
+        //gets participants who paid using the payment specified
         case (preg_match($payement_search_regex, $recherche)==1):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and payement=:payement and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $recherche_bdd->bindParam('payement', $recherche);
             $count_recherche = count_payement(array('event_id' => $event_id, 'payement' => $recherche));
             break;
 
+        //gets participants who have their place waiting or aborted, depending on what was asked for
         case ('W'):
         case ('A'):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status=:status and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
@@ -492,11 +538,13 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             $count_recherche = count_status(array('event_id' => $event_id, 'status' => $recherche));
             break;
 
+        //gets participants who have taken at least an option
         case (preg_match('#^option$#i', $recherche)==1):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE event_id = :event_id and participant_id IN (SELECT participant_id FROM participant_has_options) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $count_recherche = count_participants_with_option($event_id);
             break;
 
+        //gets participants who correspond to the firstname + lastname search in this order (firstname before lastname)
         case (preg_match("#^[a-zéèçôîûâ]+ [a-zçôîûâ]+$#i", $recherche)==1):
             $recherche = explode(" " , $recherche);
             $prenom = '^'.$recherche[0];
@@ -510,6 +558,7 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
             break;
 
+        //gets participants which firstname or lastname correspond to the search
         default:
             $recherche_bdd =$db-> prepare('SELECT * FROM participants WHERE status="V" and event_id = :event_id and (nom REGEXP :recherche OR prenom REGEXP :recherche) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $recherche_bdd->bindParam('recherche', $recherche);

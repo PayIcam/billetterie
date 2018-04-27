@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * On affiche les évènements, avec leur titre & description, ainsi que le lien vers la billetterie. Selon le ticketing_state, l'affichage sera légèrement différent
+ * @param  string $ticketing_state
+ * @param  array $event                [fetch de events]
+ * @param  boolean $icam_has_reservation [true si l'Icam a une réservation]
+ */
 function display_event($ticketing_state, $event, $icam_has_reservation)
 {
     global $_CONFIG;
@@ -30,7 +36,7 @@ function display_event($ticketing_state, $event, $icam_has_reservation)
                 <br>
                 <div class="row">
                     <p class="col-sm-9" style="font-size: 1.5em;">Description : <?=htmlspecialchars($event['description'])?></p>
-                    <button class="btn btn-primary col-sm-3" disabled>Inscrivez vous</button>
+                    <button class="btn btn-primary col-sm-3" disabled>Inscrivez vous</button><!-- On ne met pas le lien ici, ça n'a aucun intérêt -->
                 </div>
             </div>
             <hr>

@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * Page appelée en Ajax lors de l'edition des réservations
+ * La réponse à cette page est donnée en Json, parce qu'il faut aussi donner l'url de la transaction, en plus des messages d'erreur ou du message de validation.
+ * Comme d'habitude, il faut vérifier toutes les infos, puis ensuite faire les ajouts dans la base de données.
+ * Il faut aussi vérifier qu'il n'y a pas déjà de transaction en attente, que les quotas sont bons, et qu'ils ne seraient pas dépassés, etc ...
+ * Cette fois ci pourtant, ce n'est pas exactement pareil. En effet, l'Icam ne va pas payer sa place, qu'il a déjà. Il ne peux que rajouter des options, et mettre à jour son numéro de tel.
+ * Egalement, il y aura une distinction entre les nouveaux invités et les anciens.
+ * On paye la place des nouveaux invités et d'éventuelles options
+ * Pour les anciens on mettra juste à jour nom & prénom, et ajoutera si précisé leurs options
+ */
+
 require __DIR__ . '/../../general_requires/_header.php';
 
 if(!isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
@@ -41,7 +52,10 @@ if(!empty($_POST))
         $icam_data = json_decode_particular($_POST['icam_informations']);
         if($icam_data!=false)
         {
-            if(!is_correct_participant_data($icam_data, 'icam', $promo_specifications, 'update'))
+            $check = check_participant_data($icam_data, 'icam', $promo_specifications, 'update');
+            $correct = $check['correct'];
+            $icam_data = $check['participant_data'];
+            if(!$correct)
             {
                 echo json_encode($ajax_json_response);
                 die();
@@ -80,17 +94,23 @@ if(!empty($_POST))
                         die();
                     }
 
-                    foreach($previous_guests_data as $previous_guest_data)
+                    foreach($previous_guests_data as &$previous_guest_data)
                     {
-                        if(!is_correct_participant_data($previous_guest_data, 'guest', $guests_specifications, 'update'))
+                        $check = check_participant_data($previous_guest_data, 'guest', $guests_specifications, 'update');
+                        $correct = $check['correct'];
+                        $previous_guest_data = $check['participant_data'];
+                        if(!$correct)
                         {
                             echo json_encode($ajax_json_response);
                             die();
                         }
                     }
-                    foreach($new_guests_data as $new_guest_data)
+                    foreach($new_guests_data as &$new_guest_data)
                     {
-                        if(!is_correct_participant_data($new_guest_data, 'guest', $guests_specifications))
+                        $check = check_participant_data($new_guest_data, 'guest', $guests_specifications);
+                        $correct = $check['correct'];
+                        $new_guest_data = $check['participant_data'];
+                        if(!$correct)
                         {
                             echo json_encode($ajax_json_response);
                             die();
@@ -124,6 +144,7 @@ if(!empty($_POST))
 
     if($icam_data!=false)
     {
+        //Mise à jour de l'Icam, et ajout d'options s'il y en a
         $icam_id = $icam_data->participant_id;
 
         $icam_insertion_data = array(
@@ -144,6 +165,7 @@ if(!empty($_POST))
 
         participant_options_handling($event_id, $icam_id, $icam_data->options);
 
+        //Mise à jour et ajout d'options s'il y en a pour chaque ancien invité
         if(count($previous_guests_data)>0 && $previous_guests_data != false)
         {
             foreach($previous_guests_data as $previous_guest_data)
@@ -163,6 +185,7 @@ if(!empty($_POST))
             }
         }
 
+        //Ajout de chaque nouvel invité
         if(count($new_guests_data)>0 && $new_guests_data != false)
         {
             foreach($new_guests_data as $new_guest_data)
@@ -185,7 +208,11 @@ if(!empty($_POST))
             }
             $guests_article_id = array(array($guests_event_article_id, count($new_guests_data)));
         }
+
         $transaction_articles = array_merge($guests_article_id, $options_articles);
+
+        //Potentiellement du coup, il n'y a rien à payer, la validation n'a été qu'un changement de nom ou de numéro de téléphone.
+        //Dans ce cas, on met un message différent, et on ne redirigera pas vers la page de payement, mais vers la page d'accueil
         if(!empty($transaction_articles))
         {
             $transaction = $payutcClient->createTransaction(array(

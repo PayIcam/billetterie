@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Controlleur de la page permettant de préparer le formulaire de modification d'un évènement. Forcémént, il y a plus de choses à initialiser cette fois ci.
+ */
+
 require __DIR__ . '/../general_requires/_header.php';
 
 if(isset($_GET['event_id']))

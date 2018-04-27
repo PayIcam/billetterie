@@ -18,7 +18,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                 if($Auth->hasRole('admin'))
                 {
                     $ajax_json_response = array("message" => "" , "participant_id" => "");
-                    check_user_fundations_rights(get_fundation_id($event_id), false);
+                    check_user_fundations_rights(get_fundation_id($event_id));
 
                     $event = get_event_details($event_id);
                     $promos = array_column(get_event_promo_names($event_id), 'promo_name');

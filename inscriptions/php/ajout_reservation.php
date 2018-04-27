@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Page appelée en Ajax lors de l'inscriptions (pas de réservation déjà)
+ * La réponse à cette page est donnée en Json, parce qu'il faut aussi donner l'url de la transaction, en plus des messages d'erreur ou du message de validation.
+ * Comme d'habitude, il faut vérifier toutes les infos, puis ensuite faire les ajouts dans la base de données.
+ * Il faut aussi vérifier qu'il n'y a pas déjà de transaction en attente, que les quotas sont bons, et qu'ils ne seraient pas dépassés, etc ...
+ */
+
 require __DIR__ . '/../../general_requires/_header.php';
 
 if(!isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
@@ -49,7 +56,10 @@ if(!empty($_POST))
         $icam_data = json_decode_particular($_POST['icam_informations']);
         if($icam_data!=false)
         {
-            if(!is_correct_participant_data($icam_data, 'icam', $promo_specifications))
+            $check = check_participant_data($icam_data, 'icam', $promo_specifications);
+            $correct = $check['correct'];
+            $icam_data = $check['participant_data'];
+            if(!$correct)
             {
                 echo json_encode($ajax_json_response);
                 die();
@@ -87,8 +97,10 @@ if(!empty($_POST))
 
                     foreach($guests_data as $guest_data)
                     {
-
-                        if(!is_correct_participant_data($guest_data, 'guest', $guests_specifications))
+                        $check = check_participant_data($guest_data, 'guest', $guests_specifications);
+                        $correct = $check['correct'];
+                        $guest_data = $check['participant_data'];
+                        if(!$correct)
                         {
                             echo json_encode($ajax_json_response);
                             die();
@@ -142,20 +154,25 @@ if(!empty($_POST))
             "promo_id" => $icam_data->promo_id
             );
         $icam_id = insert_icam_participant($icam_insertion_data);
+        //Ajout dans participants de l'Icam
 
+        //Ajout de l'id dans le futur JSON parsé en txt pour la table transaction
         $transaction_linked_purchases = array("participant_ids" => array($icam_id), "option_ids" => array());
 
         $icam_event_article_id = get_promo_article_id(array('event_id' => $event_id, 'promo_id' => $promo_id, 'site_id' => $site_id));
         $guests_event_article_id = get_promo_article_id(array('event_id' => $event_id, 'promo_id' => get_promo_id('Invités'), 'site_id' => $site_id));
 
+        //Préparation de la création de la transaction
         $icam_event_article_id = array(array($icam_event_article_id, 1));
         $guests_article_id = array();
         $options_articles = array();
 
+        //Les options de l'Icam sont ajoutées ici
         participant_options_handling($event_id, $icam_id, $icam_data->options);
 
         if(count($guests_data)>0 && $guests_data != false)
         {
+            //Même fonctionnement pour tous les invités
             foreach($guests_data as $guest_data)
             {
                 $guest_insertion_data = array(
@@ -176,7 +193,10 @@ if(!empty($_POST))
             }
             $guests_article_id = array(array($guests_event_article_id, count($guests_data)));
         }
+        //On mets tous les articles payés dans un array, qu'on va envoyer en paramètre pour créer la transaction.
+        //Ce sera un array, composé de ce genre d'array : array($id_article, $nombre_articles_payes)
         $transaction_articles = array_merge($icam_event_article_id, $guests_article_id, $options_articles);
+        //D'ou le array_merge
 
         $transaction = $payutcClient->createTransaction(array(
             "items" => json_encode($transaction_articles),
@@ -186,11 +206,10 @@ if(!empty($_POST))
             "callback_url" => $_CONFIG['public_url']. "inscriptions/php/validate_reservations.php?event_id=".$event_id
             ));
 
-        $ajax_json_response = array("message" => "Votre réservation a bien été prise en compte ! <br>Vous allez être redirigé pour payer !", "transaction_url" => $transaction->url);
-
         $transaction_data = array("login" => $email, "liste_places_options" => json_encode($transaction_linked_purchases), "price" => $total_price, "payicam_transaction_id" => $transaction->tra_id, "payicam_transaction_url" => $transaction->url, "event_id" => $event_id, "icam_id" => $icam_id);
-
         insert_transaction($transaction_data);
+
+        $ajax_json_response = array("message" => "Votre réservation a bien été prise en compte ! <br>Vous allez être redirigé pour payer !", "transaction_url" => $transaction->url);
 
         echo json_encode($ajax_json_response);
     }

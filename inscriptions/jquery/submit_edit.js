@@ -1,3 +1,18 @@
+/**
+ * Cette page contient la fonction à appeler au moment de submit le formulaire d'edit.
+ * C'est très similaire au submit des inscriptions.
+ * Il y a surtout uniquement le guests data qui évolue pas mal, pour se séparer en 2 : nouveaux invités(ajout), et anciens (mise à jour)
+ * Pareil, les mêmes infos ne sont pas envoyées pour l'Icam
+ *
+ * Le principe est le même que dans toutes mes pages, notamment dans event_administration ou je suis rentré dans les détails.
+ * - Utilisation de fonctions pour gérer les grandes parties, et "peu" de "programme principal" à la fin
+ * - Vérification du formulaire, annulation à la moindre erreur, affichage de l'erreur
+ * - Préparation des informations à envoyer en Ajax, en créant peu d'objets à partir de tous les champs, dans lesquels tout est déjà rangé
+ * - Envoi en Ajax de la requête, cette fois ci en JSON, parce que je dois récupérer des infos supplémentaires (url de la transaction pour rediriger vers le payement)
+ * - Empécher de faire plusieurs Ajax en même temps, et affichage d'un message demandant de patienter
+ * - Afficher les erreurs trouvées en Php s'il y en a, sinon, afficher le message de succcès et rediriger vers le moyen de payement
+ */
+
 function prepare_edit_submit()
 {
     function add_alert(message, alert_type="danger")

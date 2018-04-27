@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Cette fonction sert à remplir les options sur un edit de formulaire avec leurs bonnes données
+ * @param [type] $options [description]
+ */
 function add_options_previously_defined($options)
 {
     global $db;
@@ -27,7 +31,11 @@ function add_options_previously_defined($options)
         add_option_html_code($compteur, $option, $option_choices, $promo_options);
     }
 }
-
+/**
+ * Cette fonction permet de déterminer si on a ou non des permanents, des invités, ou des diplomés, afin de cocher les boutons radios en conséquence.
+ * @param  [array] $promos_specifications [fetchAll de la table promos_site_specifications]
+ * @return [array]                        [la valeur des inputs]
+ */
 function get_event_radio_values($promos_specifications)
 {
     $guests = 0;
@@ -54,10 +62,13 @@ function get_event_radio_values($promos_specifications)
     return array("guests" => $guests, "permanents" => $permanents, "graduated" => $graduated);
 }
 
-
+/**
+ * Cette fonction appelle les autres fonctions qui controlent que tous les données envoyées sont valide
+ * @return ne retourne rien, mais arrête le script, et affiche l'erreur correspondante si il y en a. Si on va jusqu'à la fin, c'est que tout est bon.
+ */
 function check_and_prepare_data()
 {
-    if(isset($_POST['event_data_json']) && $_POST['event_data_json']!='')
+    if(isset($_POST['event_data_json']))
     {
         if($_POST['event_data_json']!='')
         {
@@ -117,7 +128,10 @@ function check_and_prepare_data()
     }
 }
 
-
+/**
+ * On vérifie que les infos sur la table event sont bonnes. Le nom est assez explicite
+ * @return boolean !$error (on renvoie donc true si tout va bien)
+ */
 function is_correct_event_data()
 {
     global $event;
@@ -135,52 +149,112 @@ function is_correct_event_data()
     }
     else
     {
-        if(!is_string($event->name))
+        if(isset($event->name))
         {
-            add_alert("Le nom de l'évènement n'est même pas une chaine de caractères.");
+            if(!is_string($event->name))
+            {
+                add_alert("Le nom de l'évènement n'est même pas une chaine de caractères.");
+                $error = true;
+            }
+            elseif(strlen($event->name)>60)
+            {
+                add_alert("Est ce vraiment nécessaire d'avoir un nom d'évènement si grand ?");
+                $error = true;
+            }
+            else
+            {
+                $event->name = htmlspecialchars($event->name);
+            }
+        }
+        else
+        {
+            add_alert("Le nom de l'évènement n'est pas transmis.");
             $error = true;
         }
-        elseif(strlen($event->name)>60)
+        if(isset($event->description))
         {
-            add_alert("Est ce vraiment nécessaire d'avoir un nom d'évènement si grand ?");
+            if(!is_string($event->description))
+            {
+                add_alert("La description de l'évènement n'est même pas une chaine de caractères.");
+                $error = true;
+            }
+            else
+            {
+                $event->description = htmlspecialchars($event->description);
+            }
+        }
+        else
+        {
+            add_alert("La description de l'évènement n'est pas transmise.");
             $error = true;
         }
-        if(!is_string($event->description))
+        if(isset($event->quota))
         {
-            add_alert("La description de l'évènement n'est même pas une chaine de caractères.");
+            if(!is_numeric($event->quota))
+            {
+                add_alert("Le quota de l'évènement n'est même pas numérique.");
+                $error = true;
+            }
+            elseif(!is_an_integer($event->quota))
+            {
+                add_alert("Le quota de l'évènement n'est même pas entier.");
+                $error = true;
+            }
+            else
+            {
+                $event->quota = htmlspecialchars($event->quota);
+            }
+        }
+        else
+        {
+            add_alert("Le quota de l'évènement n'est pas transmis.");
             $error = true;
         }
-        if(!is_numeric($event->quota))
+        if(isset($event->ticketing_start_date))
         {
-            add_alert("Le quota de l'évènement n'est même pas numérique.");
+            try
+            {
+                $event->ticketing_start_date = date('Y-m-d H:i:s', date_create_from_format('m/d/Y h:i a', $event->ticketing_start_date)->getTimestamp());
+            }
+            catch(Exception $exception)
+            {
+                add_alert("Impossible de convertir la date de début de la billetterie.");
+                $error = true;
+            }
+        }
+        else
+        {
+            add_alert("La date de début de la billetterie n'est pas transmise.");
             $error = true;
         }
-        elseif(!is_an_integer($event->quota))
+        if(isset($event->ticketing_end_date))
         {
-            add_alert("Le quota de l'évènement n'est même pas entier.");
+            try
+            {
+                $event->ticketing_end_date = date('Y-m-d H:i:s', date_create_from_format('m/d/Y h:i a', $event->ticketing_end_date)->getTimestamp());
+            }
+            catch(Exception $exception)
+            {
+                add_alert("Impossible de convertir la date de fin de la billetterie.");
+                $error = true;
+            }
+        }
+        else
+        {
+            add_alert("La date de fin de la billetterie n'est pas transmise.");
             $error = true;
         }
-        try
+        if(isset($event->is_active))
         {
-            $event->ticketing_start_date = date('Y-m-d H:i:s', date_create_from_format('m/d/Y h:i a', $event->ticketing_start_date)->getTimestamp());
+            if(!in_array($event->is_active, [0,1]))
+            {
+                add_alert("Les données traitant de l'activité ou non de l'évènement ont mal été transmises.");
+                $error = true;
+            }
         }
-        catch(Exception $exception)
+        else
         {
-            add_alert("Impossible de convertir la date de début de la billetterie.");
-            $error = true;
-        }
-        try
-        {
-            $event->ticketing_end_date = date('Y-m-d H:i:s', date_create_from_format('m/d/Y h:i a', $event->ticketing_end_date)->getTimestamp());
-        }
-        catch(Exception $exception)
-        {
-            add_alert("Impossible de convertir la date de fin de la billetterie.");
-            $error = true;
-        }
-        if(!in_array($event->is_active, [0,1]))
-        {
-            add_alert("Les données traitant de l'activité ou non de l'évènement ont mal été transmises.");
+            add_alert("Les données traitant de l'activité ou non de l'évènement n'ont pas été transmises du tout.");
             $error = true;
         }
         if(isset($event->fundation_id))
@@ -197,7 +271,8 @@ function is_correct_event_data()
             }
             else
             {
-                check_user_fundations_rights($event->fundation_id, false);
+                //C'est inddiqué dans la doc de la fonction, mais si tout est bon, $error = false, sinon, l'erreur est déjà affichée, et $error = true;
+                $error = check_user_fundations_rights($event->fundation_id, false);
             }
         }
         else
@@ -209,6 +284,10 @@ function is_correct_event_data()
     return !$error;
 }
 
+/**
+ * On vérifie que les infos sur la table promo_site_specifications sont bonnes. Le nom est assez explicite
+ * @return boolean !$error (on renvoie donc true si tout va bien)
+ */
 function is_correct_event_accessibility()
 {
     global $event_promos;
@@ -229,75 +308,134 @@ function is_correct_event_accessibility()
         }
         else
         {
-            if(!is_string($event_promo->site))
+            if(isset($event_promo->site))
             {
-                add_alert("Le nom du site n'est même pas une chaine de caractères.");
-                $error = true;
-            }
-            else
-            {
-                $event_promo->site_id = get_site_id($event_promo->site);
-                if(empty($event_promo->site_id))
+                if(!is_string($event_promo->site))
                 {
-                    add_alert("Aucun site ne correspond au site donné. (".$event_promo->site.")");
+                    add_alert("Le nom du site n'est même pas une chaine de caractères.");
                     $error = true;
-                }
-            }
-            if(!is_string($event_promo->promo))
-            {
-                add_alert("Le nom du promo n'est même pas une chaine de caractères.");
-                $error = true;
-            }
-            else
-            {
-                $event_promo->promo_id = get_promo_id($event_promo->promo);
-                if(empty($event_promo->promo_id))
-                {
-                    add_alert("Aucun promo ne correspond à la promo donné. (".$event_promo->promo.")");
-                    $error = true;
-                }
-            }
-            if(!is_numeric($event_promo->price))
-            {
-                add_alert("Le prix d'une des promos n'est même pas numérique");
-                $error = true;
-            }
-            elseif(!is_an_integer(100*$event_promo->price))
-            {
-                add_alert("Le prix d'une des promos est défini avec une précision plus grande que le centime, ou n'est même pas positif");
-                $error = true;
-            }
-            if(!is_numeric($event_promo->quota))
-            {
-                if(in_array($event_promo->quota, ['', null]))
-                {
-                    $event_promo->quota = null;
                 }
                 else
                 {
-                    add_alert("Le quota d'une des promos n'est même pas numérique");
-                    $error = true;
+                    $event_promo->site = htmlspecialchars($event_promo->site);
+                    $event_promo->site_id = get_site_id($event_promo->site);
+                    if(empty($event_promo->site_id))
+                    {
+                        add_alert("Aucun site ne correspond au site donné. (" . $event_promo->site . ")");
+                        $error = true;
+                    }
                 }
             }
-            elseif(!is_an_integer(1*$event_promo->quota))
+            else
             {
-                add_alert("Le quota d'une des promos n'est même pas entier");
+                add_alert("Un des sites n'est pas transmis.");
                 $error = true;
             }
-            if(!is_numeric($event_promo->guest_number))
+            if(isset($event_promo->promo))
             {
-                add_alert("Le nombre d'invités d'une des promos n'est même pas numérique");
+                if(!is_string($event_promo->promo))
+                {
+                    add_alert("Le nom du promo n'est même pas une chaine de caractères.");
+                    $error = true;
+                }
+                else
+                {
+                    $event_promo->promo = htmlspecialchars($event_promo->promo);
+                    $event_promo->promo_id = get_promo_id($event_promo->promo);
+                    if(empty($event_promo->promo_id))
+                    {
+                        add_alert("Aucun promo ne correspond à la promo donné. (".$event_promo->promo.")");
+                        $error = true;
+                    }
+                }
+            }
+            else
+            {
+                add_alert("Une des promos n'est pas transmise.");
                 $error = true;
             }
-            elseif(!is_an_integer(1*$event_promo->guest_number))
+            if(isset($event_promo->price))
             {
-                add_alert("Le nombre d'invités d'une des promos n'est même pas entier");
+                if(!is_numeric($event_promo->price))
+                {
+                    add_alert("Le prix d'une des promos n'est même pas numérique");
+                    $error = true;
+                }
+                elseif(!is_an_integer(100*$event_promo->price))
+                {
+                    add_alert("Le prix d'une des promos est défini avec une précision plus grande que le centime, ou n'est même pas positif");
+                    $error = true;
+                }
+                else
+                {
+                    $event_promo->price = htmlspecialchars($event_promo->price);
+                }
+            }
+            else
+            {
+                add_alert("Le prix d'une des promos n'est pas transmis");
+                $error = true;
+            }
+            if(isset($event_promo->quota))
+            {
+                if(!is_numeric($event_promo->quota))
+                {
+                    if(in_array($event_promo->quota, ['', null]))
+                    {
+                        $event_promo->quota = null;
+                    }
+                    else
+                    {
+                        add_alert("Le quota d'une des promos n'est même pas numérique");
+                        $error = true;
+                    }
+                }
+                elseif(!is_an_integer(1*$event_promo->quota))
+                {
+                    add_alert("Le quota d'une des promos n'est même pas entier");
+                    $error = true;
+                }
+                else
+                {
+                    $event_promo->quota = htmlspecialchars($event_promo->quota);
+                }
+            }
+            else
+            {
+                add_alert("Le quota d'une des promos n'est pas transmis.");
+                $error = true;
+            }
+            if(isset($event_promo->guest_number))
+            {
+                if(!is_numeric($event_promo->guest_number))
+                {
+                    add_alert("Le nombre d'invités d'une des promos n'est même pas numérique");
+                    $error = true;
+                }
+                elseif(!is_an_integer(1*$event_promo->guest_number))
+                {
+                    add_alert("Le nombre d'invités d'une des promos n'est même pas entier");
+                    $error = true;
+                }
+                else
+                {
+                    $event_promo->guest_number = htmlspecialchars($event_promo->guest_number);
+                }
+            }
+            else
+            {
+                add_alert("Le nombre d'invités d'une des promos n'est pas transmis.");
                 $error = true;
             }
         }
     }
     return !$error;
 }
+
+/**
+ * On vérifie que les infos sur la table options sont bonnes. Le nom est assez explicite
+ * @return boolean !$error (on renvoie donc true si tout va bien)
+ */
 
 function are_correct_options()
 {
@@ -329,7 +467,11 @@ function are_correct_options()
                 add_alert($option_name . "Le nom de l'option n'est même pas une chaine de caractères");
                 $error = true;
             }
-            elseif(strlen($option->name)>45)
+            else
+            {
+                $option->name = htmlspecialchars($option->name);
+            }
+            if(strlen($option->name)>45)
             {
                 add_alert($option_name . "Est-il nécessaire d'avoir un nom si long pour votre option ?");
                 $error = true;
@@ -352,6 +494,10 @@ function are_correct_options()
                 add_alert($option_name . "La description de l'option n'est même pas une chaine de caractères");
                 $error = true;
             }
+            else
+            {
+                $option->description = htmlspecialchars($option->description);
+            }
         }
         else
         {
@@ -373,6 +519,10 @@ function are_correct_options()
             {
                 add_alert($option_name . "Le quota d'une des options n'est même pas entier");
                 $error = true;
+            }
+            else
+            {
+                $option->quota = htmlspecialchars($option->quota);
             }
         }
         else
@@ -479,6 +629,10 @@ function are_correct_options()
                                 add_alert($option_name .  "Le nom combiné de votre évènement, de votre option, et de votre sous-option est trop grand... Enlevez quelques caractères là ou vous pouvez.");
                                 $error = true;
                             }
+                            else
+                            {
+                                $suboption->name = htmlspecialchars($suboption->name);
+                            }
                         }
                         else
                         {
@@ -496,6 +650,10 @@ function are_correct_options()
                             {
                                 add_alert($option_name .  "Le prix d'une sous-option select est défini avec une précision plus grande que le centime, ou n'est même pas positif");
                                 $error = true;
+                            }
+                            else
+                            {
+                                $suboption->price = htmlspecialchars($suboption->price);
                             }
                         }
                         else
@@ -521,6 +679,10 @@ function are_correct_options()
                             {
                                 add_alert($option_name .  "Le quota d'une sous-option select n'est pas un entier");
                                 $error = true;
+                            }
+                            else
+                            {
+                                $suboption->quota = htmlspecialchars($suboption->quota);
                             }
                         }
                         else
@@ -551,33 +713,51 @@ function are_correct_options()
             }
             foreach($option->accessibility as &$promo)
             {
-                if(!is_string($promo->site))
+                if(isset($promo->site))
                 {
-                    add_alert($option_name . "Le nom du site n'est même pas une chaine de caractères.");
-                    $error = true;
+                    if(!is_string($promo->site))
+                    {
+                        add_alert($option_name . "Le nom du site n'est même pas une chaine de caractères.");
+                        $error = true;
+                    }
+                    else
+                    {
+                        $promo->site = htmlspecialchars($promo->site);
+                        $promo->site_id = get_site_id($promo->site);
+                        if(empty($promo->site_id))
+                        {
+                            add_alert($option_name . "Aucun site ne correspond au site donné. (".$promo->site.")");
+                            $error = true;
+                        }
+                    }
                 }
                 else
                 {
-                    $promo->site_id = get_site_id($promo->site);
-                    if(empty($promo->site_id))
+                    add_alert($option_name . "Le nom du site n'est pas défini.");
+                    $error = true;
+                }
+                if(isset($promo->promo))
+                {
+                    if(!is_string($promo->promo))
                     {
-                        add_alert($option_name . "Aucun site ne correspond au site donné. (".$promo->site.")");
+                        add_alert($option_name . "Le nom du promo n'est même pas une chaine de caractères.");
                         $error = true;
                     }
-                }
-                if(!is_string($promo->promo))
-                {
-                    add_alert($option_name . "Le nom du promo n'est même pas une chaine de caractères.");
-                    $error = true;
+                    else
+                    {
+                        $promo->promo = htmlspecialchars($promo->promo);
+                        $promo->promo_id = get_promo_id($promo->promo);
+                        if(empty($promo->promo_id))
+                        {
+                            add_alert($option_name . "Aucun promo ne correspond à la promo donné. (".$promo->promo.")");
+                            $error = true;
+                        }
+                    }
                 }
                 else
                 {
-                    $promo->promo_id = get_promo_id($promo->promo);
-                    if(empty($promo->promo_id))
-                    {
-                        add_alert($option_name . "Aucun promo ne correspond à la promo donné. (".$promo->promo.")");
-                        $error = true;
-                    }
+                    add_alert($option_name . "Le nom de la promo n'est même pas une chaine de caractères.");
+                    $error = true;
                 }
             }
         }

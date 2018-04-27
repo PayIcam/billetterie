@@ -113,6 +113,12 @@ function delete_previous_option_accessibility($event_id)
     $option_accessibility_deletion = $db->prepare('DELETE FROM promo_site_has_options WHERE event_id = :event_id');
     return $option_accessibility_deletion->execute(array("event_id" => $event_id));
 }
+/**
+ * Cette fonction permet de savoir si des participants d'une certaine promo (promo+site) ont pris ou non leur place.
+ * Le principe est de compter le nombre de lignes ou des participants appartiennent à la promo. Si c'est 0 on return true, false sinon
+ * @param  array $ids [array('event_id' => , 'site_id' => , 'promo_id' => )]
+ * @return boolean
+ */
 function can_delete_promo($ids)
 {
     global $db;
@@ -126,6 +132,13 @@ function remove_promo($ids)
     $promo_removal = $db->prepare('UPDATE promos_site_specifications SET is_removed = 1 WHERE event_id= :event_id and site_id= :site_id and promo_id= :promo_id');
     return $promo_removal->execute($ids);
 }
+
+/**
+ * Cette fonction permet de savoir si des participants ont pris une certaine option.
+ * Le principe est de compter le nombre de lignes ou les participants ont pris l'option. Si c'est 0 on return true, false sinon
+ * @param  array $ids [array('event_id' => , 'option_id' => )]
+ * @return boolean
+ */
 function can_delete_option($ids)
 {
     global $db;
@@ -133,6 +146,12 @@ function can_delete_option($ids)
     $count_option->execute($ids);
     return $count_option->fetch()['rows'] == 0 ? true : false;
 }
+/**
+ * Cette fonction permet de savoir si des participants ont pris une certaine sous-option.
+ * Le principe est de compter le nombre de lignes ou les participants ont pris la sous-option. Si c'est 0 on return true, false sinon
+ * @param  array $ids [array('event_id' => , 'choice_id' => )]
+ * @return boolean
+ */
 function can_delete_option_choice($ids)
 {
     global $db;
@@ -164,6 +183,17 @@ function get_all_specification_details($event_id)
     return $promos_specifications;
 }
 
+/**
+ * Il y a un problème avec les options obligatoires. En effet, si l'option est obligatoire, il faut absolument que le participant la prenne. S'il ne l'avait pas, et qu'il allait sur la page d'edit, il aurait des soucis au moment d'envoyer les infos (c'est normal).
+ * Il faut donc faire très attention avec ces options. On peux passer une option d'obligatoire, à facultative quand on veux, mais pas l'inverse.
+ * Si un seul participant a pris sa place, est potentiellement visé par l'option, mais ne l'avait pas prise, alors, impossible de passer cette option en obligatoire.
+ * Cela irait si le participant avait pris l'option ceci dit
+ *
+ * Une fois ceci compris, le nom de la fonction pose clairement ce qui va être retourné
+ * On va compter le nombre de lignes ou on aurait des participants avec des problèmes si l'option devenait obligatoire, si c'est 0, on renvoie false, true sinon.
+ * @param  array $ids [array('option_id' => , 'event_id' => )]
+ * @return boolean      [description]
+ */
 function a_participant_would_have_to_pay_obliged_option($ids)
 {
     global $db;
@@ -180,6 +210,11 @@ function a_participant_would_have_to_pay_obliged_option($ids)
     return $count_option->fetch()['nb_participants_without_option'] == 0 ? false : true;
 }
 
+/**
+ * Retoune true si des participants ont djéà pris leur place. C'est le même problème qu'au dessus, mais en prenant compte d'une toute nouvelle option. C'est la carte de la simplicité qui est jouée ici.
+ * @param  [mixed] $event_id
+ * @return [boolean]           [description]
+ */
 function participants_already_took_places($event_id)
 {
     global $db;
@@ -188,6 +223,9 @@ function participants_already_took_places($event_id)
     return $count_promo->fetch()['current_total_quota'] == 0 ? false : true;
 }
 
+/**
+ * Le code est assez clair, il y a cette distinction, parce qu'il n'y a qu'un choix dans un checkbox, et plusieurs dans un select
+ */
 function insert_option_choices($data, $type)
 {
     global $db;

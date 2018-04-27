@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Permet d'afficher le formulaire d'inscription d'un Icam
+ * @param  [array] $event                [fetch de l'event]
+ * @param  [array] $promo_specifications [fetch de la promo de l'icam]
+ * @param  [array] $options              [fetchAll des options de l'event]
+ * @param  [array] $icam_reservation     [fetch de participant sur un edit, sinon null]
+ */
 function form_icam($event, $promo_specifications, $options, $icam_reservation = null)
 {
     global $ticketing_state;
@@ -69,6 +76,14 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
     <?php }
 }
 
+/**
+ * Permet d'afficher le formulaire d'inscription d'un invité
+ * @param  [array] $event                [fetch de l'event]
+ * @param  [array] $guest_specifications [fetch de la promo des invités]
+ * @param  [array] $options              [fetchAll des options de l'event]
+ * @param  [int] $i              [simple compteur, pour pas faire de problèmes et mettre des ids différentes]
+ * @param  [array] $guest_reservation     [fetch de participant sur un edit, sinon null]
+ */
 function form_guest($event, $guest_specifications, $options, $i, $guest_reservation=null)
 {
     global $ticketing_state;
@@ -116,6 +131,11 @@ function form_guest($event, $guest_specifications, $options, $i, $guest_reservat
     <?php
 }
 
+/**
+ * Permet d'afficher une checkbox option
+ * @param  [array]  $option     [fetch de options + ajout d'un fetch du bon option_choices à l'index $option['option_choices'][0]]
+ * @param  mixed $price_paid [si sur un edit, price_paid indiqué, pour afficher combien le participant a réellement payé (possible de changer le prix du checkbox, alors celui de l'option serait faux)]
+ */
 function checkbox_form($option, $price_paid=false)
 {
     ?>
@@ -134,6 +154,12 @@ function checkbox_form($option, $price_paid=false)
     </div>
     <?php
 }
+
+/**
+ * Permet d'afficher une select option
+ * @param  [array]  $option     [fetch de options + ajout d'un fetchAll des option_choices à l'index $option['option_choices']]
+ * @param  [mixed] $select_choice [fetch de option_choices]
+ */
 function select_form($option, $select_choice=null)
 {
     global $ticketing_state;
@@ -155,6 +181,11 @@ function select_form($option, $select_choice=null)
     <?php
 }
 
+/**
+ * Insérer les choix possibles, s'ils ne sont pas payés, sinon, afficher juste celui déjà pris
+ * @param  [array]  $option     [fetch de options + ajout d'un fetchAll des option_choices à l'index $option['option_choices']]
+ * @param  [mixed] $select_choice [fetch de option_choices]
+ */
 function insert_according_select_options($option, $select_choice=null)
 {
     $compteur=0;
@@ -181,6 +212,12 @@ function insert_according_select_options($option, $select_choice=null)
         <?php
     }
 }
+
+/**
+ * Permet d'afficher le message le message d'erreur indiquant qu'une transaction est en attente
+ * @param  [string] $payicam_transaction_url [url à laquelle payer la transaction]
+ * @param  [int] $event_id                [sert à mettre le bon lien s'il annule sa transaction]
+ */
 function cancel_or_finish_transaction($payicam_transaction_url, $event_id)
 {
     global $_CONFIG;
@@ -192,6 +229,5 @@ function cancel_or_finish_transaction($payicam_transaction_url, $event_id)
         <br>
         <a href="<?= $payicam_transaction_url ?>" class="btn btn-primary">Régler la réservation</a> - <a href="<?= $_CONFIG['public_url'].'inscriptions/php/cancel_transaction.php?event_id='.$event_id ?>" class="btn btn-danger">Annuler la réservation</a>
     </p>
-
     <?php
 }

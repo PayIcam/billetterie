@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Controlleur des insctiptions.
+ * Il faut tout d'abord vérifier que l'utilisateur n'a aucune réservation, sinon on le redirige vers l'edit
+ * On vérifie aussi qu'il n'y a pas de réservations en attente, sinon, on lui demande de les payer ou de les annuler
+ * On vérifie aussi que les quotas sont bons, et on affiche le bon nombre d'invités en fonction.
+ */
+
 require __DIR__ . '/../general_requires/_header.php';
 
 if(isset($_GET['event_id']))

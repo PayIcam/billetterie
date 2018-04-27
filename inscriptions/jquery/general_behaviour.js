@@ -1,3 +1,6 @@
+/**
+ * La fonction qui appelle toutes les autres
+ */
 function initialisation_inscriptions()
 {
     $("form")[0].reset();
@@ -28,6 +31,11 @@ function initialisation_inscriptions()
     }
 }
 
+/**
+ * Fonction qui permet de modifier le prix en bas de page, pour le faire correspondre à ce qu'il faut
+ * @param  {int} price
+ * @param  {string} target ['icam' ou 'guests']
+ */
 function change_recap_prices(price, target)
 {
     if(target == 'icam')
@@ -47,43 +55,53 @@ function change_recap_prices(price, target)
     $("#total_price").text(new_total_price+'€');
 }
 
+
+/**
+ * Précise ce qu'il doit se passer quand on touche au formulaire
+ * Il faut actualiser le prix en bas de page
+ * Il faut débloquer les options si on commence à entrer un invité
+ * Ajuster son nom juste au dessus, c'est plus joli
+ * etc ...
+ */
 function filling_form_behaviour()
 {
+    //Quand on entre quelque chose dans le nom ou le prénom des invités
     $("#registration_guests .guest_form input[class='form-control guest_firstname'], #registration_guests .guest_form input[class='form-control guest_lastname']").on("keyup change", function()
     {
         var prenom = $(this).parents('.guest_inputs').find('.guest_firstname').val();
         var nom = $(this).parents('.guest_inputs').find('.guest_lastname').val();
+
         if(!(prenom == '' && nom == ''))
         {
-            $(this).parents('.guest_form').find('.actual_guest_title').text(prenom + " " + nom);
-            if(!$(this).parents('.guest_form').find('.event_price').hasClass('already_counted'))
+            $(this).parents('.guest_form').find('.actual_guest_title').text(prenom + " " + nom); //On affiche le bon nom juste au dessus
+            if(!$(this).parents('.guest_form').find('.event_price').hasClass('already_counted')) //Si on l'a pas déjà fait
             {
-                $(this).parents('.guest_form').find('.guest_options').find('input, select').removeAttr('disabled');
-                $(this).parents('.guest_form').find('.event_price').attr('style', 'background-color: #468847');
+                $(this).parents('.guest_form').find('.guest_options').find('input, select').removeAttr('disabled'); //On permet de toucher aux options
+                $(this).parents('.guest_form').find('.event_price').attr('style', 'background-color: #468847'); //On met le prix de la bonne couleur, pour montrer qu'on est en train de prendre l'event
                 $(this).parents('.guest_form').find('select').change();
 
                 var guest_price = parseFloat($(this).parents('.guest_form').find('.event_price').text());
-                change_recap_prices(guest_price, 'guests');
+                change_recap_prices(guest_price, 'guests');//On change le récap des prix
 
-                $(this).parents('.guest_form').find('.event_price').addClass('already_counted');
+                $(this).parents('.guest_form').find('.event_price').addClass('already_counted');//On ajoute la classe already_counted pour ne plus refaire ça 10000 fois
             }
         }
         else
         {
-            if($(this).parents('.guest_form').find('.event_price').hasClass('already_counted'))
+            if($(this).parents('.guest_form').find('.event_price').hasClass('already_counted'))//Si il était compté, c'est que le champ n'était pas vide avant, et qu'il faut faire du changement
             {
-                $(this).parents('.guest_form').find('select').trigger('remove_price');
-                $(this).parents('.guest_form').find('.guest_options').find('input, select').attr('disabled', 'true');
+                $(this).parents('.guest_form').find('select').trigger('remove_price');//On trigger le remove_price pour remettre le bon prix
+                $(this).parents('.guest_form').find('.guest_options').find('input, select').attr('disabled', 'true');//On disable les options
                 $(this).parents('.guest_form').find('.guest_options').find('input:checkbox:checked').each(function()
                 {
                     $(this).prop('checked', false);
-                    $(this).change();
+                    $(this).change();//On trigger le change des checkbox pour que les prix se mettent à jour
                 });
-                $(this).parents('.guest_form').find('.event_price').attr('style', 'background-color: #b94a48');
-                $(this).parents('.guest_form').find('.actual_guest_title').text($(this).parents(".guest_informations").find(".guest_title_default_text").text());
+                $(this).parents('.guest_form').find('.event_price').attr('style', 'background-color: #b94a48');//On remet le badge en rouge
+                $(this).parents('.guest_form').find('.actual_guest_title').text($(this).parents(".guest_informations").find(".guest_title_default_text").text());//On remet un nom du genre Invité 3
                 var guest_price = parseFloat($(this).parents('.guest_form').find('.event_price').text());
-                change_recap_prices(-guest_price, 'guests');
-                $(this).parents('.guest_form').find('.event_price').removeClass('already_counted');
+                change_recap_prices(-guest_price, 'guests');//On remet le bon recap
+                $(this).parents('.guest_form').find('.event_price').removeClass('already_counted');//On enlève la classe already_counted
             }
         }
     });
@@ -91,12 +109,12 @@ function filling_form_behaviour()
     $(".checkbox_option input:checkbox").change(function()
     {
         var option_price = parseFloat($(this).siblings("label").find(".checkbox_price").text());
-        if($(this).is(":checked"))
+        if($(this).is(":checked"))//Si ça devient checked
         {
             $(this).siblings("label").find(".checkbox_price").attr("style", "background-color: #468847");
             if($(this).closest(".container").attr("id")=='registration_icam')
             {
-                change_recap_prices(option_price, 'icam');
+                change_recap_prices(option_price, 'icam');//On ajuste le prix, et on met en vert le prix
             }
             else if($(this).closest(".container").attr("id")=='registration_guests')
             {
@@ -104,11 +122,11 @@ function filling_form_behaviour()
             }
         }
         else
-        {
+        {//Sinon
             $(this).siblings("label").find(".checkbox_price").addClass('badge-info');
             if($(this).closest(".container").attr("id")=='registration_icam')
             {
-                change_recap_prices(-option_price, 'icam');
+                change_recap_prices(-option_price, 'icam');//On remet le prix de l'autre couleur, et on l'enlève du recap
             }
             else if($(this).closest(".container").attr("id")=='registration_guests')
             {
@@ -117,7 +135,7 @@ function filling_form_behaviour()
         }
     });
 
-    $(".select_option select").change(function()
+    $(".select_option select").change(function()//Même genre ici
     {
         if(!$(this).is(":disabled"))
         {
@@ -157,6 +175,14 @@ function filling_form_behaviour()
     });
 }
 
+/**
+ * Fonction qui permet de déterminer si les urls des forms sont bonnes ou non
+ * Elle affiche une erreur et cancel le submit si c'est le cas
+ * Vilain utilisateur qui veux faire n'importe quoi en frontend
+ *
+ * Renvoie true si les urls sont bonnes false sinon
+ * @return {boolean}
+ */
 function check_urls(add_alert)
 {
     var current_path = window.location.pathname;

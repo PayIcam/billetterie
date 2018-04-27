@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Sets all the <head> html code, and the header at the top of the body
+ * @param [string] $title [Title of the page]
+ */
 function set_header_navbar($title)
 {
     global $_CONFIG, $is_super_admin, $event_id, $Auth;
@@ -66,6 +70,11 @@ function set_header_navbar($title)
     <?php
 }
 
+/**
+ * Permits to add_an_alert easily using Bootstrap
+ * @param string $message [message which should be displayed]
+ * @param string $class   [type of Bootstrap alert]
+ */
 function add_alert($message, $class="danger")
 {
     ?>
@@ -76,6 +85,11 @@ function add_alert($message, $class="danger")
     <?php
 }
 
+/**
+ * Permits to add_an_alert easily using Bootstrap to the ajax response
+ * @param string $message [message which should be displayed]
+ * @param string $class   [type of Bootstrap alert]
+ */
 function add_alert_to_ajax_response($message, $class="danger")
 {
     ob_start(); ?>
@@ -88,7 +102,10 @@ function add_alert_to_ajax_response($message, $class="danger")
     global $ajax_json_response;
     $ajax_json_response['message'] .= $html_code_error;
 }
-
+/**
+ * Permits to set the header and the links to display an alert. This function is called when there is an error only
+ * @param [string] $title [name of the error, which will be the name of the page]
+ */
 function set_alert_style($title)
 {
     global $_CONFIG, $is_super_admin, $event_id;

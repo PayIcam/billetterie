@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Controlleur de la page servant à définir une nouvelle billetterie.
+ */
+
 require dirname(__DIR__) . '/general_requires/_header.php';
 
 if(isset($_GET['fundation_id']))

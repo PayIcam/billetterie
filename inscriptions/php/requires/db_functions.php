@@ -194,7 +194,7 @@ function get_participant_previous_option_choice_status($data)
 function update_participant_option_to_waiting($data)
 {
     global $db;
-    $option_query = $db->prepare('UPDATE participant_has_options SET status="W", price=:price, option_date=CURRENT_TIMESTAMP() WHERE event_id=:event_id and participant_id=:participant_id and choice_id=:choice_id');
+    $option_query = $db->prepare('UPDATE participant_has_options SET status="W", price=:price, option_date=CURRENT_TIMESTAMP(), payement=:payement WHERE event_id=:event_id and participant_id=:participant_id and choice_id=:choice_id');
     return $option_query->execute($data);
 }
 
