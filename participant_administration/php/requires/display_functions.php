@@ -417,6 +417,7 @@ function insert_select_options_no_checking($option)
  */
 function display_fundations_participants_admin($fundation)
 {
+    global $_CONFIG;
     ?>
     <div class="col-sm-4">
         <a data-toggle="collapse" href="#button_links_<?=$fundation->fun_id?>" role="button" aria-expanded="false" aria-controls="#button_links_<?=$fundation->fun_id?>"><h2><?=htmlspecialchars($fundation->name)?></h2></a>

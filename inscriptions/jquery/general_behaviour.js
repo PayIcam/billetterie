@@ -77,7 +77,7 @@ function filling_form_behaviour()
             if(!$(this).parents('.guest_form').find('.event_price').hasClass('already_counted')) //Si on l'a pas déjà fait
             {
                 $(this).parents('.guest_form').find('.guest_options').find('input, select').removeAttr('disabled'); //On permet de toucher aux options
-                $(this).parents('.guest_form').find('.event_price').attr('style', 'background-color: #468847'); //On met le prix de la bonne couleur, pour montrer qu'on est en train de prendre l'event
+                $(this).parents('.guest_form').find('.event_price').removeClass('badge-error').addClass('badge-success'); //On met le prix de la bonne couleur, pour montrer qu'on est en train de prendre l'event
                 $(this).parents('.guest_form').find('select').change();
 
                 var guest_price = parseFloat($(this).parents('.guest_form').find('.event_price').text());
@@ -97,7 +97,7 @@ function filling_form_behaviour()
                     $(this).prop('checked', false);
                     $(this).change();//On trigger le change des checkbox pour que les prix se mettent à jour
                 });
-                $(this).parents('.guest_form').find('.event_price').attr('style', 'background-color: #b94a48');//On remet le badge en rouge
+                $(this).parents('.guest_form').find('.event_price').removeClass('badge-success').addClass('badge-error');//On remet le badge en rouge
                 $(this).parents('.guest_form').find('.actual_guest_title').text($(this).parents(".guest_informations").find(".guest_title_default_text").text());//On remet un nom du genre Invité 3
                 var guest_price = parseFloat($(this).parents('.guest_form').find('.event_price').text());
                 change_recap_prices(-guest_price, 'guests');//On remet le bon recap
@@ -111,7 +111,7 @@ function filling_form_behaviour()
         var option_price = parseFloat($(this).siblings("label").find(".checkbox_price").text());
         if($(this).is(":checked"))//Si ça devient checked
         {
-            $(this).siblings("label").find(".checkbox_price").attr("style", "background-color: #468847");
+            $(this).siblings("label").find(".checkbox_price").removeClass('badge-info').addClass('badge-success');
             if($(this).closest(".container").attr("id")=='registration_icam')
             {
                 change_recap_prices(option_price, 'icam');//On ajuste le prix, et on met en vert le prix
@@ -152,7 +152,10 @@ function filling_form_behaviour()
                 new_price = 0;
             }
 
-            $(this).parents(".select_option").find(".select_price").text(new_price+'€');
+            $(this).parents(".select_option").find(".select_price").text(new_price+'€').filter(function()
+                {
+                    return $.trim($(this).parents(".select_option").find("select option:selected").text()) != 'Sélectionnez votre option !';
+                }).removeClass('badge-info').addClass('badge-success');
 
             if($(this).closest(".container").attr("id")=='registration_icam')
             {

@@ -26,14 +26,13 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                 $participant = get_participant_event_data(array('event_id' => $event_id, 'participant_id' => $_GET['participant_id']));
                 if(!empty($participant))
                 {
-                    $is_icam = $participant['is_icam'];
-                    $verification = check_update_participant_data($_POST, $is_icam);
+                    $verification = check_update_participant_data($participant['is_icam']);
                     if(!$verification)
                     {
                         die();
                     }
 
-                    if($is_icam==0)
+                    if($participant['is_icam']==0)
                     {
                         update_participant_data(array(
                             'event_id' => $event_id,

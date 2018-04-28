@@ -51,12 +51,12 @@
         <!-- Si le ticketing_state n'indique pas que la billetterie est ouverte, c'est qu'on peux juste voir ses réservations, parce que la billetterie a fermé il y a peu. On ne peux par contre RIEN changer -->
         <?php if($ticketing_state=='open') { ?>
         <div id="recapitulatif" class="container">
-            <h3> Récapitulatif du coût de vos nouvelles réservations : <span id="total_price" class="badge" style="background-color:#428bca; font-size:0.8em;"> <?= isset($icam_event_data) ? 0 : htmlspecialchars($promo_specifications['price'])?>€ </span> </h3>
+            <h3> Récapitulatif du coût de vos nouvelles réservations : <span id="total_price" class="badge badge-pill badge-info" style="font-size:0.8em;"> <?= isset($icam_event_data) ? 0 : htmlspecialchars($promo_specifications['price'])?>€ </span> </h3>
             <div id="recap_icam">
-                <h4>Pour vous même : <span id="icam_total_price" class="badge" style="background-color:#428bca; font-size:0.8em;"><?= isset($icam_event_data) ? 0 : $promo_specifications['price']?>€</span></h4>
+                <h4>Pour vous même : <span id="icam_total_price" class="badge badge-pill badge-info" style="font-size:0.8em;"><?= isset($icam_event_data) ? 0 : $promo_specifications['price']?>€</span></h4>
             </div>
             <div id="recap_guests">
-                <h4>Pour vos invités : <span id="guests_total_prices" class="badge" style="background-color:#428bca; font-size:0.8em;">0€</span></h4>
+                <h4>Pour vos invités : <span id="guests_total_prices" class="badge badge-pill badge-info" style="font-size:0.8em;">0€</span></h4>
             </div>
         </div>
         <br><br>

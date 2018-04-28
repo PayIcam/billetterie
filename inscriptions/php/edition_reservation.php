@@ -146,6 +146,7 @@ if(!empty($_POST))
     {
         //Mise à jour de l'Icam, et ajout d'options s'il y en a
         $icam_id = $icam_data->participant_id;
+        $icam_data->telephone = $icam_data->telephone=='' ? null : $icam_data->telephone;
 
         $icam_insertion_data = array(
             "telephone" => $icam_data->telephone,

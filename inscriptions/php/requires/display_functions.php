@@ -19,7 +19,7 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
    <div id="icam_informations">
         <h4>
             Votre propre place
-            <span class="badge event_price" style="background-color: #468847"><?= htmlspecialchars($promo_specifications['price']). "€" ?></span>
+            <span class="badge bade-pill badge-success event_price"><?= htmlspecialchars($promo_specifications['price']). "€" ?></span>
         </h4>
 
         <div class="row">
@@ -92,7 +92,7 @@ function form_guest($event, $guest_specifications, $options, $i, $guest_reservat
     <div class="guest_form col-sm-6 <?= $guest_reservation!=null ? "previous_guest" : "" ?>">
         <h3 class="guest_title">
             <span class="actual_guest_title">Invité n°<?=$i?></span>
-            <span class="badge event_price" style="background-color: #b94a48"><?= htmlspecialchars($guest_specifications['price']). "€" ?></span>
+            <span class="badge badge-pill <?=$guest_reservation==null ? 'badge-error' : 'badge-success' ?> event_price"><?= htmlspecialchars($guest_specifications['price']). "€" ?></span>
         </h3>
         <div class="guest_informations">
             <span class="guest_title_default_text" style="display:none">Invité n°<?=$i?></span>
@@ -139,11 +139,11 @@ function form_guest($event, $guest_specifications, $options, $i, $guest_reservat
 function checkbox_form($option, $price_paid=false)
 {
     ?>
-    <div class="checkbox_option form-check" <?= $checked ? "data-payed=1" : "" ?> >
+    <div class="checkbox_option form-check" <?= $price_paid ? "data-payed=1" : "" ?> >
         <input class="form-check-input has_option" name="has_option" type="checkbox" value="<?=$option['option_choices'][0]['choice_id']?>" <?= $price_paid ? "checked disabled data-payed=1" : "" ?> >
         <label class="form-check-label">
             <span class="option_name"><?= htmlspecialchars($option['name']) ?></span>
-            <span class="checkbox_price badge badge-pill badge-info"><?= isset($price_paid) ? htmlspecialchars($price_paid) : htmlspecialchars($option['option_choices'][0]['price']) . ' €' ?></span>
+            <span class="checkbox_price badge badge-pill badge-info"><?= $price_paid!==false ? htmlspecialchars($price_paid) : htmlspecialchars($option['option_choices'][0]['price'])?>€</span>
             <button class="btn option_tooltip" data-container="body" data-toggle="popover" title="Description de l'option : " data-content="<?= htmlspecialchars($option['description']) ?>" type="button">
                 <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
             </button>
@@ -167,7 +167,7 @@ function select_form($option, $select_choice=null)
     <div class="select_option form-group" <?= $select_choice!=null ? "data-payed=1" : "" ?>>
         <label>
             <span><?= htmlspecialchars($option['name']) ?></span>
-            <span class="select_price badge" style="background-color: #468847"></span>
+            <span class="select_price badge badge-pill <?= isset($select_choice) ? 'badge-success' : 'badge-info' ?>"></span>
             <button class="btn option_tooltip" type="button" data-container="body" data-toggle="popover" title="Description de l'option : " data-content="<?= htmlspecialchars($option['description']) ?>">
                 <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
             </button>

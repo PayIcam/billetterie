@@ -68,10 +68,10 @@ function participant_options_handling($event_id, $participant_id, $options)
         $article_id = get_option_article_id($option->choice_id);
 
         //Il est possible qu'il y ait déjà une option qui ait été prise par le participant, mais annulée. Dans ce cas, on ne peux en créer une autre. Il faut mettre à jour celle ci.
-        $previous_status = get_participant_previous_option_choice_status(array('event_id' => $event_id, 'participant_id' => $participant_id, 'choice_id' => $option->choice_id, 'payement' => 'PayIcam'));
+        $previous_status = get_participant_previous_option_choice_status(array('event_id' => $event_id, 'participant_id' => $participant_id, 'choice_id' => $option->choice_id));
         if($previous_status!==false)
         {
-            update_participant_option_to_waiting(array("event_id" => $event_id, "participant_id" => $participant_id, "choice_id" => $option->choice_id, "price" => $option->price));
+            update_participant_option_to_waiting(array("event_id" => $event_id, "participant_id" => $participant_id, "choice_id" => $option->choice_id, "price" => $option->price, 'payement' => 'PayIcam'));
         }
         else
         {
