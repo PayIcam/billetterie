@@ -371,6 +371,7 @@ function prepare_participant_displaying($participant)
 {
     global $event_id;
 
+    $participant['is_in'] = participant_has_arrived($participant['participant_id']);
     $participant['promo'] = get_promo_name($participant['promo_id']);
     $participant['site'] = get_site_name($participant['site_id']);
 

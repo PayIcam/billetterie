@@ -385,12 +385,19 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
     $payement_search_regex = substr($payement_search_regex, 0, count($payement_search_regex)-2).'){1}#i';
 
     $options = get_option_names($event_id);
-    $option_search_regex = '#(';
-    foreach($options as $option)
+    if(!empty($options))
     {
-        $option_search_regex .= $option . '|';
+        $option_search_regex = '#(';
+        foreach($options as $option)
+        {
+            $option_search_regex .= $option . '|';
+        }
+        $option_search_regex = substr($option_search_regex, 0, count($option_search_regex)-2).'){1}#i';
     }
-    $option_search_regex = substr($option_search_regex, 0, count($option_search_regex)-2).'){1}#i';
+    else
+    {
+        $option_search_regex = '#0000#';
+    }
 
     switch ($recherche)
     {
@@ -463,6 +470,21 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             $count_recherche -> execute(array('bracelet_identification' => $recherche, 'event_id' => $event_id));
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
             break;
+
+        //gets all arrived guests
+        case(preg_match("#^entrée[s]?$#i", $recherche)==1):
+        {
+            $recherche_bdd = $db->prepare('SELECT * FROM participants p LEFT JOIN arrivals a on a.participant_id=p.participant_id and a.event_id=p.event_id WHERE a.participant_id IS NOT NULL and status="V" and p.event_id=:event_id ORDER BY p.participant_id LIMIT :start_lign, :rows_per_page');
+            $count_recherche = get_arrival_number($event_id);
+            break;
+        }
+        //gets all guests which did not arrive yet
+        case(preg_match("#^no[t]? entrée[s]?$#i", $recherche)==1):
+        {
+            $recherche_bdd = $db->prepare('SELECT * FROM participants p LEFT JOIN arrivals a on a.participant_id=p.participant_id and a.event_id=p.event_id WHERE a.participant_id IS NULL and status="V" and p.event_id=:event_id ORDER BY p.participant_id LIMIT :start_lign, :rows_per_page');
+            $count_recherche = get_arrival_number($event_id);
+            break;
+        }
 
         //gets all the icams
         case (preg_match("#^icam[s]?$#i", $recherche)==1):

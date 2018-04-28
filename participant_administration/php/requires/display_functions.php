@@ -143,8 +143,9 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
  * @param  boolean $date_payement     [default : false]
  * @param  boolean $pending_indicator [default : true]
  * @param  boolean $guest_info        [default : true]
+ * @param  boolean $arrivals        [default : true]
  */
-function display_liste_head($specification="", $id=true, $status=false, $personnal_infos=true, $options=true, $edit=true, $additions=true, $bracelet=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
+function display_liste_head($specification="", $id=true, $status=false, $personnal_infos=true, $options=true, $edit=true, $additions=true, $bracelet=true, $date_payement=false, $pending_indicator=true, $guest_info=true, $arrivals=true)
 {
     global $Auth;
     if(!$Auth->hasRole('super-admin'))
@@ -197,6 +198,7 @@ function display_liste_head($specification="", $id=true, $status=false, $personn
         <?php if($pending_indicator) { ?> <th scope="col">Attente</th> <?php } ?>
         <?php if($edit) { ?> <th scope="col">Editer</th> <?php } ?>
         <?php if($additions) { ?> <th scope="col">Ajouts</th> <?php } ?>
+        <?php if($arrivals) { ?> <th scope="col">Entrer/sortir</th> <?php } ?>
     <?php
 }
 
@@ -273,8 +275,9 @@ function display_promo($promo)
  * @param  boolean $date_payement     [default : false]
  * @param  boolean $pending_indicator [default : true]
  * @param  boolean $guest_info        [default : true]
+ * @param  boolean $arrivals        [default : true]
  */
-function display_participant_info($participant, $specification="", $id=true, $status=false, $options=true, $edit=true, $additions=true, $bracelet=true, $personnal_infos=true, $date_payement=false, $pending_indicator=true, $guest_info=true)
+function display_participant_info($participant, $specification="", $id=true, $status=false, $options=true, $edit=true, $additions=true, $bracelet=true, $personnal_infos=true, $date_payement=false, $pending_indicator=true, $guest_info=true, $arrivals=true)
 {
     global $Auth;
     if(!$Auth->hasRole('super-admin'))
@@ -311,7 +314,7 @@ function display_participant_info($participant, $specification="", $id=true, $st
         $pending_indicator = false;
     }
     ?>
-    <tr>
+    <tr data-participant_id=<?=$participant['participant_id']?> >
         <?= $id ? "<td>" . $participant['participant_id'] . "</td>" : "" ?>
         <?= $status ? "<td>" . $participant['status'] . "</td>" : "" ?>
         <td class="prenom"><?= htmlspecialchars($participant['prenom']) ?></td>
@@ -324,6 +327,7 @@ function display_participant_info($participant, $specification="", $id=true, $st
         <?= $pending_indicator ? display_pending_reservations($participant) : "" ?>
         <?= $edit ? link_to_edit_reservation($participant) : "" ?>
         <?= $additions ? links_to_various_addition($participant) : "" ?>
+        <?= $arrivals ? display_validate_button($participant) : "" ?>
     </tr>
     <?php
 }
@@ -605,8 +609,6 @@ function display_participants_rows($participants)
     foreach($participants as $participant)
     {
         $participant = prepare_participant_displaying($participant);
-        $participant['site'] = get_site_name($participant['site_id']);
-        $participant['is_in'] = participant_has_arrived($participant['participant_id']);
         ?>
         <tr data-participant_id=<?=$participant['participant_id']?>>
             <td><span class='badge badge-pill badge-success'><?=$participant['bracelet_identification']?></span></td>
