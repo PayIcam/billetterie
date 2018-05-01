@@ -185,10 +185,10 @@ if(!empty($_POST))
                     }
                     elseif($option->type == "Select")
                     {
+                        $previous_option_choices_update_data = array();
+                        $previous_option_choices_addition_data = array();
                         foreach($option->type_specification as &$select_option)
                         {
-                            $previous_option_choices_update_data = array();
-                            $previous_option_choices_addition_data = array();
                             if(isset($select_option->choice_id))//Ce choix existait déjà, il faut juste le MAJ
                             {
                                 $article_id = get_choice_article_id($select_option->choice_id);

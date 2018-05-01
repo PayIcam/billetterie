@@ -824,7 +824,7 @@ function display_option_choices_stats($choices_stats)
         <tr>
             <td><?=$choice_stats['name']?></td>
             <td><?=$choice_stats['choice_count']?></td>
-            <td><?=$choice_stats['quota']?></td>
+            <td><?=$choice_stats['quota'] !== null ? $choice_stats['quota'] : "infini" ?></td>
             <td class="<?=display_pourcentage_style($choice_stats['pourcentage_choice'], 2)?>"><?=$choice_stats['pourcentage_choice']?></td>
         </tr>
         <?php
