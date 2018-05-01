@@ -291,7 +291,7 @@ function get_options_stats($event_id)
     $option_stats = $option_stats->fetchAll();
     foreach($option_stats as &$option)
     {
-        $option['pourcentage_option'] = $option['quota'] !=0 ? round(100 * $option['option_count'] / $option['quota'], 2) . '%' : "0%";
+        $option['pourcentage_option'] = $option['quota'] !=0 ? round(100 * $option['option_count'] / $option['quota'], 2) . '%' : "undefined";
         if($option['type'] == 'Select')
         {
             $choices_stats = $db->prepare('SELECT oc.name, oc.quota, COUNT(*) choice_count FROM participant_has_options pho

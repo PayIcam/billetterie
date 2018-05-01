@@ -451,7 +451,7 @@ function display_promo_stats($promos_data)
             <th class="col-sm-2"><?= $promo_stats['promo_name'] . " " . $promo_stats['site_name'] ?></th>
             <td class="col-sm-1"><?= $promo_stats['promo_count'] ?></td>
             <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_quota'], 2)?>"><?= $promo_stats['pourcentage_quota'] ?></td>
-            <td class="col-sm-1"><?= $promo_stats['quota'] ?></td>
+            <td class="col-sm-1"><?= $promo_stats['quota'] !== null ? $promo_stats['quota'] : "infini" ?></td>
             <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_evenement'], count($promos_data))?>"><?= $promo_stats['pourcentage_evenement'] ?></td>
             <td class="col-sm-1"><?= $promo_stats['invited_guests'] ?></td>
             <td class="col-sm-1 <?=display_pourcentage_style($promo_stats['pourcentage_invites'], count($promos_data))?>"><?= $promo_stats['pourcentage_invites'] ?></td>
@@ -513,6 +513,8 @@ function display_pourcentage_style($pourcentage, $number_rows)
 {
     switch ($pourcentage)
     {
+        case ('undefined'):
+            break;
         case ($pourcentage<40/$number_rows):
             echo 'danger';
             break;
@@ -768,6 +770,10 @@ function display_go_to_arrivals($event_id)
     <?php
 }
 
+/**
+ * Permet d'afficher les statistiques des options
+ * @param  [array] $option_stats [retour de la fonction get_option_stats]
+ */
 function display_option_stats($option_stats)
 {
     $i=0;
@@ -791,7 +797,7 @@ function display_option_stats($option_stats)
                     <tr>
                         <td><?=$option_stats['type'] == 'Select' ? 'Total' : $option_stats['name']?></td>
                         <td><?=$option_stats['option_count']?></td>
-                        <td><?=$option_stats['quota']?></td>
+                        <td><?= $option_stats['quota'] !== null ? $option_stats['quota'] : "infini" ?></td>
                         <td class="<?=display_pourcentage_style($option_stats['pourcentage_option'], 2)?>"><?=$option_stats['pourcentage_option']?></td>
                     </tr>
                 </tbody>
@@ -805,11 +811,15 @@ function display_option_stats($option_stats)
     }
 }
 
+/**
+ * [display_option_choices_stats description]
+ * @param  [array] $choices_stats [statistiques et informations sur les choix pris]
+ */
 function display_option_choices_stats($choices_stats)
 {
     foreach($choices_stats as $choice_stats)
     {
-        $choice_stats['pourcentage_choice'] = $choice_stats['quota'] !=0 ? round(100 * $choice_stats['choice_count'] / $choice_stats['quota'], 2) . '%' : "0%";
+        $choice_stats['pourcentage_choice'] = $choice_stats['quota'] !=0 ? round(100 * $choice_stats['choice_count'] / $choice_stats['quota'], 2) . '%' : "undefined";
         ?>
         <tr>
             <td><?=$choice_stats['name']?></td>
