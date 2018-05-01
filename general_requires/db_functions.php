@@ -481,8 +481,8 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
         //gets all guests which did not arrive yet
         case(preg_match("#^no[t]? entrée[s]?$#i", $recherche)==1):
         {
-            $recherche_bdd = $db->prepare('SELECT * FROM participants p LEFT JOIN arrivals a on a.participant_id=p.participant_id and a.event_id=p.event_id WHERE a.participant_id IS NULL and status="V" and p.event_id=:event_id ORDER BY p.participant_id LIMIT :start_lign, :rows_per_page');
-            $count_recherche = get_arrival_number($event_id);
+            $recherche_bdd = $db->prepare('SELECT p.* FROM participants p LEFT JOIN arrivals a on a.participant_id=p.participant_id and a.event_id=p.event_id WHERE a.participant_id IS NULL and status="V" and p.event_id=:event_id ORDER BY p.participant_id LIMIT :start_lign, :rows_per_page');
+            $count_recherche = get_whole_current_quota($event_id) - get_arrival_number($event_id);
             break;
         }
 

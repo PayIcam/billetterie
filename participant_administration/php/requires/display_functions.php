@@ -474,7 +474,7 @@ function display_payments_stats($payments_stats, $total_number)
         $pourcentage_payment = round(100 * $payment_stats['nombre'] / $total_number, 2) .'%';
         ?>
         <tr>
-            <th class="col-sm-3"><?= $payment_stats['payement']?></th>
+            <th class="col-sm-2"><?= $payment_stats['payement']?></th>
             <td class="col-sm-1"><?= $payment_stats['nombre'] ?></td>
             <td class="col-sm-1 <?=display_pourcentage_style($pourcentage_payment, count($payments_stats))?>"><?= $pourcentage_payment ?></td>
         </tr>
@@ -494,7 +494,7 @@ function display_days_stats($days_stats, $total_number)
         $pourcentage_day = round(100 * $day_stats['nombre'] / $total_number, 2) .'%';
         ?>
         <tr>
-            <th class="col-sm-3"><?= $day_stats['day']?></th>
+            <th class="col-sm-2"><?= $day_stats['day']?></th>
             <td class="col-sm-1"><?= $day_stats['nombre'] ?></td>
             <td class="col-sm-1 <?=display_pourcentage_style($pourcentage_day, count($days_stats))?>"><?= $pourcentage_day ?></td>
         </tr>
@@ -766,4 +766,57 @@ function display_go_to_arrivals($event_id)
         <a class="btn btn-primary" href="<?=$_CONFIG['public_url']?>participant_administration/entrees.php?event_id=<?=$event_id?>">Aller aux entrées</a>
     </div>
     <?php
+}
+
+function display_option_stats($option_stats)
+{
+    $i=0;
+    foreach($option_stats as $option_stats)
+    {
+        $i++;
+        ?>
+        <div class="col-sm-6">
+            <h3 class="text-center"><?=$option_stats['name']?></h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Choix</th>
+                        <th>Nombre de participants</th>
+                        <th>Quota</th>
+                        <th>Pourcentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php display_option_choices_stats($option_stats['choices']); ?>
+                    <tr>
+                        <td><?=$option_stats['type'] == 'Select' ? 'Total' : $option_stats['name']?></td>
+                        <td><?=$option_stats['option_count']?></td>
+                        <td><?=$option_stats['quota']?></td>
+                        <td class="<?=display_pourcentage_style($option_stats['pourcentage_option'], 2)?>"><?=$option_stats['pourcentage_option']?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <?php
+        if($i%2==0)
+        {
+            echo '</div><div class="row">';
+        }
+    }
+}
+
+function display_option_choices_stats($choices_stats)
+{
+    foreach($choices_stats as $choice_stats)
+    {
+        $choice_stats['pourcentage_choice'] = $choice_stats['quota'] !=0 ? round(100 * $choice_stats['choice_count'] / $choice_stats['quota'], 2) . '%' : "0%";
+        ?>
+        <tr>
+            <td><?=$choice_stats['name']?></td>
+            <td><?=$choice_stats['choice_count']?></td>
+            <td><?=$choice_stats['quota']?></td>
+            <td class="<?=display_pourcentage_style($choice_stats['pourcentage_choice'], 2)?>"><?=$choice_stats['pourcentage_choice']?></td>
+        </tr>
+        <?php
+    }
 }

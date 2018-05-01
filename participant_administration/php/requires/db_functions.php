@@ -109,15 +109,22 @@ function get_event_details_stats($event_id)
 {
     global $db;
     $details_stats = $db->prepare('
-        SELECT e.*, SUM(IF(p.status IN ("V", "W"), 1, 0)) total_count, SUM(IF(p.bracelet_identification IS NULL or p.status="A", 0, 1)) total_bracelet_count, SUM(IF(pr.still_student = 1 and p.status!="A", 1, 0)) student_count, SUM(IF(pr.still_student = 0 and p.status!="A", 1, 0)) graduated_count, SUM(IF(pr.promo_name="Invités" and p.status!="A", 1, 0)) guests_count
+        SELECT e.*, COUNT(p.participant_id) total_count, SUM(IF(p.bracelet_identification IS NOT NULL, 1, 0)) total_bracelet_count, SUM(IF(pr.still_student = 1, 1, 0)) student_count, SUM(IF(pr.still_student = 0, 1, 0)) graduated_count, SUM(IF(pr.promo_name="Invités", 1, 0)) guests_count, COUNT(a.participant_id) arrival_count
         FROM events e
-        LEFT JOIN participants p on p.event_id=e.event_id LEFT JOIN promos pr ON pr.promo_id=p.promo_id LEFT JOIN promos_site_specifications pss ON p.promo_id = pss.promo_id and p.site_id = pss.site_id and p.event_id=pss.event_id
-        WHERE e.event_id=:event_id');
+        LEFT JOIN participants p on p.event_id=e.event_id
+        LEFT JOIN promos pr ON pr.promo_id=p.promo_id
+        LEFT JOIN promos_site_specifications pss ON p.promo_id = pss.promo_id and p.site_id = pss.site_id and p.event_id=pss.event_id
+        LEFT JOIN arrivals a ON a.participant_id=p.participant_id and a.event_id=p.event_id
+        WHERE e.event_id=:event_id and p.status!="A"');
     $details_stats->execute(array('event_id' => $event_id));
 
     $type_quotas = $db->prepare('SELECT SUM(IF(pr.still_student=0, quota, 0)) graduated_quota, SUM(IF(pr.still_student=1, quota, 0)) student_quota, SUM(IF(pr.promo_name="Invités", quota, 0)) guest_quota FROM promos_site_specifications pss LEFT JOIN promos pr ON pr.promo_id=pss.promo_id WHERE pss.event_id=:event_id and (pr.still_student!=2 or pr.promo_name="Invités")');
     $type_quotas->execute(array('event_id' => $event_id));
-    return array_merge($details_stats->fetch(), $type_quotas->fetch());
+
+    $options_count = $db->prepare('SELECT COUNT(DISTINCT participant_id) options_count FROM participant_has_options WHERE event_id=:event_id');
+    $options_count->execute(array('event_id' => $event_id));
+
+    return array_merge($details_stats->fetch(), $type_quotas->fetch(), $options_count->fetch());
 }
 function get_promo_specification_details_stats($event_id)
 {
@@ -125,14 +132,17 @@ function get_promo_specification_details_stats($event_id)
     $details_stats = $db->prepare('
         SELECT pr.promo_name, s.site_name, pss.quota, pss.guest_number, SUM(IF(p.status IN ("V", "W"), 1, 0)) promo_count, SUM(IF(p.bracelet_identification IS NULL or p.status="A", 0, 1)) bracelet_count
         FROM promos_site_specifications pss
-        LEFT JOIN participants p ON p.promo_id = pss.promo_id and p.site_id = pss.site_id and pss.event_id=p.event_id LEFT JOIN promos pr ON pr.promo_id=pss.promo_id LEFT JOIN sites s ON s.site_id=pss.site_id
+        LEFT JOIN participants p ON p.promo_id = pss.promo_id and p.site_id = pss.site_id and pss.event_id=p.event_id
+        LEFT JOIN promos pr ON pr.promo_id=pss.promo_id
+        LEFT JOIN sites s ON s.site_id=pss.site_id
         WHERE p.event_id=:event_id and status != "A"
         GROUP BY pss.promo_id, pss.site_id, pss.quota, pss.guest_number');
     $details_stats->execute(array('event_id' => $event_id));
     $details_stats = $details_stats->fetchAll();
     $guest_promo_count = $db->prepare('SELECT COUNT(ihg.icam_id) invited_guests
         FROM promos_site_specifications pss
-        LEFT JOIN participants p ON p.promo_id = pss.promo_id and p.site_id = pss.site_id and pss.event_id=p.event_id LEFT JOIN icam_has_guests ihg on ihg.icam_id=p.participant_id
+        LEFT JOIN participants p ON p.promo_id = pss.promo_id and p.site_id = pss.site_id and pss.event_id=p.event_id
+        LEFT JOIN icam_has_guests ihg on ihg.icam_id=p.participant_id
         WHERE p.event_id=:event_id and status != "A"
         GROUP BY p.promo_id, p.site_id');
     $guest_promo_count->execute(array('event_id' => $event_id));
@@ -266,4 +276,38 @@ function participant_can_have_choice($ids)
         WHERE p.participant_id=:participant_id and oc.choice_id=:choice_id');
     $rows_number->execute($ids);
     return $rows_number->fetch()['COUNT(*)']==1 ? true : false;
+}
+
+function get_options_stats($event_id)
+{
+    global $db;
+    $option_stats = $db->prepare('SELECT o.option_id, o.name, o.quota, o.type, COUNT(*) option_count FROM participant_has_options pho
+        LEFT JOIN participants p ON p.participant_id=pho.participant_id
+        LEFT JOIN option_choices oc ON pho.choice_id = oc.choice_id
+        LEFT JOIN options o ON oc.option_id=o.option_id
+        WHERE p.status!="A" and pho.status!="A" and p.event_id=:event_id
+        GROUP BY o.option_id, o.name, o.quota, o.type');
+    $option_stats->execute(array('event_id' => $event_id));
+    $option_stats = $option_stats->fetchAll();
+    foreach($option_stats as &$option)
+    {
+        $option['pourcentage_option'] = $option['quota'] !=0 ? round(100 * $option['option_count'] / $option['quota'], 2) . '%' : "0%";
+        if($option['type'] == 'Select')
+        {
+            $choices_stats = $db->prepare('SELECT oc.name, oc.quota, COUNT(*) choice_count FROM participant_has_options pho
+                LEFT JOIN participants p ON p.participant_id=pho.participant_id
+                LEFT JOIN option_choices oc ON pho.choice_id = oc.choice_id
+                WHERE p.status!="A" and pho.status!="A" and p.event_id=:event_id and oc.option_id=:option_id
+                GROUP BY oc.choice_id, oc.name, oc.quota
+                ');
+            $choices_stats->execute(array('option_id' => $option['option_id'], 'event_id' => $event_id));
+            $choices_stats = $choices_stats->fetchAll();
+            $option['choices'] = $choices_stats;
+        }
+        else
+        {
+             $option['choices'] = array();
+        }
+    }
+    return $option_stats;
 }
