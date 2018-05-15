@@ -23,7 +23,15 @@ if($Auth->hasRole('admin'))
         $event_id = $_GET['event_id'];
         if(event_id_is_correct($event_id))
         {
-            check_user_fundations_rights(get_fundation_id($event_id));
+            $fundation_id = get_fundation_id($event_id);
+            check_user_fundations_rights($fundation_id);
+            if(!has_admin_rights($fundation_id, 'getPayutcClient'))
+            {
+                set_alert_style("Erreur droits admin");
+                add_alert("Vous n'avez pas les droits nécessaires pour ajouter un participant.");
+                die();
+            }
+
             $event = get_event_details($event_id);
             $promos = array_column(get_event_promo_names($event_id), 'promo_name');
             $sites = array_column(get_event_site_names($event_id), 'site_name');

@@ -47,14 +47,26 @@ function getPayutcClient($service)
 $route = str_replace($_CONFIG['base_path'], '', $_SERVER['REQUEST_URI']);
 $route = current(explode('?', $route, 2));
 
+$payutcClient = getPayutcClient("WEBSALE");
+$Auth = new \CoreHelpers\Auth();
+$is_super_admin = $payutcClient->isSuperAdmin();
+$is_admin = $payutcClient->isAdmin();
+
+if(isset($_SESSION['icam_informations']))
+{
+    $payutcClient = getPayutcClient("WEBSALE");
+    check_if_folder_is_active('ticketing');
+}
+
 switch($_SERVER['REQUEST_URI'])
 {
     case strpos($_SERVER['REQUEST_URI'], '/event_administration/') !== false:
         $payutcClient = getPayutcClient("GESARTICLE");
         if(isset($_SESSION['icam_informations']))
         {
-            redirect_if_not_admin($payutcClient->isSuperAdmin());
+            // redirect_if_not_admin($payutcClient->isSuperAdmin());
             $fundations = redirect_if_no_rights();
+            check_if_folder_is_active('event_administration');
         }
         break;
     case strpos($_SERVER['REQUEST_URI'], '/participant_administration/') !== false:
@@ -62,22 +74,33 @@ switch($_SERVER['REQUEST_URI'])
         if(isset($_SESSION['icam_informations']))
         {
             $fundations = redirect_if_no_rights();
+            check_if_folder_is_active('participant_administration');
+        }
+        break;
+    case (strpos($_SERVER['REQUEST_URI'], '/inscriptions/') !== false || $_SERVER['PHP_SELF'] == '/billetterie/index.php'):
+        $payutcClient = getPayutcClient("WEBSALE");
+        if(isset($_SESSION['icam_informations']))
+        {
+            check_if_folder_is_active('inscriptions');
+        }
+        break;
+    case strpos($_SERVER['REQUEST_URI'], '/super_admin/') !== false:
+        if(isset($_SESSION['icam_informations']))
+        {
+            $payutcClient = getPayutcClient("WEBSALE");
+            redirect_if_not_admin($payutcClient->isSuperAdmin());
         }
         break;
     default:
         $payutcClient = getPayutcClient("WEBSALE");
 }
 
-$is_super_admin = $payutcClient->isSuperAdmin();
-$is_admin = $payutcClient->isAdmin();
 $status = $payutcClient->getStatus();
 
 $casUrl = $payutcClient->getCasUrl()."login?service=".urlencode($_CONFIG['public_url']."login.php");
 $logoutUrl = $payutcClient->getCasUrl()."logout?service=".urlencode($_CONFIG['public_url']."login.php");
 
 $icam_informations = null;
-
-$Auth = new \CoreHelpers\Auth();
 
 // Vérifier que l'on est connecté, que l'application est connectée, etc ...
 require $rootPath. 'general_requires/validate_auth.php';

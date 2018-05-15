@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Sets all the <head> html code, and the header at the top of the body
+ * Sets the whole <head> html code, and the header at the top of the body
  * @param [string] $title [Title of the page]
  */
 function set_header_navbar($title)
 {
-    global $_CONFIG, $is_super_admin, $event_id, $Auth;
+    global $_CONFIG, $event_id;
     ?>
     <!DOCTYPE html>
         <html lang="fr">
@@ -53,20 +53,30 @@ function set_header_navbar($title)
 
             </head>
             <body>
-                <nav class="navbar navbar-default navbar-inverse navbar-fixed-top">
-                    <div class="container-fluid">
-                        <ul class="nav navbar-nav">
-                            <li><a href="https://payicam.icam.fr/accueil-payicam/">Accueil PayIcam</a></li>
-                            <li><a href="<?=$_CONFIG['public_url']?>">Accueil Billetterie</a></li>
-                            <?php
-                            echo $Auth->hasRole('member') ? '<li><a href="' . $_CONFIG['public_url'] . 'event_administration">Administration des évènements</a></li>' : '';
+                <?php set_navbar();
+}
 
-                            echo $Auth->hasRole('member++') ? '<li><a href="' . $_CONFIG['public_url'] . 'participant_administration">Administration des participants</a></li>' : '';
+/**
+ * Affiche l'ensemble de la barre de navigation. La fonction est appelée par deux fonctions différentes, et est donc séparée.
+ */
+function set_navbar()
+{
+    global $Auth, $is_super_admin, $_CONFIG;
+    ?>
+        <nav class="navbar navbar-default navbar-inverse navbar-fixed-top">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    <li><a href="https://payicam.icam.fr/accueil-payicam/">Accueil PayIcam</a></li>
+                    <li><a href="<?=$_CONFIG['public_url']?>">Accueil Billetterie</a></li>
+                    <?php
+                    echo $Auth->hasRole('member++') ? '<li><a href="' . $_CONFIG['public_url'] . 'event_administration">Administration des évènements</a></li>' : '';
 
-                            echo $is_super_admin ? '<li><a href="https://payicam.icam.fr/scoobydoo">Scoobydoo</a></li>' : ''?>
-                        </ul>
-                    </div>
-                </nav>
+                    echo $Auth->hasRole('member++') ? '<li><a href="' . $_CONFIG['public_url'] . 'participant_administration">Administration des participants</a></li>' : '';
+
+                    echo $is_super_admin ? '<li><a href="' . $_CONFIG['public_url'] . 'super_admin/edit_config.php">Configuration de la billetterie</a></li>' . '<li><a href="https://payicam.icam.fr/scoobydoo">Scoobydoo</a></li>' : ''?>
+                </ul>
+            </div>
+        </nav>
     <?php
 }
 
@@ -108,7 +118,6 @@ function add_alert_to_ajax_response($message, $class="danger")
  */
 function set_alert_style($title)
 {
-    global $_CONFIG, $is_super_admin, $event_id;
     ?>
     <!DOCTYPE html>
     <html>
@@ -142,17 +151,7 @@ function set_alert_style($title)
         </style>
     </head>
     <body>
-        <nav class="navbar navbar-default navbar-inverse navbar-fixed-top">
-            <div class="container-fluid">
-                <ul class="nav navbar-nav">
-                    <li><a href="https://payicam.icam.fr/accueil-payicam/">Accueil PayIcam</a></li>
-                    <li><a href="<?=$_CONFIG['public_url']?>">Accueil Billetterie</a></li>
-                    <li><a href="<?=$_CONFIG['public_url']?>event_administration">Administration Billetterie</a></li>
-                    <?=$is_super_admin ? '<li><a href="https://payicam.icam.fr/scoobydoo">Scoobydoo</a></li>' : ''?>
-                </ul>
-            </div>
-        </nav>
-    <?php
+        <?php set_navbar();
 }
 
 function insert_as_select_option($array_to_insert)

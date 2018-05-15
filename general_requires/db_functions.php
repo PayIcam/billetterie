@@ -235,7 +235,7 @@ function get_fundation_id($event_id)
     $fundation_id->execute(array('event_id' => $event_id));
     return $fundation_id->fetch()['fundation_id'];
 }
-function get_fundations_events($fundation_id)
+function get_fundation_events($fundation_id)
 {
     global $db;
     $fundation_events = $db->prepare('SELECT * FROM events WHERE fundation_id = :fundation_id');
@@ -321,7 +321,7 @@ function get_option_names($event_id)
 function get_event_promo_names($event_id)
 {
     global $db;
-    $promos = $db->prepare('SELECT promo_name FROM promos WHERE promo_id IN (SELECT DISTINCT promo_id FROM promos_site_specifications WHERE event_id = :event_id and is_removed=0)');
+    $promos = $db->prepare('SELECT promo_name FROM promos WHERE (promo_id IN (SELECT DISTINCT promo_id FROM promos_site_specifications WHERE event_id = :event_id and is_removed=0) and has_payicam=1) or has_payicam=0');
     $promos->execute(array('event_id' => $event_id));
     return $promos->fetchAll();
 }
@@ -660,7 +660,15 @@ function get_option_choice($choice_id)
 function get_participant_option_prices($participant_id)
 {
     global $db;
-    $price_sum = $db->prepare('SELECT SUM(price) sum FROM participant_has_options WHERE participant_id=:participant_id');
+    $price_sum = $db->prepare('SELECT SUM(price) sum FROM participant_has_options WHERE participant_id=:participant_id and status="V" ');
     $price_sum->execute(array('participant_id' => $participant_id));
     return $price_sum->fetch()['sum'];
+}
+
+function folder_is_active($folder)
+{
+    global $db;
+    $price_sum = $db->prepare('SELECT is_active FROM config WHERE folder=:folder');
+    $price_sum->execute(array('folder' => $folder));
+    return $price_sum->fetch()['is_active'] == 1 ? true : false;
 }

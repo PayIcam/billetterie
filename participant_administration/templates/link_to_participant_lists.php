@@ -14,12 +14,11 @@
                 {
                     if($fundation->name == 'Toutes les fundations')
                         continue;
-                    display_fundations_participants_admin($fundation);
+                    $i = display_fundations_participants_admin($fundation, $i);
                     if($i%3==0)
                     {
                         echo '</div><div class="row">';
                     }
-                    $i++;
                 }
                 ?>
             </div>

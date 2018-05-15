@@ -72,13 +72,14 @@ function insert_option_select_rows($option_choices)
 function display_fundations_events_admin($fundation)
 {
     global $_CONFIG;
+    $fundation_events = get_fundation_events($fundation->fun_id);
     ?>
     <div class="col-sm-4">
-        <a data-toggle="collapse" href="#button_links_<?=$fundation->fun_id?>" role="button" aria-expanded="false" aria-controls="#button_links_<?=$fundation->fun_id?>"><h2><?=htmlspecialchars($fundation->name)?></h2></a>
+        <a data-toggle="collapse" href="#button_links_<?=$fundation->fun_id?>" role="button" aria-expanded="false" aria-controls="#button_links_<?=$fundation->fun_id?>"><h2><?=htmlspecialchars($fundation->name) . '(' . count($fundation_events) . ')'?></h2></a>
         <div class="collapse" id="button_links_<?=$fundation->fun_id?>">
             <a href="new_ticketing.php?fundation_id=<?=$fundation->fun_id?>" class="btn btn-success"><h5>Créer une billetterie</h5></a><br><br>
             <?php
-            foreach(get_fundations_events($fundation->fun_id) as $event)
+            foreach($fundation_events as $event)
             {
                 ?><a href="<?=$_CONFIG['public_url']?>event_administration/edit_ticketing.php?event_id=<?=$event['event_id']?>" class="btn btn-primary"><h5><?=$event['name']?></h5></a><br><br><?php
             }

@@ -23,7 +23,15 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                 if($Auth->hasRole('admin'))
                 {
                     $ajax_json_response = array("message" => "");
-                    $error = check_user_fundations_rights(get_fundation_id($event_id));
+
+                    $fundation_id = get_fundation_id($event_id);
+                    $error = check_user_fundations_rights($fundation_id);
+                    if(!has_admin_rights($fundation_id, 'getPayutcClient'))
+                    {
+                        add_alert_to_ajax_response("Vous n'avez pas les droits nécessaires pour ajouter un participant.");
+                        echo json_encode($ajax_json_response);
+                        die();
+                    }
 
                     if(isset($_GET['participant_id']))
                     {

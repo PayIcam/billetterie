@@ -66,14 +66,14 @@ function redirect_if_not_admin($is_admin)
 
 /**
  * Redirection to homepage if user doesn't have rights on the service
+ * @return [object] list of all fundations user has rights on
  */
 function redirect_if_no_rights()
 {
     global $payutcClient, $_CONFIG;
     try
     {
-        $fundations = $payutcClient->getFundations();
-        return $fundations;
+        return $payutcClient->getFundations();
     }
     catch(JsonClient\JsonException $e)
     {
@@ -99,7 +99,7 @@ function redirect_if_no_rights()
  */
 function check_user_fundations_rights($fundation_id, $death=true)
 {
-    global $fundations, $error, $ajax_json_response;
+    global $fundations, $admin_fundations, $error, $ajax_json_response;
     $fundation_ids = array_column($fundations, 'fun_id');
     if(!in_array($fundation_id, $fundation_ids))
     {
@@ -134,5 +134,43 @@ function check_user_fundations_rights($fundation_id, $death=true)
     elseif($death==false)
     {
         return false;
+    }
+}
+
+function has_admin_rights($fundation_id, $getPayutcClient)
+{
+    $payutc_admin = $getPayutcClient('ADMINRIGHT');
+    try
+    {
+        $admin_fundations = $payutc_admin->getFundations();
+        $admin_fundation_ids = array_column($admin_fundations, 'fun_id');
+        return in_array($fundation_id, $admin_fundation_ids);
+    }
+    catch(JsonClient\JsonException $e)
+    {
+        if($e->gettype() == 'Payutc\Exception\CheckRightException')
+        {
+            return false;
+        }
+        else
+        {
+            set_alert_style("Erreur PayutcJsonClient");
+            add_alert("Vous n'avez vraisemblablement pas les droits, mais quelque chose d'innattendu s'est produit. Contactez Grégoire Giraud pour l'aider à résoudre ce bug svp");
+            die();
+        }
+    }
+}
+
+function check_if_folder_is_active($folder)
+{
+    global $is_super_admin;
+    if(!folder_is_active($folder))
+    {
+        if(!$is_super_admin)
+        {
+            set_alert_style('Erreur maintenance');
+            add_alert($folder . ' est en maintenance');
+            die();
+        }
     }
 }

@@ -147,12 +147,12 @@ function change_pages($current_page, $rows_per_page, $total_number_pages)
  */
 function display_liste_head($specification="", $id=true, $status=false, $personnal_infos=true, $options=true, $edit=true, $additions=true, $bracelet=true, $date_payement=false, $pending_indicator=true, $guest_info=true, $arrivals=true)
 {
-    global $Auth;
+    global $Auth, $admin_rights;
     if(!$Auth->hasRole('super-admin'))
     {
         $id = false;
     }
-    if(!$Auth->hasRole('admin'))
+    if(!$admin_rights)
     {
         $additions = false;
     }
@@ -161,6 +161,7 @@ function display_liste_head($specification="", $id=true, $status=false, $personn
     {
         $edit = false;
         $additions = false;
+        $arrivals = false;
     }
     elseif($specification == 'info_invite')
     {
@@ -170,6 +171,7 @@ function display_liste_head($specification="", $id=true, $status=false, $personn
         $pending_indicator = false;
         $edit = false;
         $additions = false;
+        $arrivals = false;
     }
     elseif($specification == 'link_icam')
     {
@@ -279,12 +281,12 @@ function display_promo($promo)
  */
 function display_participant_info($participant, $specification="", $id=true, $status=false, $options=true, $edit=true, $additions=true, $bracelet=true, $personnal_infos=true, $date_payement=false, $pending_indicator=true, $guest_info=true, $arrivals=true)
 {
-    global $Auth;
+    global $Auth, $admin_rights;
     if(!$Auth->hasRole('super-admin'))
     {
         $id = false;
     }
-    if(!$Auth->hasRole('admin'))
+    if(!$admin_rights)
     {
         $additions = false;
     }
@@ -293,6 +295,7 @@ function display_participant_info($participant, $specification="", $id=true, $st
     {
         $edit = false;
         $additions = false;
+        $arrivals = false;
     }
     elseif($specification == 'info_invite')
     {
@@ -301,6 +304,7 @@ function display_participant_info($participant, $specification="", $id=true, $st
         $pending_indicator = false;
         $edit = false;
         $additions = false;
+        $arrivals = false;
     }
     elseif($specification == 'link_icam')
     {
@@ -419,22 +423,26 @@ function insert_select_options_no_checking($option)
  * Permet d'ajouter tous les liens vers les listes de participants des events
  * @param  [object] $fundation
  */
-function display_fundations_participants_admin($fundation)
+function display_fundations_participants_admin($fundation, $i)
 {
     global $_CONFIG;
-    ?>
-    <div class="col-sm-4">
-        <a data-toggle="collapse" href="#button_links_<?=$fundation->fun_id?>" role="button" aria-expanded="false" aria-controls="#button_links_<?=$fundation->fun_id?>"><h2><?=htmlspecialchars($fundation->name)?></h2></a>
-        <div class="collapse" id="button_links_<?=$fundation->fun_id?>">
-            <?php
-            foreach(get_fundations_events($fundation->fun_id) as $event)
-            {
-                ?><a href="<?=$_CONFIG['public_url']?>participant_administration/participants.php?event_id=<?=$event['event_id']?>" class="btn btn-primary"><h5><?=$event['name']?></h5></a><br><br><?php
-            }
-            ?>
+    $fundation_events = get_fundation_events($fundation->fun_id);
+    if(count($fundation_events)>0) { ?>
+        <div class="col-sm-4">
+            <a data-toggle="collapse" href="#button_links_<?=$fundation->fun_id?>" role="button" aria-expanded="false" aria-controls="#button_links_<?=$fundation->fun_id?>"><h2><?=htmlspecialchars($fundation->name) . "(" . count($fundation_events) . ")"?></h2></a>
+            <div class="collapse" id="button_links_<?=$fundation->fun_id?>">
+                <?php
+                foreach($fundation_events as $event)
+                {
+                    ?><a href="<?=$_CONFIG['public_url']?>participant_administration/participants.php?event_id=<?=$event['event_id']?>" class="btn btn-primary"><h5><?=$event['name']?></h5></a><br><br><?php
+                }
+                ?>
+            </div>
         </div>
-    </div>
-    <?php
+        <?php
+        $i++;
+    }
+    return $i;
 }
 
 /**
@@ -673,6 +681,21 @@ function display_guest_infos($participant)
 }
 
 /**
+ * Crée le texte précisant tous les moyens de payements utilisés par l'Icam. Le premier inscrit est forcément celui de l'évènement
+ * @param  [array] $payements [un array de tous les payements]
+ */
+function create_payements_text($payements)
+{
+    $payements_text = "";
+    foreach($payements as $payement)
+    {
+        $payements_text .= $payement . " / ";
+    }
+    $payements_text = substr($payements_text, 0, count($payements_text)-4) . "<br>";
+    echo $payements_text;
+}
+
+/**
  * Crée le Texte des invités d'un Icam
  * @param  [array] $guests [ce qui sort de la fonction get_icam_guests]
  */
@@ -693,7 +716,7 @@ function create_personal_informations_text($participant)
     ?>
     <strong>Site :</strong> <span class='badge badge-pill badge-inverse'><?=$participant['site']?></span> <br>
     <strong>Prix :</strong> <span class='badge badge-pill badge-info'><?=get_participant_option_prices($participant['participant_id']) + $participant['price']?>€</span> <br>
-    <strong>Payement :</strong> <span class='badge badge-pill badge-success'><?=$participant['payement']?></span> <br>
+    <strong>Payement :</strong> <span class='badge badge-pill badge-success'><?=create_payements_text($participant['payements'])?></span> <br>
     <?= isset($participant['telephone']) ? "<strong>Telephone :</strong> <span class='badge badge-pill badge-warning'>" . $participant['telephone'] . "</span><br>" : "" ?>
     <strong>Inscription :</strong> <span class='badge badge-pill badge-error'><?=date('d/m/Y à H:i:s', date_create_from_format('Y-m-d H:i:s', $participant['inscription_date'])->getTimestamp())?></span> <br>
     <?= isset($participant['email']) ? "<strong>Email :</strong> <span class='badge badge-pill badge-inverse'>" . $participant['email'] . "</span><br>" : "" ?>
@@ -701,11 +724,12 @@ function create_personal_informations_text($participant)
 }
 
 /**
- * Crée le bouton des infos personnlles, cliquer pour les voir s'afficher
+ * Crée le bouton des infos personnelles, cliquer pour les voir s'afficher
  * @param  [type] $participant
  */
 function display_personnal_informations($participant)
 {
+    $participant['payements'] = array_unique(array_merge(array($participant['payement']), array_column($participant['validated_options'], 'payement')));
     ?>
     <td>
         <button class="btn option_tooltip" data-container="body" data-toggle="popover" data-html="true" title="Informations supplémentaires" data-content="<?= create_personal_informations_text($participant) ?>" type="button">

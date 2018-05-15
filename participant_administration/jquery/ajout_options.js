@@ -139,7 +139,7 @@ $(document).ready(function()
                 $.post(
                 {
                     url: action_url,
-                    data: {choice_ids:choice_ids},
+                    data: {choice_ids:choice_ids, payement: $('select[name=payement] option:selected').val(), price: $('input[name=price]').val()},
                     dataType: 'json',
                     success: ajax_success,
                     error: error_ajax

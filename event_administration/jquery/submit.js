@@ -52,15 +52,15 @@ function check_then_submit_form(event)
         }
         if($('input[name=guests]').val()==1)
         {
+            should_have_guests = false;
+            guests_row = false;
             $('#specification_table tbody tr').each(function()
             {
-                should_have_guests = false;
-                guests_row = false
                 if($(this).children(":nth-child(6)").text()>0)
                 {
                     should_have_guests = true;
                 }
-                if($(this).children(":nth-child(2)").text()=='Invités')
+                if($(this).children(":nth-child(3)").text()=='Invités')
                 {
                     guests_row = true;
                 }
