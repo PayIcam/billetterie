@@ -46,6 +46,7 @@ if(!empty($_POST))
         //Il faut créer un article PayIcam pour chaque promo. C'est cet article que les participants vont payer, selon leur promo.
         $scoobydoo_article_id = $payutcClient->setProduct(array(
             "name" => $event->name . " Prix " . $promo_data->promo . " " . $promo_data->site,
+            "service" => 'Billetterie',
             "parent" => $scoobydoo_promos_id,
             "prix" => 100*$promo_data->price,
             "stock" => $promo_data->quota,
@@ -86,6 +87,7 @@ if(!empty($_POST))
             //On crée un article pour l'option aussi
             $scoobydoo_article_id = $payutcClient->setProduct(array(
                 "name" => $event->name . " Option " . $option->name,
+                "service" => "Billetterie",
                 "parent" => $scoobydoo_options_id,
                 "prix" => 100*$option->type_specification->price,
                 "stock" => $option->quota,
@@ -109,6 +111,7 @@ if(!empty($_POST))
                 //On en crée plusieurs forcément si c'est un select, autant qu'il y a de sous-options
                 $scoobydoo_article_id = $payutcClient->setProduct(array(
                     "name" => $event->name . " Option " . $option->name . " Choix " . $select_option->name,
+                    "service" => 'Billetterie',
                     "parent" => $scoobydoo_options_id,
                     "prix" => 100*$select_option->price,
                     "stock" => $select_option->quota,
