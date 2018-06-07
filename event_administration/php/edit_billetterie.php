@@ -32,7 +32,7 @@ if(!empty($_POST))
 
     //Table events
 
-    $payutcClient->setCategory(array("obj_id" => $scoobydoo_event_category_id, "name" => $event->name, "parent_id" => null, "fun_id" => $fundation_id))->success;
+    $payutcClient->setCategory(array("obj_id" => $scoobydoo_event_category_id, "name" => $event->name, "service" => 'Billetterie', "parent_id" => null, "fun_id" => $fundation_id))->success;
 
     $table_event_data = array(
         "event_id" => $event_id,
@@ -58,6 +58,7 @@ if(!empty($_POST))
                 $payutcClient->setProduct(array(
                     "obj_id" => $previous_promo['scoobydoo_article_id'],
                     "name" => $event->name . " Prix " . $promo_data->promo . " " . $promo_data->site,
+                    "service" => "Billetterie",
                     "parent" => $scoobydoo_promos_id,
                     "prix" => 100*$promo_data->price,
                     "stock" => $promo_data->quota,
@@ -86,6 +87,7 @@ if(!empty($_POST))
         {
             $scoobydoo_article_id = $payutcClient->setProduct(array(
                 "name" => $event->name . " Prix " . $promo_data->promo . " " . $promo_data->site,
+                "service" => 'Billetterie',
                 "parent" => $scoobydoo_promos_id,
                 "prix" => 100*$promo_data->price,
                 "stock" => $promo_data->quota,
@@ -150,6 +152,7 @@ if(!empty($_POST))
                             $payutcClient->setProduct(array(
                                 "obj_id" => $article_id,
                                 "name" => $event->name . " Option " . $option->name,
+                                "service" => "Billetterie",
                                 "parent" => $scoobydoo_options_id,
                                 "prix" => 100*$option->type_specification->price,
                                 "stock" => $option->quota,
@@ -198,6 +201,7 @@ if(!empty($_POST))
                                     $payutcClient->setProduct(array(
                                         "obj_id" => $article_id,
                                         "name" => $event->name . " Option " . $option->name . " Choix " . $select_option->name,
+                                        "service" => "Billetterie",
                                         "parent" => $scoobydoo_options_id,
                                         "prix" => 100*$select_option->price,
                                         "stock" => $select_option->quota,
@@ -234,6 +238,7 @@ if(!empty($_POST))
                             {
                                 $article_id = $payutcClient->setProduct(array(
                                     "name" => $event->name . " Option " . $option->name . " Choix " . $select_option->name,
+                                    "service" => "Billetterie",
                                     "parent" => $scoobydoo_options_id,
                                     "prix" => 100*$select_option->price,
                                     "stock" => $select_option->quota,
@@ -305,6 +310,7 @@ if(!empty($_POST))
             {
                 $article_id = $payutcClient->setProduct(array(
                     "name" => $event->name . " Option " . $option->name,
+                    "service" => "Billetterie",
                     "parent" => $scoobydoo_options_id,
                     "prix" => 100*$option->type_specification->price,
                     "stock" => $option->quota,
@@ -327,6 +333,7 @@ if(!empty($_POST))
                 {
                     $article_id = $payutcClient->setProduct(array(
                         "name" => $event->name . " Option " . $option->name . " Choix " . $select_option->name,
+                        "service" => "Billetterie",
                         "parent" => $scoobydoo_options_id,
                         "prix" => 100*$select_option->price,
                         "stock" => $select_option->quota,

@@ -21,9 +21,9 @@ if(!empty($_POST))
     check_and_prepare_data();
 
     // Il faut créer tout d'abord les catégories dans lesquelles ranger nos articles pour l'event.
-    $scoobydoo_event_id = $payutcClient->setCategory(array("name" => $event->name, "parent_id" => null, "fun_id" => $event->fundation_id))->success;
-    $scoobydoo_promos_id = $payutcClient->setCategory(array("name" => 'Prix par promo', "parent_id" => $scoobydoo_event_id, "fun_id" => $event->fundation_id))->success;
-    $scoobydoo_options_id = $payutcClient->setCategory(array("name" => 'Options', "parent_id" => $scoobydoo_event_id, "fun_id" => $event->fundation_id))->success;
+    $scoobydoo_event_id = $payutcClient->setCategory(array("name" => $event->name, "service" => 'Billetterie', "parent_id" => null, "fun_id" => $event->fundation_id))->success;
+    $scoobydoo_promos_id = $payutcClient->setCategory(array("name" => 'Prix par promo', "service" => 'Billetterie', "parent_id" => $scoobydoo_event_id, "fun_id" => $event->fundation_id))->success;
+    $scoobydoo_options_id = $payutcClient->setCategory(array("name" => 'Options', "service" => 'Billetterie', "parent_id" => $scoobydoo_event_id, "fun_id" => $event->fundation_id))->success;
 
     $scoobydoo_category_ids = json_encode(array("scoobydoo_event_id" => $scoobydoo_event_id, "scoobydoo_promos_id" => $scoobydoo_promos_id, "scoobydoo_options_id" => $scoobydoo_options_id));
 
@@ -46,6 +46,7 @@ if(!empty($_POST))
         //Il faut créer un article PayIcam pour chaque promo. C'est cet article que les participants vont payer, selon leur promo.
         $scoobydoo_article_id = $payutcClient->setProduct(array(
             "name" => $event->name . " Prix " . $promo_data->promo . " " . $promo_data->site,
+            "service" => 'Billetterie',
             "parent" => $scoobydoo_promos_id,
             "prix" => 100*$promo_data->price,
             "stock" => $promo_data->quota,
@@ -86,6 +87,7 @@ if(!empty($_POST))
             //On crée un article pour l'option aussi
             $scoobydoo_article_id = $payutcClient->setProduct(array(
                 "name" => $event->name . " Option " . $option->name,
+                "service" => "Billetterie",
                 "parent" => $scoobydoo_options_id,
                 "prix" => 100*$option->type_specification->price,
                 "stock" => $option->quota,
@@ -109,6 +111,7 @@ if(!empty($_POST))
                 //On en crée plusieurs forcément si c'est un select, autant qu'il y a de sous-options
                 $scoobydoo_article_id = $payutcClient->setProduct(array(
                     "name" => $event->name . " Option " . $option->name . " Choix " . $select_option->name,
+                    "service" => 'Billetterie',
                     "parent" => $scoobydoo_options_id,
                     "prix" => 100*$select_option->price,
                     "stock" => $select_option->quota,
