@@ -21,9 +21,9 @@ if(!empty($_POST))
     check_and_prepare_data();
 
     // Il faut créer tout d'abord les catégories dans lesquelles ranger nos articles pour l'event.
-    $scoobydoo_event_id = $payutcClient->setCategory(array("name" => $event->name, "parent_id" => null, "fun_id" => $event->fundation_id))->success;
-    $scoobydoo_promos_id = $payutcClient->setCategory(array("name" => 'Prix par promo', "parent_id" => $scoobydoo_event_id, "fun_id" => $event->fundation_id))->success;
-    $scoobydoo_options_id = $payutcClient->setCategory(array("name" => 'Options', "parent_id" => $scoobydoo_event_id, "fun_id" => $event->fundation_id))->success;
+    $scoobydoo_event_id = $payutcClient->setCategory(array("name" => $event->name, "service" => 'Billetterie', "parent_id" => null, "fun_id" => $event->fundation_id))->success;
+    $scoobydoo_promos_id = $payutcClient->setCategory(array("name" => 'Prix par promo', "service" => 'Billetterie', "parent_id" => $scoobydoo_event_id, "fun_id" => $event->fundation_id))->success;
+    $scoobydoo_options_id = $payutcClient->setCategory(array("name" => 'Options', "service" => 'Billetterie', "parent_id" => $scoobydoo_event_id, "fun_id" => $event->fundation_id))->success;
 
     $scoobydoo_category_ids = json_encode(array("scoobydoo_event_id" => $scoobydoo_event_id, "scoobydoo_promos_id" => $scoobydoo_promos_id, "scoobydoo_options_id" => $scoobydoo_options_id));
 

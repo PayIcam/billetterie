@@ -32,7 +32,7 @@ if(!empty($_POST))
 
     //Table events
 
-    $payutcClient->setCategory(array("obj_id" => $scoobydoo_event_category_id, "name" => $event->name, "parent_id" => null, "fun_id" => $fundation_id))->success;
+    $payutcClient->setCategory(array("obj_id" => $scoobydoo_event_category_id, "name" => $event->name, "service" => 'Billetterie', "parent_id" => null, "fun_id" => $fundation_id))->success;
 
     $table_event_data = array(
         "event_id" => $event_id,
