@@ -174,3 +174,49 @@ function check_if_folder_is_active($folder)
         }
     }
 }
+
+/**
+ * Cette fonction permet de déterminer si un évènement devrait pouvoir être affiché. On ne veux pas afficher un évènement fermé depuis plus de 6 mois (s'il a été créé depuis plus de 2 mois).
+ * @param  [array] $event         [l'évènement en question]
+ * @return true si l'évènement ne doit plus être affiché
+ */
+function event_is_too_old($event)
+{
+    date_default_timezone_set('Europe/Paris');
+    $now = new DateTime();
+    $created_on = new DateTime($event['created_on']);
+    $ticketing_end_date = new DateTime($event['ticketing_start_date']);
+
+    $creation_to_now_difference = $now->diff($created_on);
+    $creation_to_ticketing_end_date_difference = $now->diff($ticketing_end_date);
+
+    $created_long_enough_ago = ($creation_to_now_difference->y > 1 || $creation_to_now_difference->m > 2);
+    $ended_too_long_ago = ($creation_to_ticketing_end_date_difference->y > 1 || $creation_to_ticketing_end_date_difference->m > 6);
+
+    return $created_long_enough_ago && $ended_too_long_ago;
+}
+
+/**
+ * Cette fonction empèche le fonctionnement normal de la page et affiche un message d'erreur si l'évènement voulu est trop vieux.
+ * @param  [array] $event         [l'évènement en question]
+ */
+function check_if_event_is_not_too_old($event)
+{
+    global $ajax_json_response;
+
+    if(event_is_too_old($event))
+    {
+        $message = "L'évènement " . $event['name'] . " est terminé depuis trop longtemps. Il n'est plus possible d'en faire quoi que ce soit. Contactez l'équipe dirigeant PayIcam si vous avez tout de même besoin de retrouver des informations à propos, de le réactiver, ou autres.";
+        if(isset($ajax_json_response))
+        {
+            add_alert_to_ajax_response($message);
+            echo json_encode($ajax_json_response);
+        }
+        else
+        {
+            set_alert_style("Erreur : Evènement trop ancien");
+            add_alert($message);
+        }
+        die();
+    }
+}

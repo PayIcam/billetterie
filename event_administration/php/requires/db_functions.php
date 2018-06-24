@@ -31,7 +31,7 @@ function get_sites_id()
 function insert_event_details($table_event_data)
 {
     global $db;
-    $event_insertion = $db->prepare('INSERT INTO events(name, description, is_active, ticketing_start_date, ticketing_end_date, total_quota, fundation_id, scoobydoo_category_ids) VALUES (:name, :description, :is_active, :ticketing_start_date, :ticketing_end_date, :total_quota, :fundation_id, :scoobydoo_category_ids)');
+    $event_insertion = $db->prepare('INSERT INTO events(name, description, is_active, ticketing_start_date, ticketing_end_date, total_quota, fundation_id, scoobydoo_category_ids, created_by) VALUES (:name, :description, :is_active, :ticketing_start_date, :ticketing_end_date, :total_quota, :fundation_id, :scoobydoo_category_ids, :created_by)');
     $event_insertion->execute($table_event_data);
     return $db->lastInsertId();
 }

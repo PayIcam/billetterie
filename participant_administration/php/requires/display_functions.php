@@ -434,7 +434,10 @@ function display_fundations_participants_admin($fundation, $i)
                 <?php
                 foreach($fundation_events as $event)
                 {
-                    ?><a href="<?=$_CONFIG['public_url']?>participant_administration/participants.php?event_id=<?=$event['event_id']?>" class="btn btn-primary"><h5><?=$event['name']?></h5></a><br><br><?php
+                    if(!event_is_too_old($event))
+                    {
+                        ?><a href="<?=$_CONFIG['public_url']?>participant_administration/participants.php?event_id=<?=$event['event_id']?>" class="btn btn-primary"><h5><?=$event['name']?></h5></a><br><br><?php
+                    }
                 }
                 ?>
             </div>

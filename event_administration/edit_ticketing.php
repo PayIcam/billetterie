@@ -13,19 +13,21 @@ if(isset($_GET['event_id']))
     {
         check_user_fundations_rights(get_fundation_id($event_id));
 
+        $event = get_event_details($event_id);
+
+        check_if_event_is_not_too_old($event);
+
         require 'php/requires/display_functions.php';
         require 'php/requires/db_functions.php';
         require 'php/requires/controller_functions.php';
         require 'templates/add_option.php';
 
+        $event['ticketing_start_date'] = date('m/d/Y h:i a', strtotime($event['ticketing_start_date']));
+        $event['ticketing_end_date'] = date('m/d/Y h:i a', strtotime($event['ticketing_end_date']));
+
         $student_promos = array_column(get_student_promos(), 'promo_name');
         $graduated_promos = array_column(get_graduated_promos(), 'promo_name');
         $sites = array_column(get_sites(), 'site_name');
-
-        $event = get_event_details($event_id);
-
-        $event['ticketing_start_date'] = date('m/d/Y h:i a', strtotime($event['ticketing_start_date']));
-        $event['ticketing_end_date'] = date('m/d/Y h:i a', strtotime($event['ticketing_end_date']));
 
         $promos_specifications = get_specification_details($event_id);
         $removed_promos_specifications = get_removed_specification_details($event_id);

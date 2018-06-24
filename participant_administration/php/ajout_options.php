@@ -26,6 +26,8 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
 
                     $fundation_id = get_fundation_id($event_id);
                     $error = check_user_fundations_rights($fundation_id);
+                    check_if_event_is_not_too_old(get_event_details($event_id));
+
                     if(!has_admin_rights($fundation_id, 'getPayutcClient'))
                     {
                         add_alert_to_ajax_response("Vous n'avez pas les droits nécessaires pour ajouter un participant.");

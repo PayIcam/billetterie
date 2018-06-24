@@ -75,6 +75,8 @@ function check_and_prepare_data()
             global $event;
             $event = json_decode($_POST['event_data_json']);
 
+            check_user_fundations_rights($event->fundation_id);
+
             if(!is_correct_event_data())
             {
                 die();

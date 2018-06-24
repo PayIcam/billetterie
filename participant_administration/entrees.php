@@ -18,6 +18,8 @@ if(isset($_GET['event_id']))
         require 'php/requires/controller_functions.php';
 
         $event = get_event_details($event_id);
+        check_if_event_is_not_too_old($event);
+
         $title = "Entrees : " . $event['name'];
         $arrival_number = get_arrival_number($event_id);
         $participants_number = get_current_participants_number($event_id);

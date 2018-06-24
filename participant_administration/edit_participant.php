@@ -27,6 +27,8 @@ if(isset($_GET['event_id']) && isset($_GET['participant_id']))
         if(!empty($participant))
         {
             $event = get_event_details($event_id);
+            check_if_event_is_not_too_old($event);
+
             $participant = prepare_participant_displaying($participant);
             if($participant['is_icam']==1)
             {

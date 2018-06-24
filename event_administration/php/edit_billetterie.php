@@ -14,7 +14,10 @@ if(!empty($_POST))
     require 'requires/db_functions.php';
     require 'requires/controller_functions.php';
 
-    $event_id=$_GET['event_id'];
+    $event_id = $_GET['event_id'];
+
+    $fundation_id = get_fundation_id($event_id);
+    check_user_fundations_rights($fundation_id);
 
     // Avant de faire quelque traitement qu'il soit, il faut vérifier tout le formulaire.
     // S'il y a la moindre erreur, le script s'arrète, et une erreur est affichée indiquant l'origine du problème.
