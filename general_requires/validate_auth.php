@@ -5,18 +5,17 @@ if(!in_array($route, ['login.php', 'callback.php']))
     if((!isset($status) || !$status->user))// Il n'était pas encore connecté en tant qu'icam.
     {
         // $this->flash->addMessage('info', "Vous devez être connecté pour accéder au reste de l'application");
-        if($_SERVER['REQUEST_URI'] != '/billetterie/')
+        if($_SERVER['REQUEST_URI'] != $_CONFIG['base_path'])
         {
             $_SESSION['REQUEST_URI'] = $_SERVER['REQUEST_URI'];
         }
-        header('Location:'.$casUrl, true, 303);
-        die();
+        header('Location:'.$casUrl, true, 303); die();
     }
     if (!empty($status->user))
     {
         if (empty($status->application) || isset($status->application->app_url) && strpos($status->application->app_url, 'billetterie') === false)// il était connecté en tant qu'icam mais l'appli non
         {
-            if($_SERVER['REQUEST_URI'] != '/billetterie/')
+            if($_SERVER['REQUEST_URI'] != $_CONFIG['base_path'])
             {
                 $_SESSION['REQUEST_URI'] = $_SERVER['REQUEST_URI'];
             }

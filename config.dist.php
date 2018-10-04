@@ -15,6 +15,7 @@ return [
         'key'=>'xxxx',
         'url'=>'https://url/ginger/index.php/v1/',
     ],
+    'cas_url' => 'xxxx',
     'public_url' => '/billetterie/',
     'base_path' => '/billetterie/',
     'site_name' => basename(__DIR__)
