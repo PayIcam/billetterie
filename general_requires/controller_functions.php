@@ -188,10 +188,10 @@ function event_is_too_old($event)
     $ticketing_end_date = new DateTime($event['ticketing_start_date']);
 
     $creation_to_now_difference = $now->diff($created_on);
-    $creation_to_ticketing_end_date_difference = $now->diff($ticketing_end_date);
+    $now_to_ticketing_end_date_difference = $now->diff($ticketing_end_date);
 
-    $created_long_enough_ago = ($creation_to_now_difference->y > 1 || $creation_to_now_difference->m > 2);
-    $ended_too_long_ago = ($creation_to_ticketing_end_date_difference->y > 1 || $creation_to_ticketing_end_date_difference->m > 6);
+    $created_long_enough_ago = ($creation_to_now_difference->y >= 1 || $creation_to_now_difference->m >= 2);
+    $ended_too_long_ago = ($now_to_ticketing_end_date_difference->y >= 1 || $now_to_ticketing_end_date_difference->m >= 6);
 
     return $created_long_enough_ago && $ended_too_long_ago;
 }
@@ -219,4 +219,23 @@ function check_if_event_is_not_too_old($event)
         }
         die();
     }
+}
+
+/**
+ * Le but de cette fonction est de séparer les évènements en deux catégories : Ceux qui doivent être affichés, et ceux qui sont trop vieux.
+ * Un event est trop vieux si sa date de fin est passée depuis 6 mois et sa date de création passée depuis 2 mois
+ * @param  [array] $events [fetchAll des events d'une fondation]
+ * @return [array("displayed_events" =>, "not_displayed_events" =>,)]         [description]
+ */
+function separate_good_bad_events($events) {
+    $displayed_events = [];
+    $not_displayed_events = [];
+    foreach ($events as $event) {
+        if(event_is_too_old($event)) {
+            array_push($not_displayed_events, $event);
+        } else {
+            array_push($displayed_events, $event);
+        }
+    }
+    return ["displayed_events" => $displayed_events, "not_displayed_events" => $not_displayed_events];
 }

@@ -72,14 +72,15 @@ function insert_option_select_rows($option_choices)
 function display_fundations_events_admin($fundation)
 {
     global $_CONFIG;
-    $fundation_events = get_fundation_events($fundation->fun_id);
+    $fundation_events = separate_good_bad_events(get_fundation_events($fundation->fun_id));
+
     ?>
     <div class="col-sm-4">
-        <a data-toggle="collapse" href="#button_links_<?=$fundation->fun_id?>" role="button" aria-expanded="false" aria-controls="#button_links_<?=$fundation->fun_id?>"><h2><?=htmlspecialchars($fundation->name) . '(' . count($fundation_events) . ')'?></h2></a>
+        <a data-toggle="collapse" href="#button_links_<?=$fundation->fun_id?>" role="button" aria-expanded="false" aria-controls="#button_links_<?=$fundation->fun_id?>"><h2><?=htmlspecialchars($fundation->name) . '(' . count($fundation_events["displayed_events"]) . ')'?></h2></a>
         <div class="collapse" id="button_links_<?=$fundation->fun_id?>">
             <a href="new_ticketing.php?fundation_id=<?=$fundation->fun_id?>" class="btn btn-success"><h5>Créer une billetterie</h5></a><br><br>
             <?php
-            foreach($fundation_events as $event)
+            foreach($fundation_events["displayed_events"] as $event)
             {
                 if(!event_is_too_old($event))
                 {
