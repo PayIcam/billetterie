@@ -430,7 +430,7 @@ function display_fundations_participants_admin($fundation, $i)
 
     $not_displayed_events_number = $is_super_admin ? " - " . count($fundation_events["not_displayed_events"]) . "anciens" : "";
 
-    if(count($fundation_events)>0) { ?>
+    if(count($fundation_events["displayed_events"])>0) { ?>
         <div class="col-sm-4">
             <a data-toggle="collapse" href="#button_links_<?=$fundation->fun_id?>" role="button" aria-expanded="false" aria-controls="#button_links_<?=$fundation->fun_id?>"><h2><?=htmlspecialchars($fundation->name) . "(" . count($fundation_events["displayed_events"]) . ")"?></h2></a>
             <div class="collapse" id="button_links_<?=$fundation->fun_id?>">

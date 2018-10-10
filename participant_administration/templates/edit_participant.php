@@ -6,7 +6,7 @@
 
         <?php display_back_to_list_button($event_id);?>
 
-        <?php $participant['is_icam'] == 1 ?  one_row_participant_table($participant, 'info_icam') : one_row_participant_table($participant, 'info_invite'); ?>
+        <?php one_row_participant_table($participant, $specification) ?>
 
         <div class="container">
             <form action="php/update_participant.php?event_id=<?=$event_id?>&participant_id=<?=$participant['participant_id']?>" method="post">

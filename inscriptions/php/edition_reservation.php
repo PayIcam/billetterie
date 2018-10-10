@@ -169,11 +169,11 @@ if(!empty($_POST))
         //Mise à jour et ajout d'options s'il y en a pour chaque ancien invité
         if(count($previous_guests_data)>0 && $previous_guests_data != false)
         {
-            foreach($previous_guests_data as $previous_guest_data)
+            foreach($previous_guests_data as &$previous_guest_data)
             {
                 $guest_id = $previous_guest_data->participant_id;
 
-                $guest_insertion_data = array(
+                $guest_update_data = array(
                     "guest_id" => $guest_id,
                     "prenom" => $previous_guest_data->prenom,
                     "nom" => $previous_guest_data->nom,
@@ -181,7 +181,7 @@ if(!empty($_POST))
                     "site_id" => $previous_guest_data->site_id,
                     "promo_id" => $previous_guest_data->promo_id
                     );
-                update_guest_participant($guest_insertion_data);
+                update_guest_participant($guest_update_data);
                 participant_options_handling($event_id, $guest_id, $previous_guest_data->options);
             }
         }
@@ -189,7 +189,7 @@ if(!empty($_POST))
         //Ajout de chaque nouvel invité
         if(count($new_guests_data)>0 && $new_guests_data != false)
         {
-            foreach($new_guests_data as $new_guest_data)
+            foreach($new_guests_data as &$new_guest_data)
             {
                 $guest_insertion_data = array(
                     "prenom" => $new_guest_data->prenom,
