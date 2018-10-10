@@ -425,14 +425,17 @@ function insert_select_options_no_checking($option)
  */
 function display_fundations_participants_admin($fundation, $i)
 {
-    global $_CONFIG;
-    $fundation_events = get_fundation_events($fundation->fun_id);
-    if(count($fundation_events)>0) { ?>
+    global $_CONFIG, $is_super_admin;
+    $fundation_events = separate_good_bad_events(get_fundation_events($fundation->fun_id));
+
+    $not_displayed_events_number = $is_super_admin ? " - " . count($fundation_events["not_displayed_events"]) . "anciens" : "";
+
+    if(count($fundation_events["displayed_events"])>0) { ?>
         <div class="col-sm-4">
-            <a data-toggle="collapse" href="#button_links_<?=$fundation->fun_id?>" role="button" aria-expanded="false" aria-controls="#button_links_<?=$fundation->fun_id?>"><h2><?=htmlspecialchars($fundation->name) . "(" . count($fundation_events) . ")"?></h2></a>
+            <a data-toggle="collapse" href="#button_links_<?=$fundation->fun_id?>" role="button" aria-expanded="false" aria-controls="#button_links_<?=$fundation->fun_id?>"><h2><?=htmlspecialchars($fundation->name) . "(" . count($fundation_events["displayed_events"]) . ")"?></h2></a>
             <div class="collapse" id="button_links_<?=$fundation->fun_id?>">
                 <?php
-                foreach($fundation_events as $event)
+                foreach($fundation_events["displayed_events"] as $event)
                 {
                     ?><a href="<?=$_CONFIG['public_url']?>participant_administration/participants.php?event_id=<?=$event['event_id']?>" class="btn btn-primary"><h5><?=$event['name']?></h5></a><br><br><?php
                 }

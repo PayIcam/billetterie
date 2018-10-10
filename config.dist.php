@@ -3,18 +3,19 @@
 return [
     'ticketing' => [
         'sql_host' => "localhost",
-        'sql_db' => "ticketing",
-        'sql_user' => "root",
+        'sql_db' => "db_name",
+        'sql_user' => "",
         'sql_pass' => ""
     ],
     'payicam' => [
-        'key'=>'xxxx',
-        'url'=>'http://url/server/web/',
+        'key'=>'',
+        'url'=>'',
     ],
     'ginger' => [
-        'key'=>'xxxx',
-        'url'=>'https://url/ginger/index.php/v1/',
+        'key'=>'',
+        'url'=>'',
     ],
+    'cas_url' => 'xxxx',
     'public_url' => '/billetterie/',
     'base_path' => '/billetterie/',
     'site_name' => basename(__DIR__)

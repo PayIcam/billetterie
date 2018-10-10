@@ -97,8 +97,8 @@ switch($_SERVER['REQUEST_URI'])
 
 $status = $payutcClient->getStatus();
 
-$casUrl = $payutcClient->getCasUrl()."login?service=".urlencode($_CONFIG['public_url']."login.php");
-$logoutUrl = $payutcClient->getCasUrl()."logout?service=".urlencode($_CONFIG['public_url']."login.php");
+$casUrl = $_CONFIG['cas_url']."login?service=".urlencode($_CONFIG['public_url']."login.php");
+$logoutUrl = $_CONFIG['cas_url']."logout?service=".urlencode($_CONFIG['public_url']."login.php");
 
 $icam_informations = null;
 

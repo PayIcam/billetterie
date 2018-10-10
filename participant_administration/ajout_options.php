@@ -35,6 +35,8 @@ if($Auth->hasRole('admin'))
             $icam = get_participant_event_data(array('event_id' => $event_id, 'participant_id' => $_GET['participant_id']));
             if(!empty($icam))
             {
+                check_if_event_is_not_too_old(get_event_details($event_id));
+
                 $icam = prepare_participant_displaying($icam);
                 $promo_id = $icam['promo_id'];
                 $site_id = $icam['site_id'];

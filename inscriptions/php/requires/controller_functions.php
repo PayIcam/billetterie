@@ -669,7 +669,7 @@ function prevent_displaying_on_wrong_ticketing_state($ticketing_state)
     }
 }
 
-function check_if_event_should_be_displayed($event,$promo_id, $site_id, $email)
+function check_if_event_should_be_displayed($event, $promo_id, $site_id, $email)
 {
     global $ajax_json_response;
     $event_id = $event['event_id'];

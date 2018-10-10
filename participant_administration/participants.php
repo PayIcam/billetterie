@@ -21,9 +21,11 @@ if(isset($_GET['event_id']))
     {
         $fundation_id = get_fundation_id($event_id);
         check_user_fundations_rights($fundation_id);
-        $admin_rights = has_admin_rights($fundation_id, 'getPayutcClient');
 
         $event = get_event_details($event_id);
+        check_if_event_is_not_too_old($event);
+
+        $admin_rights = has_admin_rights($fundation_id, 'getPayutcClient');
 
         $current_page = (isset($_GET['page'])) ? intval($_GET['page']) : 1;
         $rows_per_page = (isset($_GET['rows'])) ? intval($_GET['rows']) : 25;

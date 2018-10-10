@@ -12,8 +12,10 @@
                 $i=1;
                 foreach($fundations as $fundation)
                 {
-                    if($fundation->name == 'Toutes les fundations')
+                    if($fundation->name == 'Toutes les fundations') {
+                        $i-=1;
                         continue;
+                    }
                     $i = display_fundations_participants_admin($fundation, $i);
                     if($i%3==0)
                     {

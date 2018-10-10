@@ -33,6 +33,8 @@ if($Auth->hasRole('admin'))
             }
 
             $event = get_event_details($event_id);
+            check_if_event_is_not_too_old($event);
+
             $promos = array_column(get_event_promo_names($event_id), 'promo_name');
             $sites = array_column(get_event_site_names($event_id), 'site_name');
 
