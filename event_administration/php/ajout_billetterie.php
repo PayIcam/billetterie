@@ -36,7 +36,8 @@ if(!empty($_POST))
         "ticketing_end_date" => $event->ticketing_end_date,
         "is_active" => $event->is_active,
         "fundation_id" => $event->fundation_id,
-        "scoobydoo_category_ids" => $scoobydoo_category_ids
+        "scoobydoo_category_ids" => $scoobydoo_category_ids,
+        "created_by" => $_SESSION['icam_informations']->login
         );
     $event_id = insert_event_details($table_event_data);
 
