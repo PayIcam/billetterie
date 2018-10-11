@@ -86,7 +86,6 @@ function submit_inscriptions(submit)
     $("input[name=guests_informations]").val('');
     $("input[name=total_transaction_price]").val(parseFloat($("#total_price").text()));
 
-    var telephone = $('input[name=icam_phone_number]').val();
     var event_price = parseFloat($('#registration_icam .event_price').text());
     var total_icam_price = event_price;
     var promo_id = $('input[name=icam_promo_id]').val();
@@ -95,7 +94,7 @@ function submit_inscriptions(submit)
     var options = [];
     $("#icam_options").children('div').each(prepare_option_data);
 
-    var icam_data = {event_price: event_price, total_participant_price: total_icam_price, telephone: telephone, options: options, site_id: site_id, promo_id: promo_id};
+    var icam_data = {event_price: event_price, total_participant_price: total_icam_price, options: options, site_id: site_id, promo_id: promo_id};
     var json_icam_data = JSON.stringify(icam_data);
     $("#hidden_inputs input[name=icam_informations]").attr('value', json_icam_data);
 

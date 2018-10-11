@@ -38,10 +38,8 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                     }
 
                     $event = get_event_details($event_id);
-                    $promos = array_column(get_event_promo_names($event_id), 'promo_name');
-                    $sites = array_column(get_event_site_names($event_id), 'site_name');
 
-                    if(isset($_GET['icam_id']))
+                    if(isset($_GET['icam_id']))//On ajoute des invités à un Icam.
                     {
                         $icam = get_participant_event_data(array('event_id' => $event_id, 'participant_id' => $_GET['icam_id']));
                         $is_icam = 0;
@@ -63,7 +61,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             die();
                         }
                     }
-                    else
+                    else//On ajout un participant "Icam"
                     {
                         $is_icam = 1;
                         $site = false;
@@ -86,7 +84,6 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         'price' => $_POST['price'],
                         'payement' => $_POST['payement'],
                         'email' => $_POST['email'],
-                        'telephone' => $_POST['telephone'],
                         'bracelet_identification' => $_POST['bracelet_identification'],
                         'event_id' => $event_id,
                         'site_id' => $_POST['site_id'],

@@ -155,7 +155,7 @@ function get_promos_events($ids)
 function icam_has_its_place($identification_data)
 {
     global $db;
-    $icam_data = $db->prepare('SELECT participant_id, prenom, nom, is_icam, email, telephone, event_id, site_id, promo_id FROM participants WHERE email = :email and event_id = :event_id and promo_id = :promo_id and site_id = :site_id and status = "V" ');
+    $icam_data = $db->prepare('SELECT participant_id, prenom, nom, is_icam, email, event_id, site_id, promo_id FROM participants WHERE email = :email and event_id = :event_id and promo_id = :promo_id and site_id = :site_id and status = "V" ');
     $icam_data->execute($identification_data);
     $icam_data = $icam_data->fetchAll();
     return !empty($icam_data);
@@ -266,13 +266,6 @@ function count_current_icam_student($event_id, $condition=true)
     return $count->fetch()['COUNT(*)'];
 }
 
-function count_current_telephone($event_id, $condition=true)
-{
-    global $db;
-    $count = $condition ? $db->prepare('SELECT COUNT(*) FROM participants WHERE telephone IS NOT NULL and event_id = :event_id and is_icam=1 and status="V"') : $db->prepare('SELECT COUNT(*) FROM participants WHERE telephone IS NULL and event_id = :event_id and is_icam=1 and status="V"');
-    $count->execute(array('event_id' => $event_id));
-    return $count->fetch()['COUNT(*)'];
-}
 function count_current_bracelet($event_id, $condition=true)
 {
     global $db;
@@ -400,15 +393,6 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
 
     switch ($recherche)
     {
-        //gets participants with the telephone number corresponding to the search
-        case (preg_match("#^0[1-68]([-. ]?[0-9]{2}){4}$#", $recherche)==1):
-            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and telephone = :telephone and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
-            $recherche_bdd->bindParam('telephone', $recherche);
-            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE status="V" and telephone = :telephone and event_id=:event_id');
-            $count_recherche->execute(array('telephone' => $recherche, 'event_id' => $event_id));
-            $count_recherche = $count_recherche->fetch()['COUNT(*)'];
-            break;
-
         //gets every participant who has pending_reservations
         case('pending_reservations'):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE participant_id IN(SELECT icam_id FROM transactions INNER JOIN events ON events.event_id = transactions.event_id WHERE status = "W" and transactions.event_id= :event_id) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
@@ -509,17 +493,6 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
             $count_recherche = count_current_icam($event_id, false);
             break;
 
-        //gets participants who have entered their phone number
-        case (preg_match("#^telephone$|^téléphone$#i", $recherche)==1):
-            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and telephone IS NOT NULL and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
-            $count_recherche = count_current_telephone($event_id);
-            break;
-
-        //gets participants who have not entered their phone number
-        case (preg_match("#^no[t]? telephone|no[t]? téléphone$#i", $recherche)==1):
-            $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and is_icam = 1 and telephone IS NULL and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
-            $count_recherche = count_current_telephone($event_id, false);
-            break;
         //gets participants who have their bracelet_identication filled in
         case (preg_match("#^bracelet$#i", $recherche)==1):
             $recherche_bdd =$db->prepare('SELECT * FROM participants WHERE status="V" and bracelet_identification IS NOT NULL and event_id = :event_id or bracelet_identification !="" ORDER BY participant_id LIMIT :start_lign, :rows_per_page');

@@ -166,7 +166,6 @@ function display_liste_head($specification="", $id=true, $status=false, $personn
     elseif($specification == 'info_invite')
     {
         $email = false;
-        $telephone = false;
         $guest_number = false;
         $pending_indicator = false;
         $edit = false;
@@ -180,7 +179,6 @@ function display_liste_head($specification="", $id=true, $status=false, $personn
     elseif($specification == 'link_invite')
     {
         $email = false;
-        $telephone = false;
         $guest_number = false;
         $additions = false;
         $pending_indicator = false;
@@ -300,7 +298,6 @@ function display_participant_info($participant, $specification="", $id=true, $st
     elseif($specification == 'info_invite')
     {
         $email = false;
-        $telephone = false;
         $pending_indicator = false;
         $edit = false;
         $additions = false;
@@ -313,7 +310,6 @@ function display_participant_info($participant, $specification="", $id=true, $st
     elseif($specification == 'link_invite')
     {
         $email = false;
-        $telephone = false;
         $additions = false;
         $pending_indicator = false;
     }
@@ -720,7 +716,6 @@ function create_personal_informations_text($participant)
     <strong>Site :</strong> <span class='badge badge-pill badge-inverse'><?=$participant['site']?></span> <br>
     <strong>Prix :</strong> <span class='badge badge-pill badge-info'><?=get_participant_option_prices($participant['participant_id']) + $participant['price']?>€</span> <br>
     <strong>Payement :</strong> <span class='badge badge-pill badge-success'><?=create_payements_text($participant['payements'])?></span> <br>
-    <?= isset($participant['telephone']) ? "<strong>Telephone :</strong> <span class='badge badge-pill badge-warning'>" . $participant['telephone'] . "</span><br>" : "" ?>
     <strong>Inscription :</strong> <span class='badge badge-pill badge-error'><?=date('d/m/Y à H:i:s', date_create_from_format('Y-m-d H:i:s', $participant['inscription_date'])->getTimestamp())?></span> <br>
     <?= isset($participant['email']) ? "<strong>Email :</strong> <span class='badge badge-pill badge-inverse'>" . $participant['email'] . "</span><br>" : "" ?>
     <?php

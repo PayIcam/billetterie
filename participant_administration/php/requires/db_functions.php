@@ -71,7 +71,7 @@ function get_participant_promo_site_ids($ids)
 function add_participant($participant_data)
 {
     global $db;
-    $addition = $db->prepare('INSERT INTO participants(prenom, nom, status, is_icam, price, payement, email, telephone, bracelet_identification, event_id, site_id, promo_id) VALUES (:prenom, :nom, :status, :is_icam, :price, :payement, :email, :telephone, :bracelet_identification, :event_id, :site_id, :promo_id)');
+    $addition = $db->prepare('INSERT INTO participants(prenom, nom, status, is_icam, price, payement, email, bracelet_identification, event_id, site_id, promo_id) VALUES (:prenom, :nom, :status, :is_icam, :price, :payement, :email, :bracelet_identification, :event_id, :site_id, :promo_id)');
     $addition->execute($participant_data);
     return $db->lastInsertId();
 }

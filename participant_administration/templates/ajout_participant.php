@@ -26,10 +26,6 @@
                     </div>
                     <?php if(!isset($icam)) { ?>
                         <div class="col-sm-4 form-group">
-                            <label for="telephone">Téléphone</label>
-                            <input required type="text" class="form-control" id="telephone" name="telephone">
-                        </div>
-                        <div class="col-sm-4 form-group">
                             <label for="email">Email</label>
                             <input required type="text" class="form-control" id="email" name="email">
                         </div>
@@ -37,6 +33,20 @@
                     <div class="col-sm-4 form-group">
                         <label for="bracelet_identification">Identifiant du bracelet</label>
                         <input type="text" class="form-control" id="bracelet_identification" name="bracelet_identification">
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label for="sel1">Payement:</label>
+                        <select class="form-control" name="payement">
+                            <option disabled> Choisissez le moyen de payement de votre participant</option>
+                            <option>Espèces</option>
+                            <option>Carte bleue</option>
+                            <option>Pumpkin</option>
+                            <option>Lydia</option>
+                            <option>Circle</option>
+                            <option>Offert</option>
+                            <option>à l'amiable</option>
+                            <option>Autre</option>
+                        </select>
                     </div>
                 </div>
                 <div class="row">
@@ -56,20 +66,6 @@
                             </select>
                         </div>
                     <?php } ?>
-                    <div class="col-sm-4 form-group">
-                        <label for="sel1">Payement:</label>
-                        <select class="form-control" name="payement">
-                            <option disabled> Choisissez le moyen de payement de votre participant</option>
-                            <option>Espèces</option>
-                            <option>Carte bleue</option>
-                            <option>Pumpkin</option>
-                            <option>Lydia</option>
-                            <option>Circle</option>
-                            <option>Offert</option>
-                            <option>à l'amiable</option>
-                            <option>Autre</option>
-                        </select>
-                    </div>
                 </div>
                 <div id="message_submit" class="container">
                     <div class="alert alert-info alert-dismissible waiting">

@@ -146,16 +146,6 @@ if(!empty($_POST))
     {
         //Mise à jour de l'Icam, et ajout d'options s'il y en a
         $icam_id = $icam_data->participant_id;
-        $icam_data->telephone = $icam_data->telephone=='' ? null : $icam_data->telephone;
-
-        $icam_insertion_data = array(
-            "telephone" => $icam_data->telephone,
-            "event_id" => $event_id,
-            "site_id" => $icam_data->site_id,
-            "promo_id" => $icam_data->promo_id,
-            "icam_id" => $icam_id
-            );
-        update_icam_participant($icam_insertion_data);
 
         $transaction_linked_purchases = array("participant_ids" => array(), "option_ids" => array());
 
@@ -212,7 +202,7 @@ if(!empty($_POST))
 
         $transaction_articles = array_merge($guests_article_id, $options_articles);
 
-        //Potentiellement du coup, il n'y a rien à payer, la validation n'a été qu'un changement de nom ou de numéro de téléphone.
+        //Potentiellement du coup, il n'y a rien à payer, la validation n'a été qu'un changement de nom.
         //Dans ce cas, on met un message différent, et on ne redirigera pas vers la page de payement, mais vers la page d'accueil
         if(!empty($transaction_articles))
         {

@@ -51,13 +51,6 @@ $(document).ready(function()
             {
                 add_alert('Le nom est trop long');
             }
-            if($('input[name=telephone]').length)
-            {
-                if($('input[name=telephone]').val().length > 25)
-                {
-                    add_alert('Le numéro de téléphone est trop long');
-                }
-            }
             if($('input[name=email]').length)
             {
                 if($('input[name=email]').val().length > 255)

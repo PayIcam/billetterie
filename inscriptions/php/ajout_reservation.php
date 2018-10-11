@@ -140,15 +140,12 @@ if(!empty($_POST))
 
     if($icam_data!=false)
     {
-        $icam_data->telephone = $icam_data->telephone == '' ? null : $icam_data->telephone;
-
         $icam_insertion_data = array(
             "prenom" => $_SESSION['icam_informations']->prenom,
             "nom" => $_SESSION['icam_informations']->nom,
             "is_icam" => 1,
             "email" => $_SESSION['icam_informations']->mail,
             "price" => $icam_data->event_price,
-            "telephone" => $icam_data->telephone,
             "event_id" => $event_id,
             "site_id" => $icam_data->site_id,
             "promo_id" => $icam_data->promo_id

@@ -91,7 +91,6 @@ function prepare_edit_submit()
         $("input[name=total_transaction_price]").val(parseFloat($("#total_price").text()));
 
         var icam_id = $("input[name=icam_id]").val();
-        var telephone = $('input[name=icam_phone_number]').val();
         var icam_price_addition = 0;
         var promo_id = $('input[name=icam_promo_id]').val();
         var site_id = $('input[name=icam_site_id]').val();
@@ -99,7 +98,7 @@ function prepare_edit_submit()
         var options = [];
         $("#icam_options").children('div:not(div[data-payed=1])').each(prepare_option_data);
 
-        var icam_data = {participant_id: icam_id, participant_price_addition: icam_price_addition, telephone: telephone, options: options, site_id: site_id, promo_id: promo_id};
+        var icam_data = {participant_id: icam_id, participant_price_addition: icam_price_addition, options: options, site_id: site_id, promo_id: promo_id};
         var json_icam_data = JSON.stringify(icam_data);
         $("#hidden_inputs input[name=icam_informations]").attr('value', json_icam_data);
 

@@ -381,7 +381,7 @@ function check_participant_data($participant_data, $participant_type, $promo_spe
     }
     else
     {
-        $participant_data_length = $participant_action=='addition' ? ($participant_type=='icam' ? 6:7) : ($participant_type=='icam' ? 6:7);
+        $participant_data_length = $participant_action=='addition' ? ($participant_type=='icam' ? 5:7) : ($participant_type=='icam' ? 5:7);
         if(count(get_object_vars($participant_data)) != $participant_data_length)
         {
             die();
@@ -509,32 +509,7 @@ function check_participant_data($participant_data, $participant_type, $promo_spe
                     $error = true;
                 }
             }
-            if($participant_type=='icam')
-            {
-                if(isset($participant_data->telephone))
-                {
-                    if(!is_string($participant_data->telephone))
-                    {
-                        add_alert_to_ajax_response($participant_type . " : Quelqu'un s'est débrouillé pour altérer la valeur du numéro de téléphone <br>");
-                        $error = true;
-                    }
-                    elseif(count($participant_data->telephone)>25)
-                    {
-                        add_alert_to_ajax_response($participant_type . " : Pourquoi avez vous besoin d'autant de caractères pour un simple numéro de téléphone ?<br>");
-                        $error = true;
-                    }
-                    else
-                    {
-                        $participant_data->telephone = htmlspecialchars($participant_data->telephone);
-                    }
-                }
-                else
-                {
-                    add_alert_to_ajax_response($participant_type . " : Le numéro de téléphone du participant n'a pas été transmis <br>");
-                    $error = true;
-                }
-            }
-            elseif($participant_type=='guest')
+            if($participant_type=='guest')
             {
                 if(isset($participant_data->prenom))
                 {

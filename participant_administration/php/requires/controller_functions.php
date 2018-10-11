@@ -80,7 +80,7 @@ function check_prepare_addition_data($icam_site_id)
     global $promos, $sites;
 
     $error = false;
-    $post_nb_inputs = $icam_site_id === false ? 9 : 5;
+    $post_nb_inputs = $icam_site_id === false ? 8 : 5;
 
     if(count($_POST)==$post_nb_inputs)
     {
@@ -114,20 +114,6 @@ function check_prepare_addition_data($icam_site_id)
         }
         if($icam_site_id === false)
         {
-            if(isset($_POST['telephone']))
-            {
-                $_POST['telephone'] = htmlspecialchars($_POST['telephone']);
-                if(!count($_POST['telephone']) > 25)
-                {
-                    $error = true;
-                    add_alert_to_ajax_response('Le numéro de téléphone de votre nouveau participant est trop long.');
-                }
-            }
-            else
-            {
-                $error = true;
-                add_alert_to_ajax_response("Le numéro de télephone n'est pas défini.");
-            }
             if(isset($_POST['email']))
             {
                 if(!count($_POST['email']) > 255)
@@ -237,7 +223,6 @@ function check_prepare_addition_data($icam_site_id)
             $_POST['promo_id'] = get_promo_id('Invités');
             $_POST['site_id'] = get_site_id($icam_site_id);
             $_POST['email'] = null;
-            $_POST['telephone'] = null;
         }
     }
     else

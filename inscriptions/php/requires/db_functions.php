@@ -35,15 +35,9 @@ function get_current_select_option_quota($data)
 function insert_icam_participant($icam_data)
 {
     global $db;
-    $icam_insertion = $db->prepare('INSERT INTO participants(status, prenom, nom, is_icam, email, price, telephone, event_id, site_id, promo_id) VALUES ("W", :prenom, :nom, :is_icam, :email, :price, :telephone, :event_id, :site_id, :promo_id)');
+    $icam_insertion = $db->prepare('INSERT INTO participants(status, prenom, nom, is_icam, email, price, event_id, site_id, promo_id) VALUES ("W", :prenom, :nom, :is_icam, :email, :price, :event_id, :site_id, :promo_id)');
     $icam_insertion->execute($icam_data);
     return $db->lastInsertId();
-}
-function update_icam_participant($icam_data)
-{
-    global $db;
-    $icam_update = $db->prepare('UPDATE participants SET telephone=:telephone WHERE participant_id=:icam_id and event_id=:event_id and site_id=:site_id and promo_id=:promo_id');
-    return $icam_update->execute($icam_data);
 }
 function update_participant_status($data)
 {
