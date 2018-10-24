@@ -34,6 +34,7 @@ function set_header_navbar($title)
                     }
                 </style>
                 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111260636-2"></script>
+                <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112368112-1"></script>
                 <script>
                     window.dataLayer = window.dataLayer || [];
                     function gtag(){dataLayer.push(arguments);}
@@ -131,6 +132,7 @@ function set_alert_style($title)
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111260636-2"></script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112368112-1"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
