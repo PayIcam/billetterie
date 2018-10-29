@@ -144,7 +144,7 @@ function is_correct_event_data()
         add_alert("Les informations sur l'évènement sont mal passées. Ce n'est même pas un objet.");
         return false;
     }
-    if(count(get_object_vars($event))!=7)
+    if(count(get_object_vars($event))!=8)
     {
         add_alert("Il n'y a pas le bon nombre de paramètres transmis pour les infos de l'évènement.");
         $error = true;
@@ -188,6 +188,23 @@ function is_correct_event_data()
         else
         {
             add_alert("La description de l'évènement n'est pas transmise.");
+            $error = true;
+        }
+        if(isset($event->conditions))
+        {
+            if(!is_string($event->conditions))
+            {
+                add_alert("Les conditions de l'évènement ne sont même pas une chaine de caractères.");
+                $error = true;
+            }
+            else
+            {
+                $event->conditions = htmlspecialchars($event->conditions);
+            }
+        }
+        else
+        {
+            add_alert("Les conditions de l'évènement ne sont pas transmise.");
             $error = true;
         }
         if(isset($event->quota))

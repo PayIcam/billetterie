@@ -21,6 +21,11 @@ function initialisation_inscriptions()
     $("form").submit(submit_inscriptions);
     $("#message_submit").hide();
 
+    if(conditions && !edit) {
+        $('#event_conditions').modal({backdrop: 'static', keyboard: false});
+        $('#event_conditions').modal('show');
+    }
+
     if(typeof(ticketing_state) == "undefined")
     {
         $('form').off('submit').submit(function(submit)

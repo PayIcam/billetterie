@@ -155,13 +155,14 @@ function check_then_submit_form(event)
     {
         var name = $('input[name=event_name]').val();
         var description = $('textarea[name=event_description]').val();
+        var conditions = $('textarea[name=event_conditions]').val();
         var quota = $('input[name=event_quota]').val();
         var ticketing_start_date = $('input[name=ticketing_start_date]').val();
         var ticketing_end_date = $('input[name=ticketing_end_date]').val();
         var is_active = $('.general_infos .toggle').hasClass('off') ? 0 : 1;
         var fundation_id = $('input[name=fundation_id]').val();
 
-        var event_json = {name: name, description: description, quota: quota, ticketing_start_date: ticketing_start_date, ticketing_end_date: ticketing_end_date, is_active: is_active, fundation_id: fundation_id};
+        var event_json = {name: name, description: description, conditions: conditions, quota: quota, ticketing_start_date: ticketing_start_date, ticketing_end_date: ticketing_end_date, is_active: is_active, fundation_id: fundation_id};
         return event_json;
     }
     /**

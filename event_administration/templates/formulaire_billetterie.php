@@ -36,6 +36,12 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="event_conditions">Conditions de votre évènement :</label>
+                    <textarea class="form-control" name="event_conditions" id="event_conditions" aria-describedby="conditions_help" placeholder="Quelles sont les conditions de réservations et de participation à votre évènement?" required><?= isset($event['conditions']) ? htmlspecialchars($event['conditions']) : '' ?></textarea>
+                    <small id="conditions_help" class="form-text text-muted">Il est possible de définir des conditions pour votre évènement. Elles apparaitront en pop-up la premi_re fois qu'on prend sa place. Il faudra alors les lire et les accepter. Si vous ne remplissez pas ce champ, rien n'apparaitra.</small>
+                </div>
+
+                <div class="form-group">
                     <label for="event_quota">Quota de places disponibles pour votre évènement :</label>
                     <input value="<?= isset($event['total_quota']) ? htmlspecialchars($event['total_quota']) : '' ?>" type="number" min=0 class="form-control" name="event_quota" id="event_quota" aria-describedby="quota_place_help" placeholder="Nombre de places" required>
                     <small id="quota_place_help" class="form-text text-muted">Il ne sera pas possible de dépasser ce quota, les inscriptions se bloqueront automatiquement une fois ce nombre atteint.</small>

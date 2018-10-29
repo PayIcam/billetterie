@@ -31,14 +31,14 @@ function get_sites_id()
 function insert_event_details($table_event_data)
 {
     global $db;
-    $event_insertion = $db->prepare('INSERT INTO events(name, description, is_active, ticketing_start_date, ticketing_end_date, total_quota, fundation_id, scoobydoo_category_ids, created_by) VALUES (:name, :description, :is_active, :ticketing_start_date, :ticketing_end_date, :total_quota, :fundation_id, :scoobydoo_category_ids, :created_by)');
+    $event_insertion = $db->prepare('INSERT INTO events(name, description, conditions, is_active, ticketing_start_date, ticketing_end_date, total_quota, fundation_id, scoobydoo_category_ids, created_by) VALUES (:name, :description, :conditions, :is_active, :ticketing_start_date, :ticketing_end_date, :total_quota, :fundation_id, :scoobydoo_category_ids, :created_by)');
     $event_insertion->execute($table_event_data);
     return $db->lastInsertId();
 }
 function update_event_details($table_event_data)
 {
     global $db;
-    $event_update = $db->prepare('UPDATE events SET name = :name, description = :description, is_active = :is_active, ticketing_start_date = :ticketing_start_date, ticketing_end_date = :ticketing_end_date, total_quota = :total_quota WHERE event_id = :event_id');
+    $event_update = $db->prepare('UPDATE events SET name = :name, description = :description, conditions = :conditions, is_active = :is_active, ticketing_start_date = :ticketing_start_date, ticketing_end_date = :ticketing_end_date, total_quota = :total_quota WHERE event_id = :event_id');
     return $event_update->execute($table_event_data);
 }
 function get_scoobydoo_event_infos($event_id)

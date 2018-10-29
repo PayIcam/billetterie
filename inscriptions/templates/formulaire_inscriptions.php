@@ -6,6 +6,30 @@
             <h1 class="text-center"><?= htmlspecialchars($event['name']) ?></h1>
             <h2><?= htmlspecialchars($event['description']) ?></h2>
             <h3>Inscrivez vous en remplissant le formulaire ci dessous, et en validant ! Pensez à recharger afin d'avoir de quoi payer au préalable ! </h3>
+            <?php if(!empty($event['conditions'])) { ?>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#event_conditions">
+                Conditions de l'évènement
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="event_conditions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Conditions : <?= $event['name'] ?></h4>
+                        </div>
+                        <div class="modal-body">
+                            <?= $event['conditions'] ?>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" data-dismiss="modal">J'ai lu et j'accepte les conditions</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php } ?>
+
         </div>
     </div>
     <form method="post" action="php/<?= isset($icam_event_data) ? "edition_reservation" : "ajout_reservation" ?>.php?event_id=<?=$event_id?>">
@@ -79,7 +103,9 @@
     <script>
         $(document).ready(function()
         {
+            edit = '<?=isset($icam_event_data)?>';
             ticketing_state = '<?=$ticketing_state?>';
+            conditions = '<?=!empty($event['conditions'])?>'
         });
     </script>
     <script src="jquery/submit_inscriptions.js"></script>
