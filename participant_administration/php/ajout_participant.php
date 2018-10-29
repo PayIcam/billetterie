@@ -38,6 +38,8 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                     }
 
                     $event = get_event_details($event_id);
+                    $promos = array_column(get_event_promo_names($event_id), 'promo_name');
+                    $sites = array_column(get_event_site_names($event_id), 'site_name');
 
                     if(isset($_GET['icam_id']))//On ajoute des invités à un Icam.
                     {

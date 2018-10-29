@@ -19,7 +19,7 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
    <div id="icam_informations">
         <h4>
             Votre propre place
-            <span class="badge bade-pill badge-success event_price"><?= htmlspecialchars($promo_specifications['price']). "€" ?></span>
+            <span class="badge bade-pill badge-success event_price"><?= $icam_reservation['price'] ?? htmlspecialchars($promo_specifications['price']) ?>€</span>
         </h4>
 
         <div class="row">
@@ -88,7 +88,7 @@ function form_guest($event, $guest_specifications, $options, $i, $guest_reservat
     <div class="guest_form col-sm-6 <?= $guest_reservation!=null ? "previous_guest" : "" ?>">
         <h3 class="guest_title">
             <span class="actual_guest_title">Invité n°<?=$i?></span>
-            <span class="badge badge-pill <?=$guest_reservation==null ? 'badge-error' : 'badge-success' ?> event_price"><?= htmlspecialchars($guest_specifications['price']). "€" ?></span>
+            <span class="badge badge-pill <?=$guest_reservation==null ? 'badge-error' : 'badge-success' ?> event_price"><?= isset($guest_reservation['price']) ? htmlspecialchars($guest_reservation['price']) : htmlspecialchars($guest_specifications['price']) ?>€ </span>
         </h3>
         <div class="guest_informations">
             <span class="guest_title_default_text" style="display:none">Invité n°<?=$i?></span>

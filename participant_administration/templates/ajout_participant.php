@@ -8,8 +8,12 @@
 
         <?php isset($icam) ? $icam['is_icam']==1 ? one_row_participant_table($icam, 'info_icam') : one_row_participant_table($icam, 'info_invite') : "" ?>
 
-        <form method="POST" action="php/ajout_participant.php?event_id=<?=isset($icam) ? $event_id.'&icam_id='.$icam['participant_id'] : $event_id?>">
-            <div class="container">
+        <div class="container">
+            <br><div class="form-group">
+                <label for="prenom">Rechercher un Icam</label>
+                <input type="text" class="input-large typeahead-user form-control" name="usr" placeholder="Rechercher un utilisateur" autocomplete="off" />
+            </div>
+            <form method="POST" action="php/ajout_participant.php?event_id=<?=isset($icam) ? $event_id.'&icam_id='.$icam['participant_id'] : $event_id?>">
                 <h2>Renseignez les informations du participant</h2>
                 <div class="row">
                     <div class="col-sm-4 form-group">
@@ -53,6 +57,7 @@
                     <?php if(!isset($icam)) { ?>
                         <div class="col-sm-4 form-group">
                             <label for="sel1">Promo:</label>
+                            <input type="hidden" name="promo" class="form-control">
                             <select class="form-control" name="promo">
                                 <option disabled> Choisissez la promotion de votre participant</option>
                                 <?php insert_as_select_option($promos) ?>
@@ -60,6 +65,7 @@
                         </div>
                         <div class="col-sm-4 form-group">
                             <label for="sel1">Site:</label>
+                            <input type="hidden" name="site" class="form-control">
                             <select class="form-control" name="site">
                                 <option disabled> Choisissez le site de votre participant</option>
                                 <?php insert_as_select_option($sites) ?>
@@ -78,8 +84,13 @@
                 <div class="text-center">
                     <button id="button_submit_form" class="btn btn-primary" type="submit">Ajouter</button>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
+        <script src="../js/typeahead.min.js"></script>
+        <script>
+            var promos = '<?=json_encode($promos)?>';
+            var sites = '<?=json_encode($sites)?>';
+        </script>
         <script src="jquery/ajout_participant.js"></script>
     </body>
 </html>

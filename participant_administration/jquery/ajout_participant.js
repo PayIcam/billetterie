@@ -11,6 +11,51 @@ $(document).ready(function()
 {
     $("#message_submit").hide();
 
+    promos = JSON.parse(promos);
+    sites = JSON.parse(sites);
+
+    $('.typeahead-user').typeahead({
+        source: function (query, process) {
+            return $.get('../autocomplete.php', { query: query, dataType: 'json' }, function (data) {
+                map = {};
+                usernames = [];
+
+                $.each(JSON.parse(data), function (i, user) {
+                    if($.inArray(user.promo, promos)!==-1 && $.inArray(user.site, sites)!==-1) {
+                        map[user.name + ' (' + user.mail + ')'] = user;
+                        usernames.push(user.name + ' (' + user.mail + ')');
+                    }
+                });
+                process(usernames);
+
+                return process(usernames);
+            });
+        },
+        updater: function(display) {
+            user = map[display];
+            $('input[name=prenom]').val(user.firstname).attr('readonly', '');
+            $('input[name=nom]').val(user.lastname).attr('readonly', '');
+            $('input[name=email]').val(user.mail).attr('readonly', '');
+            $('select[name=promo] > option').each(function() {
+                if($(this).text() == user.promo) {
+                    $('input[name=promo]').attr('type', 'text').attr('readonly', '').val($(this).val());
+                    $(this).parent().hide().attr('disabled', '');
+                    return false;
+                }
+            });
+            $('select[name=site] > option').each(function() {
+                if($(this).text() == user.site) {
+                    $('input[name=site]').attr('type', 'text').attr('readonly', '').val($(this).val());
+                    $(this).parent().hide().attr('disabled', '');
+                    return false;
+                }
+            });
+
+            $('.typeahead-user').text('');
+            return user;
+        }
+    });
+
     $('form').submit(function(submit)
     {
         function add_alert(message, alert_type="danger")
