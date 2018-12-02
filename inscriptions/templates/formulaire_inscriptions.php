@@ -4,7 +4,7 @@
     <div id="presentation" class="container">
         <div class="jumbotron">
             <h1 class="text-center"><?= htmlspecialchars($event['name']) ?></h1>
-            <h2><?= htmlspecialchars($event['description']) ?></h2>
+            <h2><?= $event['description'] ?></h2>
             <h3>Inscrivez vous en remplissant le formulaire ci dessous, et en validant ! Pensez à recharger afin d'avoir de quoi payer au préalable ! </h3>
             <?php if(!empty($event['conditions'])) { ?>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#event_conditions">

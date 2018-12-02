@@ -246,7 +246,7 @@ function display_event($ticketing_state, $event, $icam_has_reservation)
                 <h2 class="text-center"><?=htmlspecialchars($event['name'])?> <span class="label label-success">En cours</span></h2>
                 <br>
                 <div class="row">
-                    <p class="col-sm-9" style="font-size: 1.5em;">Description : <?=htmlspecialchars($event['description'])?></p>
+                    <p class="col-sm-9" style="font-size: 1.5em;">Description : <?=$event['description']?></p>
                     <a href="<?=$_CONFIG['public_url']?>inscriptions/<?=$icam_has_reservation ? "edit_reservation.php" : "inscriptions.php" ?>?event_id=<?=$event['event_id']?>" class="btn btn-primary col-sm-3">
                         <?=$icam_has_reservation ? "Modifier sa réservation" : "S'inscrire" ?>
                     </a>
@@ -263,7 +263,7 @@ function display_event($ticketing_state, $event, $icam_has_reservation)
                 <h2 class="text-center"><?=htmlspecialchars($event['name'])?> <span class="label label-info">Ouvre bientôt</span></h2>
                 <br>
                 <div class="row">
-                    <p class="col-sm-9" style="font-size: 1.5em;">Description : <?=htmlspecialchars($event['description'])?></p>
+                    <p class="col-sm-9" style="font-size: 1.5em;">Description : <?=$event['description']?></p>
                     <button class="btn btn-primary col-sm-3" disabled>Inscrivez vous</button><!-- On ne met pas le lien ici, ça n'a aucun intérêt -->
                 </div>
             </div>
@@ -278,7 +278,7 @@ function display_event($ticketing_state, $event, $icam_has_reservation)
                 <h2 class="text-center"><?=htmlspecialchars($event['name'])?> <span class="label label-info">Terminé</span></h2>
                 <br>
                 <div class="row">
-                    <p class="col-sm-9" style="font-size: 1.5em;">Description : <?=htmlspecialchars($event['description'])?></p>
+                    <p class="col-sm-9" style="font-size: 1.5em;">Description : <?=$event['description']?></p>
                     <a href="<?=$_CONFIG['public_url']?>inscriptions/edit_reservation.php?event_id=<?=$event['event_id']?>" class="btn btn-primary col-sm-3">Regarder sa réservation</a>
                 </div>
             </div>

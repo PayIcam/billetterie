@@ -203,3 +203,7 @@ function display_pending_reservations_entrees($participant)
         }
     }
 }
+
+function br2nl($string){
+   return str_replace('<br />', "\n", $string);
+}
