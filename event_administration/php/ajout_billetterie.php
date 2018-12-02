@@ -30,8 +30,8 @@ if(!empty($_POST))
     //On prépare alors notre insertion de données pour la table events, pas besoin de vérifier quoi que ce soit, c'est déjà fait !
     $table_event_data = array(
         "name" => $event->name,
-        "description" => $event->description,
-        "conditions" => $event->conditions,
+        "description" => nl2br($event->description),
+        "conditions" => nl2br($event->conditions),
         "total_quota" => $event->quota,
         "ticketing_start_date" => $event->ticketing_start_date,
         "ticketing_end_date" => $event->ticketing_end_date,

@@ -37,8 +37,8 @@ if(!empty($_POST))
     $table_event_data = array(
         "event_id" => $event_id,
         "name" => $event->name,
-        "description" => $event->description,
-        "conditions" => $event->conditions,
+        "description" => nl2br($event->description),
+        "conditions" => nl2br($event->conditions),
         "total_quota" => $event->quota,
         "ticketing_start_date" => $event->ticketing_start_date,
         "ticketing_end_date" => $event->ticketing_end_date,
