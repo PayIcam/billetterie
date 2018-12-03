@@ -36,6 +36,15 @@ else
         if($transaction_info->status != "W")
         {
             update_reservation_status($transaction_info->status, $pending_reservation);
+        } else {
+            date_default_timezone_set('Europe/Paris');
+            $now = new \DateTime();
+            $creation = new \DateTime($pending_reservation['date_demande']);
+            $difference = $now->diff($creation);
+            $old_creation = ($difference->days>=1 || $difference->h>=1 || $difference->m>15);
+            if($old_creation) {
+                update_reservation_status("A", $pending_reservation);
+            }
         }
     }
 }
