@@ -9,6 +9,7 @@
 
 $(document).ready(function()
 {
+
     $("#message_submit").hide();
 
     promos = JSON.parse(promos);
@@ -50,11 +51,45 @@ $(document).ready(function()
                     return false;
                 }
             });
+            change_promo_site();
 
             $('.typeahead-user').text('');
             return user;
         }
     });
+
+    $('select[name="promo"]').change(change_promo_site);
+    $('select[name="site"]').change(change_promo_site);
+
+    change_promo_site();
+
+    function change_promo_site() {
+        if(typeof site_icam == 'undefined') {
+            $('#button_submit_form').attr('disabled', 'disabled');
+            if($('.promo:not([disabled]):not([type=hidden])').prop('localName') == 'input') {
+                var promo = $('input[name="promo"]').val();
+            } else {
+                var promo = $('select[name="promo"] option:selected').val();
+            }
+            if($('.site:not([disabled]):not([type=hidden])').prop('localName') == 'input') {
+                var site = $('input[name="site"]').val();
+            } else {
+                var site = $('select[name="site"] option:selected').val();
+            }
+        } else {
+            $('#button_submit_form').attr('disabled', 'disabled');
+            var site = site_icam;
+            var promo = 'Invités';
+        }
+
+        var data = {event_id:event_id , promo:promo, site:site};
+        $.get('php/get_mandatory_options_selects.php', data, display_selects, 'html');
+    }
+
+    function display_selects(data) {
+        $('#mandatory_options').html(data);
+        $('#button_submit_form').removeAttr('disabled');
+    }
 
     $('form').submit(function(submit)
     {
@@ -107,6 +142,9 @@ $(document).ready(function()
             {
                 add_alert("L'identifiant de bracelet  est trop long");
             }
+            $('#mandatory_options_selects .select_option').find('option:selected').each(function() {
+                $(this).parent().attr('name', 'choice_ids[]');
+            });
             return !$error;
         }
 

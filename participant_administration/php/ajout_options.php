@@ -53,23 +53,25 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                     }
 
                     $choice_ids = $_POST['choice_ids'];
-                    $choice_datas = check_prepare_option_choice_data();
 
+                    $choice_datas = check_prepare_option_choice_data();
                     if($choice_datas === false)
                     {
                         echo json_encode($ajax_json_response);
                         die();
                     }
+                    $sum_prices = array_sum(array_column($choice_datas, 'price'));
 
                     foreach($choice_datas as $choice_data)
                     {
+                        $price = round($_POST['price'] * $choice_data['price'] / $sum_prices, 2);
                         $option_addition_data = array(
                             "event_id" => $event_id,
                             "participant_id" => $_GET['participant_id'],
                             "choice_id" => $choice_data['choice_id'],
                             "status" => "V",
-                            "price" => htmlspecialchars($_POST['price']),
-                            "payement" => htmlspecialchars($_POST['payement'])
+                            "price" => $price,
+                            "payement" => $_POST['payement']
                             );
                         insert_participant_option($option_addition_data);
                     }

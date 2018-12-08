@@ -70,12 +70,57 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                     }
 
                     $validation = check_prepare_addition_data($site);
-                    $select_mandatory_options = get_select_mandatory_options(array('event_id' => $event_id, 'promo_id' => $_POST['promo_id'], 'site_id' => $_POST['site_id']));
-
                     if(!$validation)
                     {
                         echo json_encode($ajax_json_response);
                         die();
+                    }
+
+                    $choice_ids = $_POST['choice_ids'];
+                    $choice_datas = check_prepare_option_choice_data(false);
+
+                    if($choice_datas === false)
+                    {
+                        echo json_encode($ajax_json_response);
+                        die();
+                    }
+
+                    /**
+                     * Il n'y a qu'un seul input pour le prix de la place de base + les options obligatoires. On veut déterminer comment répartir ce prix.
+                     *
+                     * Si le prix donné est nul, quoi qu'il arrive, tout vaudra 0.
+                     * Si une option (obligatoire) est gratuite, son prix vaudra 0.
+                     * Si le prix de l'évènement est nul, il vaudra 0, sauf si toutes les options sont gratuites. Alors, il vaudra le prix donné par l'utilisateur.
+                     * Sinon, le prix des options payantes, et de la place sont déterminés au prorata de leur prix défini dans l'event.
+                     *
+                     * Ainsi, si la place est à 15€ & les options à 5€ (0 + 2 + 3), et que l'utilisateur indique 10€ de payés,
+                     * la place vaudra 15/20 *10 = 7,5€ // l'option gratuite vaudra 0€, l'option à 2€ 1€, l'option à 3€ 1,5€
+                     */
+                    $basic_price = get_event_price(array('event_id' => $_GET['event_id'], 'promo_id' => $_POST['promo_id'], 'site_id' => $_POST['site_id']));
+                    $option_prices = array_column($choice_datas, 'price');
+                    if(!empty($option_prices)) {
+                        $option_prices_sum = array_sum($option_prices);
+                        $options_nb = count($option_prices);
+                        $distinct_prices = array_unique($option_prices);
+                        $paid_options_nb = count($distinct_prices);
+                        if($basic_price == 0) {
+                            if($distinct_prices === [0]) {
+                                $ticket_price = $_POST['price'];
+                            } else {
+                                $option_price = $_POST['price'];
+                                $ticket_price = 0;
+                            }
+                        } else {
+                            if($distinct_prices === [0]) {
+                                $ticket_price = $_POST['price'];
+                            } else {
+                                $ticket_price_percentage = $basic_price / ($basic_price + $option_prices_sum);
+                                $ticket_price = round($_POST['price'] * $ticket_price_percentage, 2);
+                                $option_price = $_POST['price'] - $ticket_price;
+                            }
+                        }
+                    } else {
+                        $ticket_price = $_POST['price'];
                     }
 
                     $addition_data = array(
@@ -83,7 +128,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         'nom' => $_POST['nom'],
                         'status' => 'V',
                         'is_icam' => $is_icam,
-                        'price' => $_POST['price'],
+                        'price' => $ticket_price,
                         'payement' => $_POST['payement'],
                         'email' => $_POST['email'],
                         'bracelet_identification' => $_POST['bracelet_identification'],
@@ -94,33 +139,29 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
 
                     $participant_id = add_participant($addition_data);
                     $ajax_json_response['participant_id'] = $participant_id;
+
+                    foreach($choice_datas as $choice_data)
+                    {
+                        if($_POST['price'] ==0) {
+                            $option_price = 0;
+                        } else {
+                            $option_price = round($option_price * $choice_data['price'] / $option_prices_sum, 2);
+                        }
+
+                        $option_addition_data = array(
+                            "event_id" => $event_id,
+                            "participant_id" => $participant_id,
+                            "choice_id" => $choice_data['choice_id'],
+                            "status" => "V",
+                            "price" => $option_price,
+                            "payement" => htmlspecialchars($_POST['payement'])
+                            );
+                        insert_participant_option($option_addition_data);
+                    }
+
                     if(isset($_GET['icam_id']))
                     {
                         insert_icams_guest(array("event_id" => $event_id, "icam_id" => $_GET['icam_id'], "guest_id" => $participant_id));
-                    }
-
-                    foreach($select_mandatory_options as $select_mandatory_option)
-                    {
-                        $current_option_id = $select_mandatory_option['option_id'];
-                        if(isset($previous_option_id))
-                        {
-                            if($current_option_id==$previous_option_id)
-                            {
-                                continue;
-                            }
-                        }
-
-                        $promo_site_has_options_data = array(
-                            "event_id" => $event_id ,
-                            "participant_id" => $participant_id ,
-                            "choice_id" => $select_mandatory_option['choice_id'] ,
-                            "status" => "V",
-                            "price" => $select_mandatory_option['price'],
-                            "payement" => $_POST['payement']
-                            );
-                        insert_participant_option($promo_site_has_options_data);
-
-                        $previous_option_id=$current_option_id;
                     }
 
                     $ajax_json_response['message'] = "L'ajout a bien été effectué";

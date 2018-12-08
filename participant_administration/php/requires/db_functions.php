@@ -78,9 +78,24 @@ function add_participant($participant_data)
 function get_select_mandatory_options($ids)
 {
     global $db;
-    $select_mandatory_options = $db->prepare('SELECT * FROM options o LEFT JOIN promo_site_has_options psho ON o.option_id = psho.option_id LEFT JOIN option_choices oc ON oc.option_id=o.option_id WHERE is_active=1 and o.is_removed=0 and oc.is_removed=0 and type="Select" and is_mandatory=1 and o.event_id=:event_id and promo_id=:promo_id and site_id=:site_id ORDER BY oc.option_id');
-    $select_mandatory_options->execute($ids);
-    return $select_mandatory_options->fetchAll();
+    $all_choices_select_mandatory_options = $db->prepare('SELECT o.*, oc.choice_id, oc.price FROM options o LEFT JOIN promo_site_has_options psho ON o.option_id = psho.option_id and o.event_id=psho.event_id LEFT JOIN option_choices oc ON oc.option_id=o.option_id WHERE is_active=1 and o.is_removed=0 and oc.is_removed=0 and type="Select" and is_mandatory=1 and o.event_id=:event_id and promo_id=:promo_id and site_id=:site_id ORDER BY oc.option_id');
+    $all_choices_select_mandatory_options->execute($ids);
+    $all_choices_select_mandatory_options = $all_choices_select_mandatory_options->fetchAll();
+
+    $select_mandatory_options = [];
+    foreach($all_choices_select_mandatory_options as $choice_select_mandatory_option) {
+        $current_option_id = $choice_select_mandatory_option['option_id'];
+        if(isset($previous_option_id))
+        {
+            if($current_option_id==$previous_option_id)
+            {
+                continue;
+            }
+        }
+        array_push($select_mandatory_options, $choice_select_mandatory_option);
+        $previous_option_id=$current_option_id;
+    }
+    return $select_mandatory_options;
 }
 function get_optional_options($ids)
 {
@@ -90,10 +105,24 @@ function get_optional_options($ids)
     return $optional_options->fetchAll();
 }
 
+function get_event_price($ids) {
+    global $db;
+    $price = $db->prepare('SELECT price FROM promos_site_specifications WHERE event_id=:event_id and promo_id=:promo_id and site_id=:site_id');
+    $price->execute($ids);
+    return $price->fetch()['price'];
+}
+
+function participant_already_has_place($data) {
+    global $db;
+    $optional_options = $db->prepare('SELECT COUNT(*) matches FROM participants WHERE event_id=:event_id and email=:email');
+    $optional_options->execute($data);
+    return $optional_options->fetch()['matches'] >= 1 ? true : false;
+}
+
 function option_can_be_added($ids)
 {
     global $db;
-    $optional_options = $db->prepare('SELECT COUNT(*) matches FROM options o LEFT JOIN promo_site_has_options psho ON o.option_id = psho.option_id WHERE (o.option_id=:option_id and is_removed = 0 and is_active = 1 and promo_id=:promo_id and site_id=:site_id and o.event_id=:event_id) and ((type="Select" and is_mandatory=0) or (type="Checkbox"))');
+    $optional_options = $db->prepare('SELECT COUNT(*) matches FROM options o LEFT JOIN promo_site_has_options psho ON o.option_id = psho.option_id and o.event_id=psho.event_id WHERE (o.option_id=:option_id and is_removed = 0 and is_active = 1 and promo_id=:promo_id and site_id=:site_id and o.event_id=:event_id) and ((type="Select" and is_mandatory=:is_mandatory) or (type="Checkbox"))');
     $optional_options->execute($ids);
     return $optional_options->fetch()['matches'] == 1 ? true : false;
 }
@@ -271,9 +300,7 @@ function participant_can_have_choice($ids)
     $rows_number = $db->prepare('SELECT COUNT(*) FROM option_choices oc
         LEFT JOIN options o ON o.option_id=oc.option_id
         LEFT JOIN promo_site_has_options psho ON psho.option_id=o.option_id and psho.event_id=o.event_id
-        LEFT JOIN promos_site_specifications pss ON pss.promo_id=psho.promo_id and pss.site_id=psho.site_id and pss.event_id=psho.event_id
-        LEFT JOIN participants p ON p.promo_id=pss.promo_id and p.site_id=pss.site_id and p.event_id=pss.event_id
-        WHERE p.participant_id=:participant_id and oc.choice_id=:choice_id');
+        WHERE psho.promo_id=:promo_id and psho.site_id=:site_id and oc.choice_id=:choice_id');
     $rows_number->execute($ids);
     return $rows_number->fetch()['COUNT(*)']==1 ? true : false;
 }

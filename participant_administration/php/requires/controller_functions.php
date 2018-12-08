@@ -77,17 +77,29 @@ function check_update_participant_data($is_icam)
  */
 function check_prepare_addition_data($icam_site_id)
 {
-    global $promos, $sites;
-
+    global $promos, $sites, $mandatory_choices;
     $error = false;
-    $post_nb_inputs = $icam_site_id === false ? 8 : 5;
+    $icam_nb_inputs = 8;
+    $guest_nb_inputs = 5;
+
+    if(isset($_POST['choice_ids'])) {
+        if(is_array($_POST['choice_ids'])) {
+            $icam_nb_inputs += 2;
+            $guest_nb_inputs += 2;
+        } else {
+            $error = true;
+            add_alert_to_ajax_response('Les options reçues ont été altérées.');
+        }
+    }
+
+    $post_nb_inputs = $icam_site_id === false ? $icam_nb_inputs : $guest_nb_inputs;
 
     if(count($_POST)==$post_nb_inputs)
     {
         if(isset($_POST['prenom']))
         {
             $_POST['prenom'] = htmlspecialchars($_POST['prenom']);
-            if(count($_POST['prenom']) > 45)
+            if(strlen($_POST['prenom']) > 45)
             {
                 $error = true;
                 add_alert_to_ajax_response('Le prénom de votre nouveau participant est trop long.');
@@ -101,7 +113,7 @@ function check_prepare_addition_data($icam_site_id)
         if(isset($_POST['nom']))
         {
             $_POST['nom'] = htmlspecialchars($_POST['nom']);
-            if(count($_POST['nom']) > 45)
+            if(strlen($_POST['nom']) > 45)
             {
                 $error = true;
                 add_alert_to_ajax_response('Le nom de votre nouveau participant est trop long.');
@@ -116,8 +128,12 @@ function check_prepare_addition_data($icam_site_id)
         {
             if(isset($_POST['email']))
             {
-                if(!count($_POST['email']) > 255)
-                {
+                if(strlen($_POST['email']) <= 255) {
+                    if(participant_already_has_place(array('event_id' => $_GET['event_id'], 'email' => $_POST['email']))) {
+                        $error = true;
+                        add_alert_to_ajax_response("Ce participant a déjà pris sa place");
+                    }
+                } else {
                     $error = true;
                     add_alert_to_ajax_response("L'email de votre nouveau participant est trop long.");
                 }
@@ -131,7 +147,7 @@ function check_prepare_addition_data($icam_site_id)
         if(isset($_POST['bracelet_identification']))
         {
             $_POST['bracelet_identification'] = $_POST['bracelet_identification'] == '' ? null : htmlspecialchars($_POST['bracelet_identification']);
-            if(count($_POST['bracelet_identification']) > 25)
+            if(strlen($_POST['bracelet_identification']) > 25)
             {
                 $error = true;
                 add_alert_to_ajax_response("L'identifiant de bracelet de votre nouveau participant est trop long.");
@@ -170,7 +186,7 @@ function check_prepare_addition_data($icam_site_id)
         }
         if(isset($_POST['payement']))
         {
-            if(!in_array($_POST['payement'], ["Espèces", "Carte bleue", "Pumpkin", "Lydia", "Circle", "Offert", "à l'amiable", "Autre"]))
+            if(!in_array($_POST['payement'], ["Espèces", "Mozart", "Carte bleue", "Pumpkin", "Lydia", "Circle", "Offert", "à l'amiable", "Autre"]))
             {
                 $error = true;
                 add_alert_to_ajax_response("Le moyen de payement n'est pas dans la liste");
@@ -237,7 +253,7 @@ function check_prepare_addition_data($icam_site_id)
  * Ajustement de option_form pour ne rien vérifier.
  * @param  [array] $option [fetch de options avec option['option_choices'] qui contient un fetchAll des option_choices associés]
  */
-function display_option_no_checking($option)
+function display_option_no_checking($option, $mandatory=false)
 {
     if($option['type']=='Checkbox')
     {
@@ -246,75 +262,95 @@ function display_option_no_checking($option)
     }
     elseif($option['type']=='Select')
     {
-        select_form_basic($option);
+        select_form_basic($option, $mandatory);
     }
 }
 
 /**
  * Permet de vérifier que les informations entrées sur un ajout d'options sont bonnes
- * @return [type] [description]
+ * @param  boolean $check_basic_too Permet de savoir si on est dans un ajout d'options obligatoire (ajout_participant.php) ou dans un ajout d'options facultatives (ajout_options.php)
+ * @return mixed false si il y a eu des erreurs, sinon choice_datas, pour les options à ajouter.
  */
-function check_prepare_option_choice_data()
+function check_prepare_option_choice_data($check_basic_too=true)
 {
-    $promo_site_ids = get_participant_promo_site_ids(array('event_id' => $_GET['event_id'], 'participant_id' => $_GET['participant_id']));
+    if($check_basic_too) {
+        $promo_site_ids = get_participant_promo_site_ids(array('event_id' => $_GET['event_id'], 'participant_id' => $_GET['participant_id']));
 
-    $promo_id = $promo_site_ids['promo_id'];
-    $site_id = $promo_site_ids['site_id'];
+        $is_mandatory = 0;
+        $promo_id = $promo_site_ids['promo_id'];
+        $site_id = $promo_site_ids['site_id'];
+    } else {
+        $is_mandatory = 1;
+        $promo_id = $_POST['promo_id'];
+        $site_id = $_POST['site_id'];
+        $option_ids = [];
+    }
 
     $error = false;
 
     $choice_datas = array();
 
-    $_POST['choice_ids'] = array_column($_POST['choice_ids'], 'choice_id');
+    if($check_basic_too) {
+        $_POST['choice_ids'] = array_column($_POST['choice_ids'], 'choice_id');
+    }
 
     foreach($_POST['choice_ids'] as $choice_id)
     {
-        if(participant_can_have_choice(array('choice_id' => $choice_id, 'participant_id' => $_GET['participant_id'])))
+        if(participant_can_have_choice(array('choice_id' => $choice_id, 'promo_id' => $promo_id, 'site_id' => $site_id)))
         {
             $choice_data = get_option_choice($choice_id);
-            if(option_can_be_added(array('promo_id' => $promo_id, 'site_id' => $site_id, 'option_id' => $choice_data['option_id'], 'event_id' => $_GET['event_id'])))
+            if(option_can_be_added(array('promo_id' => $promo_id, 'site_id' => $site_id, 'option_id' => $choice_data['option_id'], 'event_id' => $_GET['event_id'], 'is_mandatory' => $is_mandatory)))
             {
-                if(!participant_has_option(array('participant_id' => $_GET['participant_id'], 'option_id' => $choice_data['option_id'], 'event_id' => $_GET['event_id'])))
-                {
-                    if(isset($_POST['payement']))
+                if($check_basic_too) {
+                    if(!participant_has_option(array('participant_id' => $_GET['participant_id'], 'option_id' => $choice_data['option_id'], 'event_id' => $_GET['event_id'])))
                     {
-                        if(!in_array($_POST['payement'], ["Espèces", "Carte bleue", "Pumpkin", "Lydia", "Circle", "Offert", "à l'amiable", "Autre"]))
+                        if(isset($_POST['payement']))
                         {
-                            $error = true;
-                            add_alert_to_ajax_response("Le moyen de payement n'est pas dans la liste");
-                        }
-                    }
-                    else
-                    {
-                        $error = true;
-                        add_alert_to_ajax_response("Le moyen de payement n'est pas spécifié");
-                    }
-                    if(isset($_POST['price']))
-                    {
-                        if(is_numeric($_POST['price']))
-                        {
-                            if(floor(100*$_POST['price']) != 100*$_POST['price'])
+                            if(!in_array($_POST['payement'], ["Espèces", "Mozart", "Carte bleue", "Pumpkin", "Lydia", "Circle", "Offert", "à l'amiable", "Autre"]))
                             {
-                                add_alert_to_ajax_response("Le prix est défini avec une précision plus grande que le centime, ou n'est même pas positif");
                                 $error = true;
+                                add_alert_to_ajax_response("Le moyen de payement n'est pas dans la liste");
                             }
                         }
                         else
                         {
                             $error = true;
-                            add_alert_to_ajax_response("Le prix de votre nouveau participant n'est pas numérique.");
+                            add_alert_to_ajax_response("Le moyen de payement n'est pas spécifié");
+                        }
+                        if(isset($_POST['price']))
+                        {
+                            if(is_numeric($_POST['price']))
+                            {
+                                if(floor(100*$_POST['price']) != 100*$_POST['price'])
+                                {
+                                    add_alert_to_ajax_response("Le prix est défini avec une précision plus grande que le centime, ou n'est même pas positif");
+                                    $error = true;
+                                }
+                            }
+                            else
+                            {
+                                $error = true;
+                                add_alert_to_ajax_response("Le prix de votre nouveau participant n'est pas numérique.");
+                            }
+                        }
+                        else
+                        {
+                            $error = true;
+                            add_alert_to_ajax_response("Les informations à propos du prix ne sont pas passées");
                         }
                     }
                     else
                     {
                         $error = true;
-                        add_alert_to_ajax_response("Les informations à propos du prix ne sont pas passées");
+                        add_alert_to_ajax_response("Le participant a déjà cette option.");
                     }
-                }
-                else
-                {
-                    $error = true;
-                    add_alert_to_ajax_response("Le participant a déjà cette option.");
+                } else {
+                    if(!in_array($choice_data['option_id'], $option_ids)) {
+                        array_push($option_ids, $choice_data['option_id']);
+                    } else {
+                        $error = true;
+                        add_alert_to_ajax_response("Bah voyons donc, t'essayes tu d'ajouter plusieurs choix de la même option ?");
+                    }
                 }
             }
             else

@@ -380,7 +380,7 @@ function checkbox_form_basic($option)
  * Affiche un checkbox sans vérifier quoi que ce soit
  * @param  [array] $option [fetch de options avec un fetchAll des choix du select dans $option['option_choices'] ]
  */
-function select_form_basic($option)
+function select_form_basic($option, $mandatory=false)
 {
     ?>
     <div class="select_option form-group">
@@ -391,8 +391,8 @@ function select_form_basic($option)
             </button>
         </label>
         <select class="form-control">
-            <option disabled selected style="display:none">Sélectionnez l'option que vous voulez offrir !</option>
-            <?php insert_select_options_no_checking($option); ?>
+            <option disabled <?=$mandatory==false ? 'selected' : '' ?> style="display:none">Sélectionnez l'option que vous voulez offrir !</option>
+            <?php insert_select_options_no_checking($option, $mandatory); ?>
         </select>
         <input type="hidden" name="option_id" value="<?=$option['option_id']?>">
     </div>
@@ -403,15 +403,15 @@ function select_form_basic($option)
  * Ajoute toutes les options possibles à un select
  * @param  [array] $option [fetch de options avec un fetchAll des choix du select dans $option['option_choices'] ]
  */
-function insert_select_options_no_checking($option)
+function insert_select_options_no_checking($option, $mandatory)
 {
     foreach($option['option_choices'] as $option_choice)
     {
         ?>
-        <option value="<?=$option_choice['choice_id']?>">
+        <option <?=$mandatory == true ? 'selected' : '' ?> value="<?=$option_choice['choice_id']?>">
             <?= htmlspecialchars($option_choice['name']) . ' (' . htmlspecialchars($option_choice['price']) . '€)' ?>
         </option>
-        <?php
+        <?php $mandatory=false;
     }
 }
 

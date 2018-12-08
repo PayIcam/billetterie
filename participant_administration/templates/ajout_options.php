@@ -29,6 +29,7 @@
                         <select class="form-control" name="payement">
                             <option disabled> Choisissez le moyen de payement de votre participant</option>
                             <option>Espèces</option>
+                            <option>Mozart</option>
                             <option>Carte bleue</option>
                             <option>Pumpkin</option>
                             <option>Lydia</option>

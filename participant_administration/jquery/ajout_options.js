@@ -82,7 +82,6 @@ $(document).ready(function()
                 var choice_ids = [];
                 $('#options .option').find('input:checkbox:checked, option:selected:not(:disabled)').each(function()
                 {
-                    console.log($(this));
                     if($(this).parents('div').hasClass('checkbox_option'))
                     {
                         var choice_id = $(this).parents('.option').find('input[name=choice_id]').val();
