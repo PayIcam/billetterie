@@ -54,10 +54,10 @@ function prepare_edit_submit()
                     var option_id = $(this).find('input[name=option_id]').val();
                     var choice_id = $(this).find('select option:not(:first):selected').val();
                     var option_text = $.trim($(this).find('select option:not(:first):selected').text());
-                    var regExp = /\(([0-9]+)€\)$/;
+                    var regExp = /\(([0-9]+\.[0-9]{2})€\)$/;
                     var option_price = parseFloat(regExp.exec(option_text)[1]);
 
-                    var regExp_name = /(\([0-9]+€\))$/;
+                    var regExp_name = /(\([0-9]+\.[0-9]{2}€\))$/;
                     var name = option_text.replace(regExp_name, '');
 
                     if($(this).parent()[0] == $("#icam_options")[0])
