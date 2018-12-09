@@ -147,7 +147,7 @@ function filling_form_behaviour()
             var previous_price = parseFloat($(this).parents(".select_option").find(".select_price").text());
             previous_price = isNaN(previous_price) ? 0 : previous_price;
             var option_text = $.trim($(this).find('option:selected').text());
-            var regExp = /\(([0-9]+€\.[0-9]{2})\)$/;
+            var regExp = /\(([0-9]+\.[0-9]{2}€)\)$/;
             try
             {
                 var new_price = parseFloat(regExp.exec(option_text)[1]);
