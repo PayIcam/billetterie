@@ -114,7 +114,7 @@ function get_event_price($ids) {
 
 function participant_already_has_place($data) {
     global $db;
-    $optional_options = $db->prepare('SELECT COUNT(*) matches FROM participants WHERE event_id=:event_id and email=:email');
+    $optional_options = $db->prepare('SELECT COUNT(*) matches FROM participants WHERE event_id=:event_id and email=:email and status IN("V", "W")');
     $optional_options->execute($data);
     return $optional_options->fetch()['matches'] >= 1 ? true : false;
 }

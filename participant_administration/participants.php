@@ -23,7 +23,6 @@ if(isset($_GET['event_id']))
         check_user_fundations_rights($fundation_id);
 
         $event = get_event_details($event_id);
-        check_if_event_is_not_too_old($event);
 
         $admin_rights = has_admin_rights($fundation_id, 'getPayutcClient');
 

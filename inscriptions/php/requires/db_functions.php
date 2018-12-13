@@ -203,14 +203,6 @@ function get_icam_event_data($identification_data)
     return $icam_data;
 }
 
-function get_whole_current_quota($event_id)
-{
-    global $db;
-    $count_promo = $db->prepare('SELECT COUNT(*) current_total_quota FROM participants WHERE event_id= :event_id and status IN("V", "W")');
-    $count_promo->execute(array("event_id" => $event_id));
-    return $count_promo->fetch()['current_total_quota'];
-}
-
 function get_participant_option($ids)
 {
     global $db;

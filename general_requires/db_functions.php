@@ -321,6 +321,14 @@ function get_event_site_names($event_id)
     return $promos->fetchAll();
 }
 
+function get_whole_current_quota($event_id)
+{
+    global $db;
+    $count_promo = $db->prepare('SELECT COUNT(*) current_total_quota FROM participants WHERE event_id= :event_id and status IN("V", "W")');
+    $count_promo->execute(array("event_id" => $event_id));
+    return $count_promo->fetch()['current_total_quota'];
+}
+
 /**
  * Will return the participants corresponding to the research, and its number. Many choices possible for the search
  * @param  [string] $recherche     [the search criteria]
@@ -433,10 +441,10 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
 
         //gets participants corresponding to the payment entered
         case(preg_match($option_search_regex, $recherche) ==1):
-            $recherche_bdd = $db->prepare('SELECT * FROM participants p WHERE p.event_id = :event_id and status="V" and participant_id IN(SELECT DISTINCT participant_id FROM participant_has_options LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE oc.option_id=:option_id) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $recherche_bdd = $db->prepare('SELECT * FROM participants p WHERE p.event_id = :event_id and status="V" and participant_id IN(SELECT DISTINCT participant_id FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE oc.option_id=:option_id) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $option_id = get_option_id($recherche);
             $recherche_bdd->bindParam('option_id', $option_id);
-            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE event_id = :event_id and status="V" and participant_id IN(SELECT DISTINCT participant_id FROM participant_has_options LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE oc.option_id=:option_id)');
+            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE event_id = :event_id and status="V" and participant_id IN(SELECT DISTINCT participant_id FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE oc.option_id=:option_id)');
             $count_recherche->execute(array('event_id' => $event_id, 'option_id' => $option_id));
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
             break;
@@ -491,13 +499,13 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
 
         //gets participants who have their bracelet_identication filled in
         case (preg_match("#^bracelet$#i", $recherche)==1):
-            $recherche_bdd =$db->prepare('SELECT * FROM participants WHERE status="V" and bracelet_identification IS NOT NULL and event_id = :event_id or bracelet_identification !="" ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $recherche_bdd =$db->prepare('SELECT * FROM participants WHERE status="V" and bracelet_identification IS NOT NULL and event_id = :event_id and bracelet_identification !="" ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $count_recherche = count_current_bracelet($event_id);
             break;
 
         //gets participants who don't have their bracelet_identication filled in
         case (preg_match("#^no[t]? bracelet$#i", $recherche)==1):
-            $recherche_bdd =$db->prepare('SELECT * FROM participants WHERE status="V" and bracelet_identification IS NULL and event_id = :event_id or bracelet_identification="" ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $recherche_bdd =$db->prepare('SELECT * FROM participants WHERE status="V" and bracelet_identification IS NULL and event_id = :event_id and bracelet_identification="" ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $count_recherche = count_current_bracelet($event_id, false);
             break;
 

@@ -22,7 +22,6 @@ if(isset($_GET['event_id']))
         check_user_fundations_rights(get_fundation_id($event_id));
 
         $event_details_stats = get_event_details_stats($event_id);
-        check_if_event_is_not_too_old($event_details_stats);
 
         $total_quota = $event_details_stats['total_quota'];
         $total_count = $event_details_stats['total_count'];

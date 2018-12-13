@@ -114,9 +114,13 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             if($distinct_prices === [0]) {
                                 $ticket_price = $_POST['price'];
                             } else {
-                                $ticket_price_percentage = $basic_price / ($basic_price + $option_prices_sum);
-                                $ticket_price = round($_POST['price'] * $ticket_price_percentage, 2);
-                                $option_price = $_POST['price'] - $ticket_price;
+                                if($basic_price + $option_prices_sum==0) {
+                                    $ticket_price_percentage = 0;
+                                } else {
+                                    $ticket_price_percentage = $basic_price / ($basic_price + $option_prices_sum);
+                                    $ticket_price = round($_POST['price'] * $ticket_price_percentage, 2);
+                                    $option_price = $_POST['price'] - $ticket_price;
+                                }
                             }
                         }
                     } else {
@@ -145,7 +149,11 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         if($_POST['price'] ==0) {
                             $option_price = 0;
                         } else {
-                            $option_price = round($option_price * $choice_data['price'] / $option_prices_sum, 2);
+                            if($option_prices_sum==0) {
+                                $option_price = 0;
+                            } else {
+                                $option_price = round($option_price * $choice_data['price'] / $option_prices_sum, 2);
+                            }
                         }
 
                         $option_addition_data = array(
