@@ -5,6 +5,8 @@
         <div class="jumbotron">
             <h1 class="text-center"><?= htmlspecialchars($event['name']) ?></h1>
             <h2><?= $event['description'] ?></h2>
+            <?php if($event['event_id'] == 2) { ?> <img class="img-responsive" style="width:100%" src="../img/after_gala.jpg" alt="image pulls bde"> <?php } ?>
+            <?php if($event['event_id'] == 5) { ?> <img class="img-responsive" src="../img/pull_bde.jpg" alt="image pulls bde"> <?php } ?>
             <h3>Inscrivez vous en remplissant le formulaire ci dessous, et en validant ! Pensez à recharger afin d'avoir de quoi payer au préalable ! </h3>
             <?php if(!empty($event['conditions'])) { ?>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#event_conditions">
