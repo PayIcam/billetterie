@@ -27,7 +27,7 @@
                                     <td class="col-sm-3 <?=display_pourcentage_style($event_details_stats['pourcentage_inscriptions'], 2)?>"><?=$event_details_stats['pourcentage_inscriptions']?></td>
                                     <td class="col-sm-3"><?=$event_details_stats['total_quota']?></td>
                                 </tr>
-                                <?php if($event_details_stats['student_count'] !=0) { ?>
+                                <?php if($event_details_stats['student_count'] !=0 && !($event_details_stats['graduated_count']==0 && $event_details_stats['guests_count']==0)) { ?>
                                 <tr>
                                     <th class="col-sm-3">Etudiants Icam</th>
                                     <td class="col-sm-3"><?=$event_details_stats['student_count']?></td>
@@ -50,7 +50,7 @@
                                 </tr>
                                 <?php } if($event_details_stats['options_count'] !=0) { ?>
                                 <tr>
-                                    <th class="col-sm-3">Participants avec option</th>
+                                    <th class="col-sm-3">Participants ayant pris des options</th>
                                     <td class="col-sm-3"><?=$event_details_stats['options_count']?></td>
                                     <td class="col-sm-3 <?=display_pourcentage_style($event_details_stats['pourcentage_options'], 2)?>"><?=$event_details_stats['pourcentage_options']?></td>
                                     <td class="col-sm-3">XXX</td>

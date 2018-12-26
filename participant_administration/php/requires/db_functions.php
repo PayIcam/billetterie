@@ -150,7 +150,7 @@ function get_event_details_stats($event_id)
     $type_quotas = $db->prepare('SELECT SUM(IF(pr.still_student=0, quota, 0)) graduated_quota, SUM(IF(pr.still_student=1, quota, 0)) student_quota, SUM(IF(pr.promo_name="Invités", quota, 0)) guest_quota FROM promos_site_specifications pss LEFT JOIN promos pr ON pr.promo_id=pss.promo_id WHERE pss.event_id=:event_id and (pr.still_student!=2 or pr.promo_name="Invités")');
     $type_quotas->execute(array('event_id' => $event_id));
 
-    $options_count = $db->prepare('SELECT COUNT(DISTINCT participant_id) options_count FROM participant_has_options WHERE event_id=:event_id');
+    $options_count = $db->prepare('SELECT COUNT(DISTINCT participant_id) options_count FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id LEFT JOIN options o ON o.option_id=oc.option_id WHERE pho.event_id=:event_id and status !="A" and o.is_mandatory=0');
     $options_count->execute(array('event_id' => $event_id));
 
     return array_merge($details_stats->fetch(), $type_quotas->fetch(), $options_count->fetch());
@@ -176,9 +176,11 @@ function get_promo_specification_details_stats($event_id)
         GROUP BY p.promo_id, p.site_id');
     $guest_promo_count->execute(array('event_id' => $event_id));
     $guest_promo_count = $guest_promo_count->fetchAll();
+
+    $combined_array = [];
     for($i=0; $i<count($guest_promo_count); $i++)
     {
-        $combined_array[] = array_merge($details_stats[$i], $guest_promo_count[$i]);
+        array_push($combined_array, array_merge($details_stats[$i], $guest_promo_count[$i]));
     }
     return $combined_array;
 }

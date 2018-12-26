@@ -32,6 +32,9 @@ if(isset($_GET['event_id']))
         $event_details_stats['pourcentage_bracelets'] = $total_count !=0 ? round(100 * $event_details_stats['total_bracelet_count'] / $total_count, 2) . '%' : "0%";
         $event_details_stats['pourcentage_arrival'] = $total_count !=0 ? round(100 * $event_details_stats['arrival_count'] / $total_count, 2) . '%' : "0%";
         $event_details_stats['pourcentage_options'] = $total_count !=0 ? round(100 * $event_details_stats['options_count'] / $total_count, 2) . '%' : "0%";
+        $event_details_stats['student_quota'] = min($total_quota, $event_details_stats['student_quota']);
+        $event_details_stats['graduated_quota'] = min($total_quota, $event_details_stats['graduated_quota']);
+        $event_details_stats['guest_quota'] = min($total_quota, $event_details_stats['guest_quota']);
 
         $event_days_stats = get_event_days_stats($event_id);
         $event_payment_stats = get_event_payments_stats($event_id);
