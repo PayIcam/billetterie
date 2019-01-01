@@ -32,7 +32,7 @@
 
         </div>
     </div>
-    <form method="post" action="php/<?= isset($icam_event_data) ? "edition_reservation" : "ajout_reservation" ?>.php?event_id=<?=$event_id?>">
+    <form method="post" action="php/<?= isset($icam_event_data) ? "edition_reservation" : "ajout_reservation" ?>.php?event_id=<?=$event_id?>" enctype="multipart/form-data">
         <div id="registration">
             <div id="registration_icam" class="container">
                 <?php
