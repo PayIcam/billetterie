@@ -648,3 +648,21 @@ function folder_is_active($folder)
     $price_sum->execute(array('folder' => $folder));
     return $price_sum->fetch()['is_active'] == 1 ? true : false;
 }
+
+function free_option($option_id) {
+    global $db;
+    $mandatory_free = $db->prepare('SELECT SUM(oc.price) sum FROM options o LEFT JOIN option_choices oc ON o.option_id=oc.option_id WHERE o.option_id=:option_id');
+    $mandatory_free->execute(array('option_id' => $option_id));
+    return $mandatory_free->fetch()['sum'] == 0 ? true : false;
+}
+
+/**
+ * On ne se sert que du choice_id, mais je laisse le reste en tant que vestiges de ce que je voulais faire, mais qui est impossible à cause du format de la base de données.
+ */
+function get_participant_previous_choice_payicam($ids) {
+    global $db;
+    $previous_choice_payicam = $db->prepare('SELECT pho.choice_id, payicam_transaction_id, scoobydoo_article_id FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id LEFT JOIN participants p ON p.participant_id=pho.participant_id LEFT JOIN transactions t ON t.icam_id=p.participant_id WHERE oc.option_id=:option_id and pho.participant_id=:participant_id and pho.event_id=:event_id and pho.status IN("V","W")');
+    $previous_choice_payicam->execute($ids);
+    $previous_choice_payicam = $previous_choice_payicam->fetch();
+    return !empty($previous_choice_payicam) ? $previous_choice_payicam : false;
+}

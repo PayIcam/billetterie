@@ -158,9 +158,10 @@ function checkbox_form($option, $price_paid=false)
  */
 function select_form($option, $select_choice=null)
 {
+    $option['free'] = free_option($option['option_id']);
     global $ticketing_state;
     ?>
-    <div class="select_option form-group" <?= $select_choice!=null ? "data-payed=1" : "" ?>>
+    <div class="select_option form-group" <?= $select_choice!=null ? $option['free'] ? "data-payed=2" : "data-payed=1" : "" ?>>
         <label>
             <span><?= htmlspecialchars($option['name']) ?></span>
             <span class="select_price badge badge-pill <?= isset($select_choice) ? 'badge-success' : 'badge-info' ?>"></span>
@@ -203,9 +204,20 @@ function insert_according_select_options($option, $select_choice=null)
     }
     else
     {
-        ?>
-        <option value="<?= $select_choice['choice_id']?>" selected data-payed=1><?= htmlspecialchars($select_choice['name']) . '(' . $select_choice['price_paid'] . '€)' ?></option>
-        <?php
+        if($option['free']) {
+            foreach($option['option_choices'] as $option_choice) {
+                if($option_choice['choice_id'] == $select_choice['choice_id']) { ?>
+                    <option value="<?= $select_choice['choice_id']?>" selected data-payed=1><?= htmlspecialchars($select_choice['name']) . '(' . $select_choice['price_paid'] . '€)' ?></option>
+                <?php } else {
+                    $suboption_quota = $option_choice['quota']==null ? INF : $option_choice['quota'];
+                    if(get_current_select_option_quota(array("event_id" => $option['event_id'], "choice_id" => $option_choice['choice_id'])) < $suboption_quota) { ?>
+                        <option value="<?= $option_choice['choice_id']?>" data-payed=0><?= htmlspecialchars($option_choice['name']) . '(' . $option_choice['price'] . '€)' ?></option>
+                    <?php }
+                }
+            }
+        } else { ?>
+            <option value="<?= $select_choice['choice_id']?>" selected data-payed=1><?= htmlspecialchars($select_choice['name']) . '(' . $select_choice['price_paid'] . '€)' ?></option>
+        <?php }
     }
 }
 

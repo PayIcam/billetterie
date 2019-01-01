@@ -62,9 +62,17 @@ function option_form($option, $promo_id, $site_id, $participant_id=-1)
  */
 function participant_options_handling($event_id, $participant_id, $options)
 {
-    global $options_articles, $transaction_linked_purchases;
+    global $options_articles, $transaction_linked_purchases, $payutcClient, $fun_id;
     foreach($options as $option)
     {
+        if(isset($option->previous_choice_payicam)) {
+            //Ne marche pas, la sructure de la db est mal faite. J'aurais du créer la table participant_has_options avec une primaire et 2 extérieures.
+            //Transaction id ne sera pas set si on est dans le cas ou la place de la personne a été ajoutée à la main. Alors on ne peux pas l'annuler, vu qu'elle n'existe pas. On annule quand même l'option sur la billetterie bien sur.
+            // if(isset($option->previous_choice_payicam['payicam_transaction_id'])) {
+            //     $payutcClient->cancel(array('fun_id' => $fun_id, 'tra_id' => $option->previous_choice_payicam['payicam_transaction_id'], 'obj_id' => $option->previous_choice_payicam['scoobydoo_article_id']));
+            // }
+            update_option_status(array("participant_id" => $participant_id, "status" => 'A', "choice_id" => $option->previous_choice_payicam['choice_id']));
+        }
         $article_id = get_option_article_id($option->choice_id);
 
         //Il est possible qu'il y ait déjà une option qui ait été prise par le participant, mais annulée. Dans ce cas, on ne peux en créer une autre. Il faut mettre à jour celle ci.
@@ -165,7 +173,7 @@ function number_of_guests_to_be_displayed($promo_specifications, $guests_specifi
  * @param  [int] $left_to_pay      [Ce qu'il reste à payer]
  * @return [array]                   [array('error' => , 'left_to_pay' => , 'participant_data' => )]
  */
-function check_participant_options($participant_data, $participant_type, $event_id, $site_id, $promo_id, $error, $left_to_pay)
+function check_participant_options(&$participant_data, $participant_type, $event_id, $site_id, $promo_id, $error, $left_to_pay)
 {
     foreach($participant_data->options as &$option)
     {
@@ -294,6 +302,20 @@ function check_participant_options($participant_data, $participant_type, $event_
                         {
                             add_alert_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : Le quota d'une sous-option est déjà plein. <br>");
                             $error = true;
+                        }
+                        if(isset($option->change_free_option)) {
+                            if($option->change_free_option) {
+                                // $error = true;
+                                // add_alert_to_ajax_response("fml");
+                                $option->previous_choice_payicam = get_participant_previous_choice_payicam(array('option_id' => $option_id, 'event_id' => $event_id, 'participant_id' => $participant_data->participant_id));
+                                if($option->previous_choice_payicam['choice_id'] == $choice_id) {
+                                    $error = true;
+                                }
+                                if($option->previous_choice_payicam == false) {
+                                    add_alert_to_ajax_response($participant_type . " : Option ". $option_db_data['name'] . " : L'option n'avait pas été prise auparavant.<br>");
+                                    $error = true;
+                                }
+                            }
                         }
 
                         if(isset($option->price))

@@ -60,6 +60,15 @@ function prepare_edit_submit()
                     var regExp_name = /(\([0-9]+\.[0-9]{2}€\))$/;
                     var name = option_text.replace(regExp_name, '');
 
+                    $datapayed = $(this).find('select option:not(:first):selected').data('payed');
+                    if($datapayed == 0) {
+                        var change_free_option = true;
+                    } else if ($datapayed == 1) {
+                        return true;
+                    } else {
+                        var change_free_option = false;
+                    }
+
                     if($(this).parent()[0] == $("#icam_options")[0])
                     {
                         icam_price_addition+=option_price;
@@ -71,7 +80,7 @@ function prepare_edit_submit()
 
                     var option_article_id= $(this).find('select option:not(:first):selected').val();
 
-                    option = {option_id: option_id, choice_id: choice_id, type: 'Select', name: name, price: option_price};
+                    option = {option_id: option_id, choice_id: choice_id, type: 'Select', name: name, price: option_price, change_free_option: change_free_option};
                     options.push(option);
                 }
             }
