@@ -7,3 +7,4 @@ event_administration/test.php
 event_administration/reset_events.php
 db_creation/event_save.sql
 participant_administration/test.php
+img/

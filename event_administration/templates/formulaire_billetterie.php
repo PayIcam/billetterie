@@ -41,32 +41,40 @@
                     <small id="conditions_help" class="form-text text-muted">Il est possible de définir des conditions pour votre évènement. Elles apparaitront en pop-up la premi_re fois qu'on prend sa place. Il faudra alors les lire et les accepter. Si vous ne remplissez pas ce champ, rien n'apparaitra.</small>
                 </div>
 
-                <div class="form-group">
-                    <label for="event_quota">Quota de places disponibles pour votre évènement :</label>
-                    <input value="<?= isset($event['total_quota']) ? htmlspecialchars($event['total_quota']) : '' ?>" type="number" min=0 class="form-control" name="event_quota" id="event_quota" aria-describedby="quota_place_help" placeholder="Nombre de places" required>
-                    <small id="quota_place_help" class="form-text text-muted">Il ne sera pas possible de dépasser ce quota, les inscriptions se bloqueront automatiquement une fois ce nombre atteint.</small>
+                <div class="row">
+                    <div class="form-group col-sm-3">
+                        <label for="event_quota">Quota de places disponibles</label>
+                        <input value="<?= isset($event['total_quota']) ? htmlspecialchars($event['total_quota']) : '' ?>" type="number" min=0 class="form-control" name="event_quota" id="event_quota" aria-describedby="quota_place_help" placeholder="Nombre de places" required>
+                        <small id="quota_place_help" class="form-text text-muted">Il ne sera pas possible de dépasser ce quota, les inscriptions se bloqueront automatiquement une fois ce nombre atteint.</small>
+                    </div>
+
+                    <div id="ticketing_dates">
+                        <div class='form-group col-sm-3'>
+                            <label for="ticketing_start_date">Début des inscriptions :</label>
+                            <div class='input-group date' id='start_date_div'>
+                                <input value="<?= isset($event['ticketing_start_date']) ? htmlspecialchars($event['ticketing_start_date']) : '' ?>" type='text' class="form-control" name="ticketing_start_date" id="ticketing_start_date" aria-describedby="ticketing_start_date_help" placeholder="Ouverture de la billetterie" required>
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                            </div>
+                            <small id="ticketing_start_date_help" class="form-text text-muted">A la date indiquée, la billetterie de votre évènement deviendra ouverte au public ciblé automatiquement.</small>
+                        </div>
+                        <div class='form-group col-sm-3'>
+                            <label for="ticketing_end_date">Fin des inscriptions :</label>
+                            <div class='input-group date' id='end_date_div'>
+                                <input value="<?= isset($event['ticketing_end_date']) ? htmlspecialchars($event['ticketing_end_date']) : '' ?>" type='text' class="form-control" name="ticketing_end_date" id="ticketing_end_date" aria-describedby="ticketing_end_date_help" placeholder="Fermeture de la billetterie" required>
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                            <small id="ticketing_end_date_help" class="form-text text-muted">A la date indiquée, la billetterie de votre évènement deviendra ouverte au public ciblé automatiquement.</small>
+                        </div>
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <label for="image_file">Image de la billetterie</label>
+                        <input type="file" id="image_file" name="image_file" aria-describedby="image_file_help">
+                        <small id="image_file_help" class="form-text text-muted">L'image apparaitre juste en dessous de la description de l'évènement.</small>
+                    </div>
                 </div>
 
-                <div id="ticketing_dates">
-                    <div class='form-group'>
-                        <label for="ticketing_start_date">Début des inscriptions :</label>
-                        <div class='input-group date' id='start_date_div'>
-                            <input value="<?= isset($event['ticketing_start_date']) ? htmlspecialchars($event['ticketing_start_date']) : '' ?>" type='text' class="form-control" name="ticketing_start_date" id="ticketing_start_date" aria-describedby="ticketing_start_date_help" placeholder="Ouverture de la billetterie" required>
-                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                        </div>
-                        <small id="ticketing_start_date_help" class="form-text text-muted">A la date indiquée, la billetterie de votre évènement deviendra ouverte au public ciblé automatiquement.</small>
-                    </div>
-                    <div class='form-group'>
-                        <label for="ticketing_end_date">Fin des inscriptions :</label>
-                        <div class='input-group date' id='end_date_div'>
-                            <input value="<?= isset($event['ticketing_end_date']) ? htmlspecialchars($event['ticketing_end_date']) : '' ?>" type='text' class="form-control" name="ticketing_end_date" id="ticketing_end_date" aria-describedby="ticketing_end_date_help" placeholder="Fermeture de la billetterie" required>
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                            </span>
-                        </div>
-                        <small id="ticketing_end_date_help" class="form-text text-muted">A la date indiquée, la billetterie de votre évènement deviendra ouverte au public ciblé automatiquement.</small>
-                    </div>
-                </div>
                 <script type="text/javascript">
                 /**
                  * Small script mostly taken from Bootstrap.

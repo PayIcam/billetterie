@@ -50,6 +50,16 @@ function check_then_submit_form(event)
             add_alert('Vous ne visez aucune promo...');
             form_is_correct = false;
         }
+        if($("#image_file")[0].files[0] != undefined) {
+            if($.inArray($("#image_file").val().replace(/^.*\./, '').toLowerCase(), ['jpg', 'png']) == -1) {
+                add_alert("L'image n'a pas la bonne extension. Il faut un pdf ou un jpeg.");
+                form_is_correct = false;
+            }
+            if($("#image_file")[0].files[0].size > 5000000) {
+                add_alert("L'image est trop lourde");
+                form_is_correct = false;
+            }
+        }
         if($('input[name=guests]').val()==1)
         {
             should_have_guests = false;
@@ -260,6 +270,15 @@ function check_then_submit_form(event)
         return options;
     }
 
+    function get_file() {
+        if(document.getElementById("image_file").files.length == 0) {
+            return false;
+        }
+        var fileInput = document.getElementById('image_file');
+        var image_file = fileInput.files[0];
+        return image_file;
+    }
+
     function check_urls()
     {
         var current_path = window.location.pathname;
@@ -295,8 +314,11 @@ function check_then_submit_form(event)
             $("#message_submit").show();
             $('.waiting').show();//On affiche un petit message montrant que la modification est en cours
 
+
+            event.preventDefault();
             var event_data = get_event_infos();
             var event_data_json = JSON.stringify(event_data);//On récupère les données de l'event, que l'on met sous format JSON, pour le passer en text
+            var image_file = get_file();
 
             var event_accessibility = get_accessibility_infos();
             var event_accessibility_json = JSON.stringify(event_accessibility);//Pareil pour l'accessiblité
@@ -310,6 +332,7 @@ function check_then_submit_form(event)
             {
                 var option_details_json = '';
             }
+
 
             var post_url = $('form').prop('action');
 
@@ -326,7 +349,7 @@ function check_then_submit_form(event)
                     $('form').off('submit').submit(function(submit)
                     {
                         //On empèche de resubmit le form vu que tout est bon
-                        submit.preventDefault();
+                        event.preventDefault();
                     });
                     setTimeout(function()
                     {
@@ -361,14 +384,29 @@ function check_then_submit_form(event)
 
             //On envoie en post, les infos nécessaires. Le retour attendu est html
             //Les données sont envoyées sous forme de 3 objets, contenant des informations spécifiques à chaque fois.
+            var formData = new FormData();
+            formData.append('image_file', image_file);
+            formData.append('event_data_json', event_data_json);
+            formData.append('event_accessibility_json', event_accessibility_json);
+            formData.append('option_details_json', option_details_json);
             $.post(
             {
                 url: post_url,
-                data: {event_data_json: event_data_json, event_accessibility_json: event_accessibility_json, option_details_json: option_details_json},
+                data: formData,
                 dataType: 'html',
                 success: ajax_success,
                 error: error_ajax,
+                processData: false,
+                contentType: false
             });
+            // $.post(
+            // {
+            //     url: post_url,
+            //     data: {event_data_json: event_data_json, event_accessibility_json: event_accessibility_json, option_details_json: option_details_json},
+            //     dataType: 'html',
+            //     success: ajax_success,
+            //     error: error_ajax,
+            // });
 
             //On ne veux pas envoyer le formulauire, on fait donc un preventDefault pour empécher de le submit.
             event.preventDefault();

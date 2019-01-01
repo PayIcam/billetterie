@@ -300,6 +300,58 @@ function is_correct_event_data()
             $error = true;
         }
     }
+    if(isset($_FILES['image_file'])) {
+        if(count($_FILES['image_file'])==5) {
+            if(isset($_FILES['image_file']['error'])) {
+                if($_FILES['image_file']['error'] !== UPLOAD_ERR_OK) {
+                    $error = true;
+                    switch($_FILES['image_file']['error']) {
+                        case UPLOAD_ERR_INI_SIZE:
+                        case UPLOAD_ERR_FORM_SIZE:
+                            add_alert("Erreur lors de l'upload de l'image : La taille du fichier est trop grosse");
+                            break;
+                        case UPLOAD_ERR_PARTIAL:
+                            add_alert("Erreur lors de l'upload de l'image : Le fichier n'a été que partiellement téléchargé.<br> Contactez nous pour résoudre le problème, en nous transférant l'image que vous avez voulu inséré et en nous spécifiant le code d'erreur rencontré");
+                            break;
+                        case UPLOAD_ERR_NO_FILE:
+                            add_alert("Erreur lors de l'upload de l'image : Aucun fichier n'a été téléchargé.<br> Contactez nous pour résoudre le problème, en nous transférant l'image que vous avez voulu inséré et en nous spécifiant le code d'erreur rencontré");
+                            break;
+                        case UPLOAD_ERR_NO_TMP_DIR:
+                            add_alert("Erreur lors de l'upload de l'image : Un dossier temporaire est manquant.<br> Contactez nous pour résoudre le problème, en nous transférant l'image que vous avez voulu inséré et en nous spécifiant le code d'erreur rencontré");
+                            break;
+                        case UPLOAD_ERR_CANT_WRITE:
+                            add_alert("Erreur lors de l'upload de l'image : Echec de l'écriture du fichier sur le disque.<br> Contactez nous pour résoudre le problème, en nous transférant l'image que vous avez voulu inséré et en nous spécifiant le code d'erreur rencontré");
+                            break;
+                        case UPLOAD_ERR_EXTENSION:
+                            add_alert("Erreur lors de l'upload de l'image : Problème d'extension PHP. <br>Contactez nous pour résoudre le problème, en nous transférant l'image que vous avez voulu inséré et en nous spécifiant le code d'erreur rencontré");
+                            break;
+                    }
+                    return !$error;
+                }
+            }
+            if(!isset($_FILES['image_file']['error']) || !isset($_FILES['image_file']['name']) || !isset($_FILES['image_file']['size']) || !isset($_FILES['image_file']['tmp_name'])) {
+                $error = true;
+                add_alert("Erreur lors de l'upload de l'image : Un des paramètres est manquant");
+                return !$error;
+            }
+            if($_FILES['image_file']['size'] > 5000000) {
+                $error = true;
+                add_alert("Erreur lors de l'upload de l'image : L'image est trop grosse.");
+                return !$error;
+            }
+            $pathinfo = pathinfo($_FILES['image_file']['name']);
+            $extension = $pathinfo['extension'];
+            if(in_array($extension, ['png', 'jpg'])) {
+                $_FILES['image_file']['extension'] = $extension;
+            } else {
+                add_alert("Seuls les formats jpeg et png sont tolérés.");
+                $error = true;
+            }
+        } else {
+            add_alert("Pas assez d'arguments sont passés avec le fichier.");
+            $error = true;
+        }
+    }
     return !$error;
 }
 

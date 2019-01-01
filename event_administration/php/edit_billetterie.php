@@ -20,6 +20,16 @@ if(!empty($_POST))
     // S'il y a la moindre erreur, le script s'arrète, et une erreur est affichée indiquant l'origine du problème.
     check_and_prepare_data();
 
+    if(isset($_FILES['image_file'])) {
+        $db_img_path = $_CONFIG['public_url'] . 'img/' . $event_id . '.' . $_FILES['image_file']['extension'];
+        $img_path = '../../img/' . $event_id . '.' . $_FILES['image_file']['extension'];
+        if(move_uploaded_file($_FILES['image_file']['tmp_name'], $img_path)) {
+            update_event_image(['event_id' => $event_id, 'img_path' => $db_img_path]);
+        } else {
+            add_alert("Pour une raison inconnue, l'upload de l'image n'a pas marché malgré toutes les vérifications. Tout le reste est censé avoir bien fonctionné.");
+        }
+    }
+
     $scoobydoo_infos = get_scoobydoo_event_infos($event_id);
     $fundation_id = $scoobydoo_infos['fundation_id'];
 

@@ -42,6 +42,16 @@ if(!empty($_POST))
         );
     $event_id = insert_event_details($table_event_data);
 
+    if(isset($_FILES['image_file'])) {
+        $db_img_path = $_CONFIG['public_url'] . 'img/' . $event_id . '.' . $_FILES['image_file']['extension'];
+        $img_path = '../../img/' . $event_id . '.' . $_FILES['image_file']['extension'];
+        if(move_uploaded_file($_FILES['image_file']['tmp_name'], $img_path)) {
+            update_event_image(['event_id' => $event_id, 'img_path' => $db_img_path]);
+        } else {
+            add_alert("Pour une raison inconnue, l'upload de l'image n'a pas marché malgré toutes les vérifications. Tout le reste est censé avoir bien fonctionné.");
+        }
+    }
+
     //On insère toutes les promos qui ont accès à l'event avec leurs particularités
     foreach($event_promos as $promo_data)
     {

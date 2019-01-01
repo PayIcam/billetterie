@@ -35,6 +35,11 @@ function insert_event_details($table_event_data)
     $event_insertion->execute($table_event_data);
     return $db->lastInsertId();
 }
+function update_event_image($data) {
+    global $db;
+    $event_update = $db->prepare('UPDATE events SET img_path = :img_path WHERE event_id = :event_id');
+    return $event_update->execute($data);
+}
 function update_event_details($table_event_data)
 {
     global $db;
