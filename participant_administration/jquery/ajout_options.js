@@ -50,9 +50,9 @@ $(document).ready(function()
             {
                 $('#options .option').each(function()
                 {
-                    if($(this).find('input[name=option_id]').length)
+                    if($(this).find('input[name=has_option]').length)
                     {
-                        if(!(Number.isInteger(parseInt($(this).find('input[name=option_id]').val())) && $(this).find('input[name=option_id]').val()>0))
+                        if(!(Number.isInteger(parseInt($(this).find('input[name=has_option]').val())) && $(this).find('input[name=has_option]').val()>0))
                         {
                             error=true;
                             add_alert("L'id de l'option a été altérée.");
