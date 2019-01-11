@@ -18,5 +18,6 @@ return [
     'cas_url' => 'xxxx',
     'public_url' => '/billetterie/',
     'base_path' => '/billetterie/',
-    'site_name' => basename(__DIR__)
+    'site_name' => basename(__DIR__),
+    'creneaux_option_ids' => [];
 ];

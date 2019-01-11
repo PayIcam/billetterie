@@ -65,6 +65,7 @@ function form_icam($event, $promo_specifications, $options, $icam_reservation = 
         foreach($options as $option)
         {
             $option['option_choices'] = get_option_choices($option['option_id']);
+            $option['bracelet'] = isset($icam_reservation['bracelet_identification']) ? $icam_reservation['bracelet_identification'] : null;
             option_form($option, $promo_specifications['promo_id'], $promo_specifications['site_id'], $icam_id);
         }
         ?>
@@ -185,6 +186,7 @@ function select_form($option, $select_choice=null)
  */
 function insert_according_select_options($option, $select_choice=null)
 {
+    global $_CONFIG;
     $compteur=0;
     if($select_choice==null)
     {
@@ -204,15 +206,35 @@ function insert_according_select_options($option, $select_choice=null)
     }
     else
     {
+        $is_creneau = in_array($option['option_id'], $_CONFIG['creneaux_option_ids']);
+        $participant_no_bracelet = empty($option['bracelet']);
+        $is_creneau_and_participant_has_bracelet = in_array($option['option_id'], $_CONFIG['creneaux_option_ids']) ? !empty($option['bracelet']) ? true : false : false;
         if($option['free']) {
-            foreach($option['option_choices'] as $option_choice) {
-                if($option_choice['choice_id'] == $select_choice['choice_id']) { ?>
+            if($is_creneau) {
+                if($participant_no_bracelet) {
+                    foreach($option['option_choices'] as $option_choice) {
+                        if($option_choice['choice_id'] == $select_choice['choice_id']) { ?>
+                            <option value="<?= $select_choice['choice_id']?>" selected data-payed=1><?= htmlspecialchars($select_choice['name']) . '(' . $select_choice['price_paid'] . '€)' ?></option>
+                        <?php } else {
+                            $suboption_quota = $option_choice['quota']==null ? INF : $option_choice['quota'];
+                            if(get_current_select_option_quota(array("event_id" => $option['event_id'], "choice_id" => $option_choice['choice_id'])) < $suboption_quota) { ?>
+                                <option value="<?= $option_choice['choice_id']?>" data-payed=0><?= htmlspecialchars($option_choice['name']) . '(' . $option_choice['price'] . '€)' ?></option>
+                            <?php }
+                        }
+                    }
+                } else { ?>
                     <option value="<?= $select_choice['choice_id']?>" selected data-payed=1><?= htmlspecialchars($select_choice['name']) . '(' . $select_choice['price_paid'] . '€)' ?></option>
-                <?php } else {
-                    $suboption_quota = $option_choice['quota']==null ? INF : $option_choice['quota'];
-                    if(get_current_select_option_quota(array("event_id" => $option['event_id'], "choice_id" => $option_choice['choice_id'])) < $suboption_quota) { ?>
-                        <option value="<?= $option_choice['choice_id']?>" data-payed=0><?= htmlspecialchars($option_choice['name']) . '(' . $option_choice['price'] . '€)' ?></option>
-                    <?php }
+                <?php }
+            } else {
+                foreach($option['option_choices'] as $option_choice) {
+                    if($option_choice['choice_id'] == $select_choice['choice_id']) { ?>
+                        <option value="<?= $select_choice['choice_id']?>" selected data-payed=1><?= htmlspecialchars($select_choice['name']) . '(' . $select_choice['price_paid'] . '€)' ?></option>
+                    <?php } else {
+                        $suboption_quota = $option_choice['quota']==null ? INF : $option_choice['quota'];
+                        if(get_current_select_option_quota(array("event_id" => $option['event_id'], "choice_id" => $option_choice['choice_id'])) < $suboption_quota) { ?>
+                            <option value="<?= $option_choice['choice_id']?>" data-payed=0><?= htmlspecialchars($option_choice['name']) . '(' . $option_choice['price'] . '€)' ?></option>
+                        <?php }
+                    }
                 }
             }
         } else { ?>
