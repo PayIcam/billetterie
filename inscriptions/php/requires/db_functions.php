@@ -225,3 +225,18 @@ function is_correct_choice_id($ids)
     $rows_number->execute($ids);
     return $rows_number->fetch()['COUNT(*)']==1 ? true : false;
 }
+
+function previous_choice_to_cancel($ids) {
+    global $db;
+    $choice_id = $db->prepare("SELECT choice_id
+        FROM participant_has_options pho
+        WHERE pho.participant_id=:participant_id
+            and pho.event_id=:event_id
+            and pho.status ='V'
+            and choice_id IN
+                (SELECT occ.choice_id FROM option_choices oc LEFT JOIN options o ON o.option_id=oc.option_id LEFT JOIN option_choices occ ON occ.option_id=o.option_id WHERE oc.choice_id=:choice_id)"
+    );
+    $choice_id->execute($ids);
+    $choice_id = $choice_id->fetch();
+    return empty($choice_id) ? null : $choice_id['choice_id'];
+}

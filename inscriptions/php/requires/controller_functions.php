@@ -65,14 +65,14 @@ function participant_options_handling($event_id, $participant_id, $options)
     global $options_articles, $transaction_linked_purchases, $payutcClient, $fun_id;
     foreach($options as $option)
     {
-        if(isset($option->previous_choice_payicam)) {
+        // if(isset($option->previous_choice_payicam)) {
             //Ne marche pas, la sructure de la db est mal faite. J'aurais du créer la table participant_has_options avec une primaire et 2 extérieures.
             //Transaction id ne sera pas set si on est dans le cas ou la place de la personne a été ajoutée à la main. Alors on ne peux pas l'annuler, vu qu'elle n'existe pas. On annule quand même l'option sur la billetterie bien sur.
             // if(isset($option->previous_choice_payicam['payicam_transaction_id'])) {
             //     $payutcClient->cancel(array('fun_id' => $fun_id, 'tra_id' => $option->previous_choice_payicam['payicam_transaction_id'], 'obj_id' => $option->previous_choice_payicam['scoobydoo_article_id']));
             // }
-            update_option_status(array("participant_id" => $participant_id, "status" => 'A', "choice_id" => $option->previous_choice_payicam['choice_id']));
-        }
+            // update_option_status(array("participant_id" => $participant_id, "status" => 'A', "choice_id" => $option->previous_choice_payicam['choice_id']));
+        // }
         $article_id = get_option_article_id($option->choice_id);
 
         //Il est possible qu'il y ait déjà une option qui ait été prise par le participant, mais annulée. Dans ce cas, on ne peux en créer une autre. Il faut mettre à jour celle ci.
@@ -714,9 +714,16 @@ function update_reservation_status($status, $pending_reservation)
     }
     foreach($list_purchases->option_ids as $ids)
     {
-        if(participant_has_specific_pending_option(array("event_id" => $pending_reservation['event_id'], "participant_id" => $ids->participant_id, "choice_id" => $ids->choice_id)))
+        $array_ids = array("event_id" => $pending_reservation['event_id'], "participant_id" => $ids->participant_id, "choice_id" => $ids->choice_id);
+        if(participant_has_specific_pending_option($array_ids))
         {
             $update=true;
+            if($status == 'V') {
+                $previous_choice_to_cancel = previous_choice_to_cancel($array_ids);
+                if(!empty($previous_choice_to_cancel)) {
+                    update_option_status(array("participant_id" => $ids->participant_id, "status" => "A", "choice_id" => $previous_choice_to_cancel));
+                }
+            }
             update_option_status(array("participant_id" => $ids->participant_id, "status" => $status, "choice_id" => $ids->choice_id));
         }
     }

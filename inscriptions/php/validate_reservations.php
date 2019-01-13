@@ -20,10 +20,17 @@ if(isset($_GET['event_id']))
         foreach($pending_reservations as $pending_reservation)
         {
             $transaction_info = $payutcClient->getTransactionInfo(array("fun_id" => $pending_reservation['fundation_id'], "tra_id" => $pending_reservation['payicam_transaction_id']));
-            if($transaction_info->status != "W")
-            {
+            if($transaction_info->status != "W") {
                 update_reservation_status($transaction_info->status, $pending_reservation);
-            }
+            } else {
+                date_default_timezone_set('Europe/Paris');
+                $now = new \DateTime();
+                $creation = new \DateTime($pending_reservation['date_demande']);
+                $difference = $now->diff($creation);
+                $old_creation = ($difference->days>=1 || $difference->h>=1 || $difference->m>15);
+                if($old_creation) {
+                    update_reservation_status("A", $pending_reservation);
+                }
         }
     }
 }
