@@ -31,6 +31,7 @@ if(isset($_GET['event_id']))
                 if($old_creation) {
                     update_reservation_status("A", $pending_reservation);
                 }
+            }
         }
     }
 }
