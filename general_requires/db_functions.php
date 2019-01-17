@@ -666,3 +666,19 @@ function get_participant_previous_choice_payicam($ids) {
     $previous_choice_payicam = $previous_choice_payicam->fetch();
     return !empty($previous_choice_payicam) ? $previous_choice_payicam : false;
 }
+
+function update_cancelled_option($data)
+{
+    global $db;
+    $option_query = $db->prepare('UPDATE participant_has_options SET status=:status, price=:price, option_date=CURRENT_TIMESTAMP(), payement=:payement WHERE event_id=:event_id and participant_id=:participant_id and choice_id=:choice_id');
+    return $option_query->execute($data);
+}
+
+function get_participant_previous_option_choice_status($data)
+{
+    global $db;
+    $row = $db->prepare('SELECT * FROM participant_has_options WHERE participant_id=:participant_id and choice_id=:choice_id and event_id=:event_id');
+    $row->execute($data);
+    $row = $row->fetch();
+    return empty($row) ? false : $row['status'];
+}

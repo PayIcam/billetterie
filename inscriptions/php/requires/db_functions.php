@@ -169,22 +169,6 @@ function guest_id_is_correct($data)
     return $match->fetch()['COUNT(*)']==1 ? true : false;
 }
 
-function get_participant_previous_option_choice_status($data)
-{
-    global $db;
-    $row = $db->prepare('SELECT * FROM participant_has_options WHERE participant_id=:participant_id and choice_id=:choice_id and event_id=:event_id');
-    $row->execute($data);
-    $row = $row->fetch();
-    return empty($row) ? false : $row['status'];
-}
-
-function update_participant_option_to_waiting($data)
-{
-    global $db;
-    $option_query = $db->prepare('UPDATE participant_has_options SET status="W", price=:price, option_date=CURRENT_TIMESTAMP(), payement=:payement WHERE event_id=:event_id and participant_id=:participant_id and choice_id=:choice_id');
-    return $option_query->execute($data);
-}
-
 function get_current_promo_site_quota($ids)
 {
     global $db;

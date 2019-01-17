@@ -79,7 +79,7 @@ function participant_options_handling($event_id, $participant_id, $options)
         $previous_status = get_participant_previous_option_choice_status(array('event_id' => $event_id, 'participant_id' => $participant_id, 'choice_id' => $option->choice_id));
         if($previous_status!==false)
         {
-            update_participant_option_to_waiting(array("event_id" => $event_id, "participant_id" => $participant_id, "choice_id" => $option->choice_id, "price" => $option->price, 'payement' => 'PayIcam'));
+            update_cancelled_option(array("event_id" => $event_id, "participant_id" => $participant_id, "choice_id" => $option->choice_id, "price" => $option->price, 'payement' => 'PayIcam', "status" => "W"));
         }
         else
         {

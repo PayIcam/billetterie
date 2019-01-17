@@ -100,7 +100,7 @@ function get_select_mandatory_options($ids)
 function get_optional_options($ids)
 {
     global $db;
-    $optional_options = $db->prepare('SELECT DISTINCT o.option_id, o.name, description, type, o.event_id FROM options o LEFT JOIN option_choices oc ON oc.option_id=o.option_id LEFT JOIN promo_site_has_options psho ON o.option_id = psho.option_id WHERE (is_active=1 and o.is_removed=0 and oc.is_removed=0 and o.event_id=:event_id and promo_id=:promo_id and site_id=:site_id and o.option_id NOT IN(SELECT option_id FROM participant_has_options phoo LEFT JOIN option_choices occ ON occ.choice_id=phoo.choice_id WHERE participant_id=:participant_id)) and ((type="Select" and is_mandatory=0) or (type="Checkbox"))');
+    $optional_options = $db->prepare('SELECT DISTINCT o.option_id, o.name, description, type, o.event_id FROM options o LEFT JOIN option_choices oc ON oc.option_id=o.option_id LEFT JOIN promo_site_has_options psho ON o.option_id = psho.option_id WHERE (is_active=1 and o.is_removed=0 and oc.is_removed=0 and o.event_id=:event_id and promo_id=:promo_id and site_id=:site_id and o.option_id NOT IN(SELECT option_id FROM participant_has_options pho LEFT JOIN option_choices occ ON occ.choice_id=pho.choice_id WHERE participant_id=:participant_id and pho.status != "A")) and ((type="Select" and is_mandatory=0) or (type="Checkbox"))');
     $optional_options->execute($ids);
     return $optional_options->fetchAll();
 }
@@ -129,7 +129,7 @@ function option_can_be_added($ids)
 function participant_has_option($ids)
 {
     global $db;
-    $optional_options = $db->prepare('SELECT COUNT(*) matches FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE participant_id=:participant_id and oc.option_id=:option_id and pho.event_id=:event_id');
+    $optional_options = $db->prepare('SELECT COUNT(*) matches FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE participant_id=:participant_id and oc.option_id=:option_id and pho.event_id=:event_id and status IN ("V", "W")');
     $optional_options->execute($ids);
     return $optional_options->fetch()['matches'] == 1 ? true : false;
 }

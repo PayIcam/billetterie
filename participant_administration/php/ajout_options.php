@@ -65,7 +65,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                     foreach($choice_datas as $choice_data)
                     {
                         $price = round($_POST['price'] * $choice_data['price'] / $sum_prices, 2);
-                        $option_addition_data = array(
+                        $option_data = array(
                             "event_id" => $event_id,
                             "participant_id" => $_GET['participant_id'],
                             "choice_id" => $choice_data['choice_id'],
@@ -73,7 +73,13 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             "price" => $price,
                             "payement" => $_POST['payement']
                             );
-                        insert_participant_option($option_addition_data);
+
+                        $previous_status = get_participant_previous_option_choice_status(array('event_id' => $event_id, 'participant_id' => $_GET['participant_id'], 'choice_id' => $choice_data['choice_id']));
+                        if($previous_status!==false) {
+                            update_cancelled_option($option_data);
+                        } else {
+                            insert_participant_option($option_data);
+                        }
                     }
 
                     $ajax_json_response['message'] = "L'ajout a bien été effectué";
