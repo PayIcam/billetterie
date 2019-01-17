@@ -58,6 +58,14 @@ $(document).ready(function()
                             add_alert("L'id de l'option a été altérée.");
                         }
                     }
+                    else if ($(this).find('select option:selected').length)
+                    {
+                        if(!(Number.isInteger(parseInt($(this).find('select option:selected').val())) && $(this).find('input[name=has_option]').val()>0))
+                        {
+                            error=true;
+                            add_alert("L'id de l'option a été altérée.");
+                        }
+                    }
                     else
                     {
                         error=true;
