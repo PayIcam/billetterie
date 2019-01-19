@@ -70,7 +70,7 @@ if(!empty($_POST))
 
                     $participant_additions = count($new_guests_data);
 
-                    if(get_whole_current_quota($event_id) + $participant_additions > $event['total_quota'])
+                    if($participant_additions !=0 && get_whole_current_quota($event_id) + $participant_additions > $event['total_quota'])
                     {
                         add_alert_to_ajax_response('Trop de participants sont rajoutés pour le quota général.');
                         echo json_encode($ajax_json_response);
