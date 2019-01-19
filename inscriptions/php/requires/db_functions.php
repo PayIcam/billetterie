@@ -118,7 +118,7 @@ function get_checkbox_option_choice($choice_id)
 function get_select_option_choice($choice_id)
 {
     global $db;
-    $option_choices = $db->prepare('SELECT * FROM option_choices oc LEFT JOIN options o ON o.option_id=oc.option_id WHERE choice_id=:choice_id and type="Select"');
+    $option_choices = $db->prepare('SELECT oc.* FROM option_choices oc LEFT JOIN options o ON o.option_id=oc.option_id WHERE choice_id=:choice_id and type="Select"');
     $option_choices->execute(array('choice_id' => $choice_id));
     return $option_choices->fetch();
 }

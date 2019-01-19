@@ -48,7 +48,7 @@ if(!empty($_POST))
     {
         if(get_current_promo_site_quota(array("event_id" => $event_id, "promo_id" => $promo_id, "site_id" => $site_id)) + 1 > $promo_specifications['quota'])
         {
-            add_alert_to_ajax_response("Le quota pour les " . $promo . " de " . $site . " est déjà plein. ");
+            add_alert_to_ajax_response("Le quota pour les " . get_promo_name($promo_id) . " de " . get_site_name($site_id) . " est déjà plein. ");
             echo json_encode($ajax_json_response);
             die();
         }
