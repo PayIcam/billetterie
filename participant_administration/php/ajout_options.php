@@ -64,7 +64,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
 
                     foreach($choice_datas as $choice_data)
                     {
-                        $price = round($_POST['price'] * $choice_data['price'] / $sum_prices, 2);
+                        $price = $sum_prices == 0 ? 0 : round($_POST['price'] * $choice_data['price'] / $sum_prices, 2);
                         $option_data = array(
                             "event_id" => $event_id,
                             "participant_id" => $_GET['participant_id'],
