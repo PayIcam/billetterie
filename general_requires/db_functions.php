@@ -347,20 +347,12 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
      */
 
     $promo_names = array_column(get_event_promo_names($event_id), 'promo_name');
-    $promo_search_regex = '#(';
-    foreach($promo_names as $promo_name)
-    {
-        $promo_search_regex .= $promo_name . '|';
-    }
-    $promo_search_regex = substr($promo_search_regex, 0, count($promo_search_regex)-2).'){1}#i';
+    $promo_search = implode('|', $promo_names);
+    $promo_search_regex = '#(' . $promo_search . '){1}#i';
 
     $site_names = array_column(get_event_site_names($event_id), 'site_name');
-    $site_search_regex = '#(';
-    foreach($site_names as $site_name)
-    {
-        $site_search_regex .= $site_name . '|';
-    }
-    $site_search_regex = substr($site_search_regex, 0, count($site_search_regex)-2).'){1}#i';
+    $site_search = implode('|', $site_names);
+    $site_search_regex = '#(' . $site_search . '){1}#i';
 
     $promos = get_specification_details($event_id);
     $promo_site_search_regex = '#(';
@@ -373,22 +365,14 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
     $payements = $db->prepare('SELECT DISTINCT payement FROM participants WHERE event_id=:event_id');
     $payements->execute(array('event_id' => $event_id));
     $payements = array_column($payements->fetchAll(), 'payement');
-    $payement_search_regex = '#(';
-    foreach($payements as $payement)
-    {
-        $payement_search_regex .= $payement . '|';
-    }
-    $payement_search_regex = substr($payement_search_regex, 0, count($payement_search_regex)-2).'){1}#i';
+    $payement_search = implode('|', $payements);
+    $payement_search_regex = '#(' . $payement_search . '){1}#i';
 
     $options = get_option_names($event_id);
     if(!empty($options))
     {
-        $option_search_regex = '#(';
-        foreach($options as $option)
-        {
-            $option_search_regex .= $option . '|';
-        }
-        $option_search_regex = substr($option_search_regex, 0, count($option_search_regex)-2).'){1}#i';
+        $option_search = implode('|', $options);
+        $option_search_regex = '#(' . $option_search . '){1}#i';
     }
     else
     {

@@ -685,12 +685,7 @@ function display_guest_infos($participant)
  */
 function create_payements_text($payements)
 {
-    $payements_text = "";
-    foreach($payements as $payement)
-    {
-        $payements_text .= $payement . " / ";
-    }
-    $payements_text = substr($payements_text, 0, count($payements_text)-4) . "<br>";
+    $payements_text = implode(" / ", $payements);
     echo $payements_text;
 }
 
