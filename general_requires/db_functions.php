@@ -360,7 +360,7 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
     {
         $promo_site_search_regex .= get_promo_name($promo['promo_id']) . ' ' . get_site_name($promo['site_id']) . '|';
     }
-    $promo_site_search_regex = substr($promo_site_search_regex, 0, count($promo_site_search_regex)-2).'){1}#i';
+    $promo_site_search_regex = substr($promo_site_search_regex, 0, strlen($promo_site_search_regex)-2).'){1}#i';
 
     $payements = $db->prepare('SELECT DISTINCT payement FROM participants WHERE event_id=:event_id');
     $payements->execute(array('event_id' => $event_id));
