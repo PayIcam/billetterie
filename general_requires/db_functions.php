@@ -489,7 +489,7 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
 
         //gets participants who don't have their bracelet_identication filled in
         case (preg_match("#^no[t]? bracelet$#i", $recherche)==1):
-            $recherche_bdd =$db->prepare('SELECT * FROM participants WHERE status="V" and bracelet_identification IS NULL and event_id = :event_id and bracelet_identification="" ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $recherche_bdd =$db->prepare('SELECT * FROM participants WHERE status="V" and bracelet_identification IS NULL and event_id = :event_id ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $count_recherche = count_current_bracelet($event_id, false);
             break;
 
