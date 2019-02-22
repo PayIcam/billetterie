@@ -37,14 +37,10 @@ function add_option(option_number)
  */
 function get_last_html_option_id()
 {
-    if($("#options #option_accordion").children().length ==0)
-    {
+    if($("#options #option_accordion").children().length ==0) {
         return 0;
-    }
-    else
-    {
-        var id_containing_last_html_id_number = $("#options #option_accordion .panel-body:last").attr('id');
-        var id_number = parseInt(id_containing_last_html_id_number[id_containing_last_html_id_number.length-1]);
+    } else {
+        var id_number = $("#options #option_accordion .panel-body:last").attr('id').split('_')[1];
         return id_number;
     }
 }
