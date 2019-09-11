@@ -37,7 +37,7 @@
 
                 <div class="form-group">
                     <label for="event_conditions">Conditions de votre évènement :</label>
-                    <textarea class="form-control" name="event_conditions" id="event_conditions" aria-describedby="conditions_help" placeholder="Quelles sont les conditions de réservations et de participation à votre évènement?" required><?= isset($event['conditions']) ? br2nl($event['conditions']) : '' ?></textarea>
+                    <textarea class="form-control" name="event_conditions" id="event_conditions" aria-describedby="conditions_help" placeholder="Quelles sont les conditions de réservations et de participation à votre évènement?"><?= isset($event['conditions']) ? br2nl($event['conditions']) : '' ?></textarea>
                     <small id="conditions_help" class="form-text text-muted">Il est possible de définir des conditions pour votre évènement. Elles apparaitront en pop-up la premi_re fois qu'on prend sa place. Il faudra alors les lire et les accepter. Si vous ne remplissez pas ce champ, rien n'apparaitra.</small>
                 </div>
 
