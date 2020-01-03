@@ -425,11 +425,11 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
 
         //gets participants corresponding to the payment entered
         case(preg_match($option_search_regex, $recherche) ==1):
-            $recherche_bdd = $db->prepare('SELECT * FROM participants p WHERE p.event_id = :event_id and status="V" and participant_id IN(SELECT DISTINCT participant_id FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE oc.option_id=:option_id and pho.status="V") ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
-            $option_id = get_option_id($recherche);
-            $recherche_bdd->bindParam('option_id', $option_id);
-            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE event_id = :event_id and status="V" and participant_id IN(SELECT DISTINCT participant_id FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE oc.option_id=:option_id and pho.status="V")');
-            $count_recherche->execute(array('event_id' => $event_id, 'option_id' => $option_id));
+            $recherche_bdd = $db->prepare('SELECT * FROM participants p WHERE p.event_id = :event_id and status="V" and participant_id IN(SELECT DISTINCT participant_id FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id LEFT JOIN options o ON o.option_id=oc.option_id WHERE o.name=:recherche and pho.status="V") ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            echo '<br>Option match : ' . $recherche . ' -> id : ' . $option_id . '<br>';
+            $recherche_bdd->bindParam('recherche', $recherche);
+            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE event_id = :event_id and status="V" and participant_id IN(SELECT DISTINCT participant_id FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id LEFT JOIN options o ON o.option_id=oc.option_id WHERE o.name=:recherche and pho.status="V")');
+            $count_recherche->execute(array('event_id' => $event_id, 'recherche' => $recherche));
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
             break;
 
