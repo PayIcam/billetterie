@@ -9,8 +9,6 @@ $(document).ready(function()
     window.JCAPPUCINO_APPLET =  'ws://localhost:9191/events';
     var login = $('input[name=login]').val();
     var $search_input = $('input[id=recherche], input[name="bracelet_identification"]');
-    console.log($('input[id=recherche]'));
-    console.log($search_input);
     var $badgeuse_indicator = $('#badgeuse_indicator');
     var $on_off = $('#on_off');
     var service = {
@@ -81,7 +79,7 @@ $(document).ready(function()
 
     service.subscribe("cardInserted", function(badge_id) {
         console.log('badge_id : '+badge_id);
-        $search_input.val(badge_id).animate({
+        $search_input.val(badge_id).keyUp().animate({
             backgroundColor: "#d9edf7",
             borderColor: "#31708F",
             color: "#31708f",

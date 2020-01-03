@@ -76,13 +76,16 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         die();
                     }
 
-                    $choice_ids = $_POST['choice_ids'];
-                    $choice_datas = check_prepare_option_choice_data(false);
+                    if (!empty($_POST['choice_ids'])) {
+                        $choice_datas = check_prepare_option_choice_data(false);
 
-                    if($choice_datas === false)
-                    {
-                        echo json_encode($ajax_json_response);
-                        die();
+                        if($choice_datas === false)
+                        {
+                            echo json_encode($ajax_json_response);
+                            die();
+                        }
+                    } else {
+                        $choice_datas = [];
                     }
 
                     /**

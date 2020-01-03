@@ -52,33 +52,35 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         die();
                     }
 
-                    $choice_ids = $_POST['choice_ids'];
+                    if(!empty($_POST['choice_ids'])) {
+                        $choice_ids = $_POST['choice_ids'];
 
-                    $choice_datas = check_prepare_option_choice_data();
-                    if($choice_datas === false)
-                    {
-                        echo json_encode($ajax_json_response);
-                        die();
-                    }
-                    $sum_prices = array_sum(array_column($choice_datas, 'price'));
+                        $choice_datas = check_prepare_option_choice_data();
+                        if($choice_datas === false)
+                        {
+                            echo json_encode($ajax_json_response);
+                            die();
+                        }
+                        $sum_prices = array_sum(array_column($choice_datas, 'price'));
 
-                    foreach($choice_datas as $choice_data)
-                    {
-                        $price = $sum_prices == 0 ? 0 : round($_POST['price'] * $choice_data['price'] / $sum_prices, 2);
-                        $option_data = array(
-                            "event_id" => $event_id,
-                            "participant_id" => $_GET['participant_id'],
-                            "choice_id" => $choice_data['choice_id'],
-                            "status" => "V",
-                            "price" => $price,
-                            "payement" => $_POST['payement']
-                            );
+                        foreach($choice_datas as $choice_data)
+                        {
+                            $price = $sum_prices == 0 ? 0 : round($_POST['price'] * $choice_data['price'] / $sum_prices, 2);
+                            $option_data = array(
+                                "event_id" => $event_id,
+                                "participant_id" => $_GET['participant_id'],
+                                "choice_id" => $choice_data['choice_id'],
+                                "status" => "V",
+                                "price" => $price,
+                                "payement" => $_POST['payement']
+                                );
 
-                        $previous_status = get_participant_previous_option_choice_status(array('event_id' => $event_id, 'participant_id' => $_GET['participant_id'], 'choice_id' => $choice_data['choice_id']));
-                        if($previous_status!==false) {
-                            update_cancelled_option($option_data);
-                        } else {
-                            insert_participant_option($option_data);
+                            $previous_status = get_participant_previous_option_choice_status(array('event_id' => $event_id, 'participant_id' => $_GET['participant_id'], 'choice_id' => $choice_data['choice_id']));
+                            if($previous_status!==false) {
+                                update_cancelled_option($option_data);
+                            } else {
+                                insert_participant_option($option_data);
+                            }
                         }
                     }
 
