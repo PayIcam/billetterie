@@ -38,7 +38,10 @@
                     <?php } ?>
                     <div class="col-sm-4 form-group">
                         <label for="bracelet_identification">Identifiant du bracelet</label>
-                        <input type="text" class="form-control" id="bracelet_identification" name="bracelet_identification">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="bracelet_identification" name="bracelet_identification">
+                            <span id="badgeuse_indicator" class="input-group-addon" title="Connexion au lecteur de carte : non établie"><span class="glyphicon glyphicon-hdd"></span> <span class="badge badge-pill badge-warning" id="on_off">OFF</span></span>
+                        </div>
                     </div>
                     <div class="col-sm-4 form-group">
                         <label for="sel1">Payement:</label>
@@ -101,5 +104,6 @@
             </script>
         <?php } ?>
         <script src="jquery/ajout_participant.js"></script>
+        <script src="jquery/carte_lecteur.js"></script>
     </body>
 </html>

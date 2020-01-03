@@ -30,7 +30,10 @@
             </div>
 
             <div class="form-group">
-                <input type="text" class="form-control" id="recherche" name="recherche" placeholder="Entrez votre recherche" autocomplete="off">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="recherche" name="recherche" placeholder="Entrez votre recherche" autocomplete="off">
+                    <span id="badgeuse_indicator" class="input-group-addon" title="Connexion au lecteur de carte : non établie"><span class="glyphicon glyphicon-hdd"></span> <span class="badge badge-pill badge-warning" id="on_off">OFF</span></span>
+                </div>
             </div>
 
             <table class="table">
@@ -53,5 +56,6 @@
         </div>
         <div id="alerts"></div>
         <script src="jquery/entrees.js"></script>
+        <script src="jquery/carte_lecteur.js"></script>
     </body>
 </html>

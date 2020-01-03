@@ -26,7 +26,10 @@
 
                     <div class="form-group">
                         <label for="bracelet_identification">Identifiant de bracelet</label>
-                        <input type="text" class="form-control" id="bracelet_identification" name="bracelet_identification" value="<?=isset($participant['bracelet_identification']) ? htmlspecialchars($participant['bracelet_identification']) : '' ?>">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="bracelet_identification" name="bracelet_identification" value="<?=isset($participant['bracelet_identification']) ? htmlspecialchars($participant['bracelet_identification']) : '' ?>">
+                            <span id="badgeuse_indicator" class="input-group-addon" title="Connexion au lecteur de carte : non établie"><span class="glyphicon glyphicon-hdd"></span> <span class="badge badge-pill badge-warning" id="on_off">OFF</span></span>
+                        </div>
                     </div>
                 </div>
                <button id="submit_participant_update" type="submit" class="btn btn-primary">Enregistrer</button>
@@ -66,5 +69,6 @@
         </div>
 
         <script src="jquery/edit_participant.js"></script>
+        <script src="jquery/carte_lecteur.js"></script>
     </body>
 </html>

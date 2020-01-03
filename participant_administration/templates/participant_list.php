@@ -12,10 +12,13 @@
             </div>
             <form action="participants.php?event_id=<?=$_GET['event_id']?>&rows=<?=$rows_per_page?>" method="post">
                 <div class="row">
-                    <div class= "col-md-3">
-                        <input type="input-medium search-query" class="form-control" name ="recherche" id="recherche" placeholder="Nom, prénom, promo..." value="<?= isset($_POST['recherche']) ? htmlspecialchars($_POST['recherche']) : '' ?>">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input type="input-medium search-query" class="form-control has-warning" name ="recherche" id="recherche" placeholder="Nom, prénom, promo..." value="<?= isset($_POST['recherche']) ? htmlspecialchars($_POST['recherche']) : '' ?>">
+                            <span id="badgeuse_indicator" class="input-group-addon" title="Connexion au lecteur de carte : non établie"><span class="glyphicon glyphicon-hdd"></span> <span class="badge badge-pill badge-warning" id="on_off">OFF</span></span>
+                        </div>
                     </div>
-                    <div class="col-md-9">
+                    <div class="col-md-8">
                         <button class="inline btn btn-primary" type="submit">Rechercher</button>
                         <a type="button" class="btn btn-primary" href="statistiques.php?event_id=<?=$event_id?>" class="btn btn-primary">Statistiques de l'évènement</a>
                         <?php if($Auth->hasRole('admin')) { ?> <a type="button" class="btn btn-success" href="ajout_participant.php?event_id=<?=$event_id?>" class="btn btn-primary">Ajouter un invité</a> <?php } ?>
@@ -56,5 +59,6 @@
             </div>
         </div>
         <script src="jquery/participants.js"></script>
+        <script src="jquery/carte_lecteur.js"></script>
     </body>
 </html>

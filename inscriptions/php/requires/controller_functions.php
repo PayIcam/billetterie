@@ -113,7 +113,7 @@ function json_decode_particular($data)
 {
     if($data == '')
     {
-        $data = false;
+        $data = [];
     }
     else
     {
