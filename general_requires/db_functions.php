@@ -541,9 +541,9 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
 
         //gets participants which firstname or lastname correspond to the search
         default:
-            $recherche_bdd =$db-> prepare('SELECT * FROM participants WHERE status="V" and event_id = :event_id and (nom REGEXP :recherche OR prenom REGEXP :recherche) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $recherche_bdd =$db-> prepare('SELECT * FROM participants WHERE status="V" and event_id = :event_id and (nom REGEXP :recherche  OR bracelet_identification REGEXP :recherche) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $recherche_bdd->bindParam('recherche', $recherche);
-            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE status="V" and event_id = :event_id and(nom REGEXP :recherche OR prenom REGEXP :recherche)');
+            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE status="V" and event_id = :event_id and(nom REGEXP :recherche  OR bracelet_identification REGEXP :recherche)');
             $count_recherche->execute(array('recherche' => $recherche, 'event_id' => $event_id));
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
     }
