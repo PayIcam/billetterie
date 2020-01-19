@@ -76,6 +76,9 @@ function ajax_success(data)
     $('[data-toggle="popover"]').popover();//Il faut activer les popovers à chaque fois
     $('.is_in').click(function() { participant_leaves($(this))});//Pour les participants déjà entrées, si on clique, on sortira
     $('.is_out').click(function() { participant_arrives($(this))});//Pour les participants pas encore arrivés, si on clique, on entrera
+    if($('table tbody tr').length ==1) {
+        $('table tbody tr .options[data-toggle="popover"]').click();
+    }
 }
 
 $('input[name=recherche]').keyup(function()
@@ -85,6 +88,7 @@ $('input[name=recherche]').keyup(function()
     var timeout = setTimeout(function()
     {
         $('button[aria-describedby]').click();//On veux enlever les pop-overs quand on clique quelque part.
+        $('.popover').popover('hide');;//On veux enlever les pop-overs quand on clique quelque part.
         $.post(
         {
             url: public_url + 'participant_administration/php/creation_tableau.php?event_id=' + event_id,
