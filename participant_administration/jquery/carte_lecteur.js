@@ -79,7 +79,7 @@ $(document).ready(function()
 
     service.subscribe("cardInserted", function(badge_id) {
         console.log('badge_id : '+badge_id);
-        $search_input.val(badge_id).keyUp().animate({
+        $search_input.val(badge_id).keyup().animate({
             backgroundColor: "#d9edf7",
             borderColor: "#31708F",
             color: "#31708f",
