@@ -641,9 +641,6 @@ function display_options($participant)
 {
     ?>
         <td>
-            <button class="btn option_tooltip options" data-container="body" data-toggle="popover" data-html="true" title="Options du participant : " data-content="salut" type="button">
-                <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
-            </button>
             <?php if(!empty($participant['validated_options'])) { ?>
             <button class="btn option_tooltip options" data-container="body" data-toggle="popover" data-html="true" title="Options du participant : " data-content="<?= create_option_text($participant['validated_options']) ?>" type="button">
                 <span class="glyphicon glyphicon-question-sign option_tooltip_glyph"></span>
