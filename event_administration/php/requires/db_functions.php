@@ -127,9 +127,9 @@ function delete_previous_option_accessibility($event_id)
 function can_delete_promo($ids)
 {
     global $db;
-    $count_promo = $db->prepare('SELECT COUNT(*) rows FROM participants WHERE event_id= :event_id and site_id= :site_id and promo_id= :promo_id');
+    $count_promo = $db->prepare('SELECT COUNT(*) results FROM participants WHERE event_id= :event_id and site_id= :site_id and promo_id= :promo_id');
     $count_promo->execute($ids);
-    return $count_promo->fetch()['rows'] == 0 ? true : false;
+    return $count_promo->fetch()['results'] == 0 ? true : false;
 }
 function remove_promo($ids)
 {
@@ -147,9 +147,9 @@ function remove_promo($ids)
 function can_delete_option($ids)
 {
     global $db;
-    $count_option = $db->prepare('SELECT COUNT(*) rows FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE pho.event_id= :event_id and oc.option_id= :option_id');
+    $count_option = $db->prepare('SELECT COUNT(*) results FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE pho.event_id= :event_id and oc.option_id= :option_id');
     $count_option->execute($ids);
-    return $count_option->fetch()['rows'] == 0 ? true : false;
+    return $count_option->fetch()['results'] == 0 ? true : false;
 }
 /**
  * Cette fonction permet de savoir si des participants ont pris une certaine sous-option.
@@ -160,9 +160,9 @@ function can_delete_option($ids)
 function can_delete_option_choice($ids)
 {
     global $db;
-    $count_option = $db->prepare('SELECT COUNT(*) rows FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE pho.event_id= :event_id and pho.choice_id= :choice_id');
+    $count_option = $db->prepare('SELECT COUNT(*) results FROM participant_has_options pho LEFT JOIN option_choices oc ON oc.choice_id=pho.choice_id WHERE pho.event_id= :event_id and pho.choice_id= :choice_id');
     $count_option->execute($ids);
-    return $count_option->fetch()['rows'] == 0 ? true : false;
+    return $count_option->fetch()['results'] == 0 ? true : false;
 }
 function remove_option($ids)
 {
