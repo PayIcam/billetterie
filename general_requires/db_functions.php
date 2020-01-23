@@ -383,9 +383,9 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
     {
         case (preg_match("/^(?=[a-z\d ]*[a-z])(?=[a-z\d ]*\d)[a-z\d ]*$/i", $recherche) == 1):
             if(preg_match("/ /i", $recherche) != 1) {
-                $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and event_id = :event_id OR bracelet_identification REGEXP :recherche ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+                $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and event_id = :event_id and bracelet_identification REGEXP :recherche ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
                 $recherche_bdd->bindParam('recherche', $recherche);
-                $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE status="V" and event_id = :event_id and event_id = :event_id OR bracelet_identification REGEXP :recherche');
+                $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE status="V" and event_id = :event_id and bracelet_identification REGEXP :recherche');
                 $count_recherche->execute(array('event_id' => $event_id, 'recherche' => $recherche));
                 $count_recherche = $count_recherche->fetch()['COUNT(*)'];
                 break;
