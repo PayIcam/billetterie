@@ -381,6 +381,16 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
 
     switch ($recherche)
     {
+        case (preg_match("/^(?=[a-z\d ]*[a-z])(?=[a-z\d ]*\d)[a-z\d ]*$/i", $recherche) == 1):
+            if(preg_match("/ /i", $recherche) != 1) {
+                $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE status="V" and event_id = :event_id OR bracelet_identification REGEXP :recherche ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+                $recherche_bdd->bindParam('recherche', $recherche);
+                $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE status="V" and event_id = :event_id and event_id = :event_id OR bracelet_identification REGEXP :recherche');
+                $count_recherche->execute(array('event_id' => $event_id, 'recherche' => $recherche));
+                $count_recherche = $count_recherche->fetch()['COUNT(*)'];
+                break;
+            }
+
         //gets every participant who has pending_reservations
         case('pending_reservations'):
             $recherche_bdd = $db->prepare('SELECT * FROM participants WHERE participant_id IN(SELECT icam_id FROM transactions INNER JOIN events ON events.event_id = transactions.event_id WHERE status = "W" and transactions.event_id= :event_id) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
@@ -541,9 +551,9 @@ function determination_recherche($recherche, $start_lign, $rows_per_page)
 
         //gets participants which firstname or lastname correspond to the search
         default:
-            $recherche_bdd =$db-> prepare('SELECT * FROM participants WHERE status="V" and event_id = :event_id and (nom REGEXP :recherche  OR bracelet_identification REGEXP :recherche) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
+            $recherche_bdd =$db-> prepare('SELECT * FROM participants WHERE status="V" and event_id = :event_id and (nom REGEXP :recherche OR prenom REGEXP :recherche) ORDER BY participant_id LIMIT :start_lign, :rows_per_page');
             $recherche_bdd->bindParam('recherche', $recherche);
-            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE status="V" and event_id = :event_id and(nom REGEXP :recherche  OR bracelet_identification REGEXP :recherche)');
+            $count_recherche = $db->prepare('SELECT COUNT(*) FROM participants WHERE status="V" and event_id = :event_id and(nom REGEXP :recherche OR prenom REGEXP :recherche)');
             $count_recherche->execute(array('recherche' => $recherche, 'event_id' => $event_id));
             $count_recherche = $count_recherche->fetch()['COUNT(*)'];
     }
